@@ -18,12 +18,12 @@ func InitializeRouter() (router *gin.Engine) {
 	{
 		auth := v1route.Group("/auth")
 		{
-			auth.POST("/login", v1.POSTLogin).Use()
-			auth.POST("/logout", v1.POSTRegister)
+			auth.POST("/signin", v1.POSTLogin)
+			auth.POST("/signup", v1.POSTRegister)
 		}
 		user := v1route.Group("/user")
 		{
-			user.GET("/:username", utils.AuthOnly, v1Master.GETUser)
+			user.GET("/:id", utils.AuthOnly, v1Master.GETUser)
 			user.PUT("/:id", utils.AuthOnly, v1Master.PUTUser)
 		}
 		misc := v1route.Group("/misc")

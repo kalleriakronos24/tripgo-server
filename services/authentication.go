@@ -16,7 +16,7 @@ import (
 
 func (module *module) AuthenticateUser(credentials dto.UserLogin) (token string, err error) {
 	var user masterModels.User
-	if user, err = module.db.userModel.GetOneByUsername(credentials.Username); err != nil {
+	if user, err = module.db.userModel.GetOneByUserName(credentials.Username); err != nil {
 		return "", errors.New("incorrect credentials")
 	}
 	if err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(credentials.Password)); err != nil {
@@ -31,11 +31,12 @@ func (module *module) RegisterUser(credentials dto.UserSignup) (err error) {
 	if hashedPassword, err = bcrypt.GenerateFromPassword([]byte(credentials.Password), bcrypt.DefaultCost); err != nil {
 		return errors.New("failed hashing password")
 	}
-	if _, err = module.db.userModel.InsertUser(masterModels.User{
+	if err = module.db.userModel.InsertUser(masterModels.User{
+		Name:     credentials.Name,
+		Address:  credentials.Address,
 		Username: credentials.Username,
 		Email:    credentials.Email,
 		Password: string(hashedPassword),
-		Bio:      credentials.Bio,
 	}); err != nil {
 		log.Print(err)
 		return fmt.Errorf("error inserting user. %v", err)

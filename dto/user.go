@@ -6,21 +6,25 @@ type UserLogin struct {
 }
 
 type UserSignup struct {
-	Username string `json:"username" binding:"required"`
-	Email    string `json:"email" binding:"required"`
-	Password string `json:"password" binding:"required"`
-	Bio      string `json:"bio" binding:"-"`
-	Role     string `json:"role" binding:"-"`
+	Name     string `json:"name,omitempty" binding:"required"`
+	Address  string `json:"address"`
+	Username string `json:"username,omitempty" binding:"required"`
+	Email    string `gorm:"unique" json:"email" binding:"required"`
+	Password string `json:"password,omitempty" binding:"required"`
 }
 
 type UserUpdate struct {
-	Email string `json:"email" binding:"-"`
-	Bio   string `json:"bio" binding:"-"`
-	Role  string `json:"role" binding:"-"`
+	Name     string `json:"name,omitempty" binding:"required"`
+	Address  string `json:"address"`
+	Username string `json:"username,omitempty" binding:"required"`
+	Email    string `gorm:"unique" json:"email" binding:"required"`
+	Password string `json:"password,omitempty" binding:"required"`
 }
 
 type RetrieveUserInfo struct {
-	Username string `uri:"username" json:"username"`
-	Email    string `json:"email"`
-	Bio      string `json:"bio"`
+	Name     string `json:"name,omitempty" binding:"required"`
+	Address  string `json:"address"`
+	Username string `json:"username,omitempty" binding:"required"`
+	Email    string `gorm:"unique" json:"email" binding:"required"`
+	Password string `json:"password,omitempty" binding:"required"`
 }

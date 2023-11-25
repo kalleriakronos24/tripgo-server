@@ -27,13 +27,13 @@ func POSTLogin(c *gin.Context) {
 func POSTRegister(c *gin.Context) {
 	var err error
 	var user dto.UserSignup
-	if err = c.ShouldBind(&user); err != nil {
+	if err = c.ShouldBindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, dto.Response{Error: err.Error()})
 		return
 	}
 	if err = services.Handler.RegisterUser(user); err != nil {
-		c.JSON(http.StatusUnauthorized, dto.Response{Error: "failed registering user"})
+		c.JSON(http.StatusUnauthorized, dto.Response{Error: "user register failed"})
 		return
 	}
-	c.JSON(http.StatusCreated, dto.Response{Data: "user created"})
+	c.JSON(http.StatusCreated, dto.Response{Data: "success"})
 }

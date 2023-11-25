@@ -19,7 +19,7 @@ type HandlerFunc interface {
 
 	// RegisterUser ====== User Handlers ====== //
 	RegisterUser(p dto.UserSignup) (err error)
-	RetrieveUser(username string) (m masterModels.User, err error)
+	RetrieveUser(id uuid.UUID) (m masterModels.User, err error)
 	UpdateUser(id uuid.UUID, p dto.UserUpdate) (err error)
 }
 

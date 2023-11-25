@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/google/uuid"
 	masterModels "gitlab.com/odma1/odma-be/models/master"
 	"gitlab.com/odma1/odma-be/types"
 	"gorm.io/gorm"
@@ -16,7 +17,7 @@ type UserLog struct {
 	Description string
 	Kind        string // common / error
 
-	UserID uint
+	UserID uuid.UUID
 	User   masterModels.User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:UserID"`
 
 	types.DefaultModelProperty
