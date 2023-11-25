@@ -22,7 +22,7 @@ services:
       - internal
 
   nginx:
-    image: nginx:1.23.3-alpine
+    image: nginx:latest
     container_name: odma-be-nginx
     restart: unless-stopped
     tty: true

@@ -17,3 +17,10 @@ COPY . /opt/app/api
 CMD ["go mod init gitlab.com/odma1/odma-be", "go mod tidy"]
 
 CMD ["air"]
+
+
+FROM nginx:latest
+
+COPY ./nginx/default.conf /etc/nginx/nginx.conf
+
+CMD ["nginx", "-g", "daemon off;"]
