@@ -1,0 +1,73 @@
+version: "3.9"
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: base
+    tty: true
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+    expose:
+      - 3009
+    volumes:
+      - .:/opt/app/api
+    ports:
+      - "3009:8000"
+    depends_on:
+      - db
+    links:
+      - db
+    networks:
+      - internal
+
+  nginx:
+    image: nginx:1.23.3-alpine
+    container_name: odma-be-nginx
+    restart: unless-stopped
+    tty: true
+    ports:
+      - '8000:8000'
+    expose:
+      - 8000
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - internal
+
+  adminer:
+    image: adminer:4.8.1-standalone
+    container_name: odma-be-adminer
+    restart: unless-stopped
+    environment:
+      ADMINER_DEFAULT_SERVER: db
+    ports:
+      - '8001:8080'
+    networks:
+      - internal
+
+  db:
+    image: postgres:latest
+    container_name: odma-db
+    restart: on-failure
+    environment:
+      - POSTGRES_HOST=${DB_HOST}
+      - POSTGRES_PORT=${DB_PORT}
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_DATABASE}
+    ports:
+      - '5432:5432'
+    expose:
+      - 5432
+    volumes:
+      - odma-db:/var/lib/postgresql/data"
+    networks:
+      - internal
+
+networks:
+    internal:
+      driver: bridge
+volumes:
+    odma-db:
+      driver: local
