@@ -1,0 +1,468 @@
+{
+	"info": {
+		"_postman_id": "9e982abb-d5b4-4a21-ab39-22b3624ec71c",
+		"name": "ODMA Backend Service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25124253"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "login",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\" : \"madanugraha\",\r\n    \"password\": \"1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{golang_local_v1}}/auth/signin",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"auth",
+								"signin"
+							]
+						},
+						"description": "``` json\nSample API Response\n{\n    \"data\": \"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyYzgyMmRhMC1mZGNlLTQ3YmMtYTY0Ny0yYzZlMjdiNjMzZWQiLCJleHAiOjE3MDExMjE2MzMsImlhdCI6MTcwMDk0ODgzM30.FapSfGaVXJVFJtmpSbmwBz6frXieu1LVbQgmAgbqCf8\"\n}\n\n ```\n\n```\nSample  API Response Error\n{\n    \"data\": false,\n    \"kind\": \"logical\",\n    \"message\": \"Incorrect username or password. Please try again\",\n    \"error\": \"incorrect credentials\"\n}\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "register",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"mada nugraha\",\r\n    \"username\" : \"madman123\",\r\n    \"password\" : \"1234\",\r\n    \"email\" : \"madman123@madman.com\",\r\n    \"address\" : \"this is optional field\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{golang_local_v1}}/auth/signup",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"auth",
+								"signup"
+							]
+						},
+						"description": "``` json\nSample API Response\n{\n    \"data\": \"success\"\n}\n\n ```\n\n``` json\nSample API Response Error\n{\n    \"data\": false,\n    \"kind\": \"insert-failed\",\n    \"message\": \"Failed inserting new user\",\n    \"error\": \"error inserting user. ERROR: duplicate key value violates unique constraint \\\"users_email_key\\\" (SQLSTATE 23505)\"\n}\n\n{\n    \"data\": false,\n    \"kind\": \"data-existing\",\n    \"message\": \"Data is already exist with email \"\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "register super admin",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"mada nugraha\",\r\n    \"username\" : \"madanugraha\",\r\n    \"password\" : \"1234\",\r\n    \"email\" : \"madman@madman.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{golang_local_v1}}/auth/signup/sa",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"auth",
+								"signup",
+								"sa"
+							]
+						},
+						"description": "``` json\nSample API Response\n{\n    \"data\": \"success\"\n}\n\n ```\n\n``` json\nSample API Response Error\n{\n    \"data\": false,\n    \"kind\": \"insert-failed\",\n    \"message\": \"Failed inserting new user\",\n    \"error\": \"error inserting user. ERROR: duplicate key value violates unique constraint \\\"users_email_key\\\" (SQLSTATE 23505)\"\n}\n\n{\n    \"data\": false,\n    \"kind\": \"data-existing\",\n    \"message\": \"Data is already exist with email \"\n}\n\n ```"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Misc",
+			"item": [
+				{
+					"name": "ping pong",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{golang_local_v1}}/misc/ping",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"misc",
+								"ping"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "upload file single",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{golang_local_v1}}/upload",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"upload"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "upload file multiple",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{golang_local_v1}}/upload-multiple",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"upload-multiple"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "get user by id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{golang_local_v1}}/user/f6f1dbef-e9b7-4bf5-bbbd-8ff0a9d7609b",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"user",
+								"f6f1dbef-e9b7-4bf5-bbbd-8ff0a9d7609b"
+							]
+						},
+						"description": "Parameter is companyId  \n  \nSample API Response\n\n``` json\n{\n    \"data\": {\n        \"id\": \"4a1a011c-f061-4ac2-8e55-532ebd751380\",\n        \"name\": \"mada nugraha\",\n        \"address\": \"this is optional field\",\n        \"username\": \"madman\",\n        \"email\": \"madman@madman.com\",\n        \"password\": \"$2a$10$9qNRsDdXyiexBmJrQ/LJEu3k4GbA2lFkn5Cxwm2kJ8IiUNFOuro/2\",\n        \"createdBy\": \"8e684d0c-57ca-4c39-907f-3d4ae2ea6f46\",\n        \"updatedBy\": \"8e684d0c-57ca-4c39-907f-3d4ae2ea6f46\",\n        \"createdByCompany\": {\n            \"id\": \"8e684d0c-57ca-4c39-907f-3d4ae2ea6f46\",\n            \"name\": \"Fantasy Fantazia\",\n            \"phoneNumber\": \"+62 834123 123\",\n            \"email\": \"mada.cool@gmail.com\",\n            \"address\": \"this is optional\",\n            \"picName\": \"mada nugraha\",\n            \"picDesignation\": \"IT\",\n            \"bankAccountName\": \"BCA\",\n            \"bankAccountNumber\": 12345678,\n            \"createdAt\": \"2023-11-26T17:58:09.424273+07:00\",\n            \"updatedAt\": \"2023-11-26T17:58:09.424273+07:00\",\n            \"deletedAt\": null\n        },\n        \"updatedByCompany\": {\n            \"id\": \"8e684d0c-57ca-4c39-907f-3d4ae2ea6f46\",\n            \"name\": \"Fantasy Fantazia\",\n            \"phoneNumber\": \"+62 834123 123\",\n            \"email\": \"mada.cool@gmail.com\",\n            \"address\": \"this is optional\",\n            \"picName\": \"mada nugraha\",\n            \"picDesignation\": \"IT\",\n            \"bankAccountName\": \"BCA\",\n            \"bankAccountNumber\": 12345678,\n            \"createdAt\": \"2023-11-26T17:58:09.424273+07:00\",\n            \"updatedAt\": \"2023-11-26T17:58:09.424273+07:00\",\n            \"deletedAt\": null\n        },\n        \"createdAt\": \"2023-11-26T18:50:01.281989+07:00\",\n        \"updatedAt\": \"2023-11-26T18:50:01.281989+07:00\",\n        \"deletedAt\": null\n    }\n}\n\n ```\n\nSample API Response Error\n\n``` json\n{\n    \"data\": false,\n    \"kind\": \"uuid-error\",\n    \"message\": \"Unknown UUID. Please try again later\",\n    \"error\": \"invalid UUID format\"\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "update user",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"mada nugraha\",\r\n    \"username\": \"madman123\",\r\n    \"password\": \"1234\",\r\n    \"email\": \"madman@madman.com\",\r\n    \"address\": \"this is optional field\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{golang_local_v1}}/user/4a1a011c-f061-4ac2-8e55-532ebd751380",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"user",
+								"4a1a011c-f061-4ac2-8e55-532ebd751380"
+							]
+						},
+						"description": "Parameter is companyId\n\nSample API Response\n\n``` json\n{\n    \"message\": \"success\"\n}\n\n ```\n\nSample API Response Error\n\n``` json\n{\n    \"data\": false,\n    \"kind\": \"uuid-error\",\n    \"message\": \"Unknown UUID. Please try again later\",\n    \"error\": \"invalid UUID format\"\n}\n{\n    \"data\": false,\n    \"kind\": \"data-existing\",\n    \"message\": \"Data is already exist with username madman123\"\n}\n\n ```"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Company",
+			"item": [
+				{
+					"name": "get company by id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{golang_local_v1}}/company/deab654a-ceb1-4942-b2d6-6a4a473d131d",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"company",
+								"deab654a-ceb1-4942-b2d6-6a4a473d131d"
+							]
+						},
+						"description": "``` json\nSample  API Response\n{\n    \"data\": {\n        \"id\": \"8e684d0c-57ca-4c39-907f-3d4ae2ea6f46\",\n        \"name\": \"Fantasy Fantazia\",\n        \"phoneNumber\": \"+62 834123 123\",\n        \"email\": \"mada.cool@gmail.com\",\n        \"address\": \"this is optional\",\n        \"picName\": \"mada nugraha\",\n        \"picDesignation\": \"IT\",\n        \"bankAccountName\": \"BCA\",\n        \"bankAccountNumber\": 12345678,\n        \"createdAt\": \"2023-11-26T17:58:09.424273+07:00\",\n        \"updatedAt\": \"2023-11-26T17:58:09.424273+07:00\",\n        \"deletedAt\": null\n    }\n}\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "update company",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\" : \"Fantasy Fantasia 123\",\r\n    \"phoneNumber\": \"+62 834123 123\",\r\n    \"email\" : \"mada.cool@gmail.com\",\r\n    \"address\": \"this is optional\",\r\n    \"PICName\": \"mada nugraha\",\r\n    \"PICDesignation\" : \"IT\",\r\n    \"bankAccountName\" : \"BCA\",\r\n    \"bankAccountNumber\" : 12345678\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{golang_local_v1}}/company/deab654a-ceb1-4942-b2d6-6a4a473d131d",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"company",
+								"deab654a-ceb1-4942-b2d6-6a4a473d131d"
+							]
+						},
+						"description": "``` json\nSample  API Response Error\n{\n    \"data\": false,\n    \"kind\": \"data-not-found\",\n    \"message\": \"Data is not found\"\n}\n\nSample API Response \n{\n    \"message\": \"success\"\n}\n\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "create company",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\" : \"Fantasy Fantazia  test\",\r\n    \"phoneNumber\": \"+62 834123 123\",\r\n    \"email\" : \"mada.22cool@gmail.com\",\r\n    \"address\": \"this is optional\",\r\n    \"PICName\": \"mada nugraha\",\r\n    \"PICDesignation\" : \"IT\",\r\n    \"bankAccountName\" : \"BCA\",\r\n    \"bankAccountNumber\" : 12345678\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{golang_local_v1}}/company/",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"company",
+								""
+							]
+						},
+						"description": "``` json\nSample API Response \n{\n  \"message\" : \"success\"\n}\n\n ```\n\n``` json\nSample API Response Error\n\n{\n    \"data\": false,\n    \"kind\": \"data-existing\",\n    \"message\": \"Data is already exist with email \"\n}\n\n ```"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Client",
+			"item": [
+				{
+					"name": "get client by id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{golang_local_v1}}/client/da4f7a8f-2c1b-4097-b92c-512c817d9fb0",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"client",
+								"da4f7a8f-2c1b-4097-b92c-512c817d9fb0"
+							]
+						},
+						"description": "``` json\nSample  API Response\n{\n    \"data\": {\n        \"id\": \"8e684d0c-57ca-4c39-907f-3d4ae2ea6f46\",\n        \"name\": \"Fantasy Fantazia\",\n        \"phoneNumber\": \"+62 834123 123\",\n        \"email\": \"mada.cool@gmail.com\",\n        \"address\": \"this is optional\",\n        \"picName\": \"mada nugraha\",\n        \"picDesignation\": \"IT\",\n        \"bankAccountName\": \"BCA\",\n        \"bankAccountNumber\": 12345678,\n        \"createdAt\": \"2023-11-26T17:58:09.424273+07:00\",\n        \"updatedAt\": \"2023-11-26T17:58:09.424273+07:00\",\n        \"deletedAt\": null\n    }\n}\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "update client",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\" : \"Fantasy Fantazia Client zxczxc\",\r\n    \"phoneNumber\": \"+62 834123 123\",\r\n    \"email\" : \"mada.cool@gmail.com\",\r\n    \"address\": \"this is optional\",\r\n    \"companyID\" : \"deab654a-ceb1-4942-b2d6-6a4a473d131d\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{golang_local_v1}}/client/7d593acd-bbe6-4199-b29d-5c004c9f783a",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"client",
+								"7d593acd-bbe6-4199-b29d-5c004c9f783a"
+							]
+						},
+						"description": "``` json\nSample  API Response Error\n{\n    \"data\": false,\n    \"kind\": \"data-not-found\",\n    \"message\": \"Data is not found\"\n}\n\nSample API Response \n{\n    \"message\": \"success\"\n}\n\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "create client",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\" : \"Fantasy Fantazia Client\",\r\n    \"phoneNumber\": \"+62 834123 123\",\r\n    \"email\" : \"mada.zxczxczxc@gmail.com\",\r\n    \"address\": \"this is optional\",\r\n    \"companyID\" : \"deab654a-ceb1-4942-b2d6-6a4a473d131d\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{golang_local_v1}}/client",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"client"
+							]
+						},
+						"description": "``` json\nSample API Response \n{\n  \"message\" : \"success\"\n}\n\n ```\n\n``` json\nSample API Response Error\n\n{\n    \"data\": false,\n    \"kind\": \"data-existing\",\n    \"message\": \"Data is already exist with email \"\n}\n\n ```"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
