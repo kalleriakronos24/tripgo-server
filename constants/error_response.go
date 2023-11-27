@@ -5,7 +5,7 @@ import (
 	"gitlab.com/odma1/odma-be/dto"
 )
 
-func GetErrorResponse(kind string, err error, modelName string) dto.Response {
+func GetErrorResponse(kind string, err error, message string) dto.Response {
 	var response dto.Response
 
 	switch kind {
@@ -31,7 +31,7 @@ func GetErrorResponse(kind string, err error, modelName string) dto.Response {
 		response = dto.Response{
 			Data:    false,
 			Kind:    "uuid-error",
-			Message: "Unknown UUID. Please try again later.",
+			Message: "Unknown UUID. Please try again later",
 			Error:   err.Error(),
 		}
 		return response
@@ -52,11 +52,26 @@ func GetErrorResponse(kind string, err error, modelName string) dto.Response {
 		}
 		return response
 
+	case "data-existing-email":
+		response = dto.Response{
+			Data:    false,
+			Kind:    "data-existing",
+			Message: fmt.Sprintf("Data is already exist with email %s", message),
+		}
+		return response
+	case "data-existing-username":
+		response = dto.Response{
+			Data:    false,
+			Kind:    "data-existing",
+			Message: fmt.Sprintf("Data is already exist with username %s", message),
+		}
+		return response
+
 		// ==== common crud operations fails ====
 	case "insert-failed":
 		response = dto.Response{
 			Data:    false,
-			Message: fmt.Sprintf("Failed inserting new %s", modelName),
+			Message: fmt.Sprintf("Failed inserting new %s", message),
 			Kind:    "insert-failed",
 			Error:   err.Error(),
 		}
@@ -65,7 +80,7 @@ func GetErrorResponse(kind string, err error, modelName string) dto.Response {
 		response = dto.Response{
 			Data:    false,
 			Kind:    "retrieve-failed",
-			Message: fmt.Sprintf("Failed when finding %s", modelName),
+			Message: fmt.Sprintf("Failed when finding %s", message),
 			Error:   err.Error(),
 		}
 		return response
@@ -73,7 +88,7 @@ func GetErrorResponse(kind string, err error, modelName string) dto.Response {
 		response = dto.Response{
 			Data:    false,
 			Kind:    "update-failed",
-			Message: fmt.Sprintf("Failed when updating %s", modelName),
+			Message: fmt.Sprintf("Failed when updating %s", message),
 			Error:   err.Error(),
 		}
 		return response
@@ -81,12 +96,20 @@ func GetErrorResponse(kind string, err error, modelName string) dto.Response {
 		response = dto.Response{
 			Data:    false,
 			Kind:    "delete-failed",
-			Message: fmt.Sprintf("Failed when deleting %s", modelName),
+			Message: fmt.Sprintf("Failed when deleting %s", message),
 			Error:   err.Error(),
 		}
 		return response
 
-		// ==== other ====
+	// ==== general / logical ====
+	case "logical":
+		response = dto.Response{
+			Data:    false,
+			Kind:    "logical",
+			Message: message,
+			Error:   err.Error(),
+		}
+		return response
 	default:
 		return response
 	}

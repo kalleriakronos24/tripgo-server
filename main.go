@@ -30,6 +30,14 @@ func runServer() {
 	}
 	migrations.Migrate()
 
+	// set application timezone globally
+	loc, err := time.LoadLocation("Asia/Jakarta")
+	if err != nil {
+		log.Fatalln(err)
+		return
+	}
+	time.Local = loc
+
 	// serve all routes and routes configuration
 	s := &http.Server{
 		Addr:           fmt.Sprintf(":%d", config.AppConfig.Port),

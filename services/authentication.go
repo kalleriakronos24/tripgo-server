@@ -3,6 +3,7 @@ package services
 import (
 	"errors"
 	"fmt"
+	"github.com/google/uuid"
 	"log"
 	"time"
 
@@ -26,17 +27,41 @@ func (module *module) AuthenticateUser(credentials dto.UserLogin) (token string,
 	return generateToken(user)
 }
 
-func (module *module) RegisterUser(credentials dto.UserSignup) (err error) {
+func (module *module) RegisterUser(credentials *dto.UserSignup) (err error) {
 	var hashedPassword []byte
 	if hashedPassword, err = bcrypt.GenerateFromPassword([]byte(credentials.Password), bcrypt.DefaultCost); err != nil {
 		return errors.New("failed hashing password")
 	}
 	if err = module.db.userModel.InsertUser(masterModels.User{
-		Name:     credentials.Name,
-		Address:  credentials.Address,
-		Username: credentials.Username,
-		Email:    credentials.Email,
-		Password: string(hashedPassword),
+		Name:      credentials.Name,
+		Address:   credentials.Address,
+		Username:  credentials.Username,
+		Email:     credentials.Email,
+		Password:  string(hashedPassword),
+		CreatedBy: credentials.CreatedBy,
+		UpdatedBy: credentials.CreatedBy,
+		Role:      "staff",
+	}); err != nil {
+		log.Print(err)
+		return fmt.Errorf("error inserting user. %v", err)
+	}
+	return
+}
+
+func (module *module) RegisterUserSuperAdmin(credentials dto.UserSignupSuperAdmin) (err error) {
+	var hashedPassword []byte
+	if hashedPassword, err = bcrypt.GenerateFromPassword([]byte(credentials.Password), bcrypt.DefaultCost); err != nil {
+		return errors.New("failed hashing password")
+	}
+	if err = module.db.userModel.InsertUser(masterModels.User{
+		Name:      credentials.Name,
+		Address:   credentials.Address,
+		Username:  credentials.Username,
+		Email:     credentials.Email,
+		Password:  string(hashedPassword),
+		Role:      "superadmin",
+		CreatedBy: uuid.Nil,
+		UpdatedBy: uuid.Nil,
 	}); err != nil {
 		log.Print(err)
 		return fmt.Errorf("error inserting user. %v", err)

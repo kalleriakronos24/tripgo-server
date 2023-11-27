@@ -14,13 +14,23 @@ import (
 var Handler HandlerFunc
 
 type HandlerFunc interface {
-	// AuthenticateUser ====== Authentication Handlers ====== //
 	AuthenticateUser(p dto.UserLogin) (token string, err error)
 
-	// RegisterUser ====== User Handlers ====== //
-	RegisterUser(p dto.UserSignup) (err error)
+	CheckExistingUser(id string, param CheckExistingUserStruct) (err error)
+	RegisterUser(p *dto.UserSignup) (err error)
+	RegisterUserSuperAdmin(p dto.UserSignupSuperAdmin) (err error)
 	RetrieveUser(id uuid.UUID) (m masterModels.User, err error)
 	UpdateUser(id uuid.UUID, p dto.UserUpdate) (err error)
+
+	CheckExistingCompany(id string, param CheckExistingCompanyStruct) (err error)
+	RetrieveCompany(id uuid.UUID) (m masterModels.Company, err error)
+	InsertCompany(p *dto.InsertCompany) (err error)
+	UpdateCompany(id uuid.UUID, p *dto.UpdateCompany) (err error)
+
+	CheckExistingClient(id string, param CheckExistingClientStruct) (err error)
+	RetrieveClient(id uuid.UUID) (m masterModels.Client, err error)
+	InsertClient(p *dto.InsertClient) (err error)
+	UpdateClient(id uuid.UUID, p *dto.UpdateClient) (err error)
 }
 
 type module struct {
@@ -28,8 +38,10 @@ type module struct {
 }
 
 type dbEntity struct {
-	conn      *gorm.DB
-	userModel masterModels.UserModelAction
+	conn         *gorm.DB
+	userModel    masterModels.UserModelAction
+	companyModel masterModels.CompanyModelAction
+	clientModel  masterModels.ClientModelAction
 }
 
 func InitializeServices() (err error) {
@@ -41,12 +53,13 @@ func InitializeServices() (err error) {
 		return
 	}
 	log.Println("[INIT] connected to PostgresSQL")
-	///
-	// Compose handler modules
+
 	Handler = &module{
 		db: &dbEntity{
-			conn:      db,
-			userModel: masterModels.NewUserAction(db),
+			conn:         db,
+			userModel:    masterModels.NewUserAction(db),
+			companyModel: masterModels.NewCompanyAction(db),
+			clientModel:  masterModels.NewClientAction(db),
 		},
 	}
 	return

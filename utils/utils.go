@@ -13,6 +13,6 @@ type AuthResponseData struct {
 
 func AuthOnly(c *gin.Context) {
 	if !c.GetBool(constants.IsAuthenticatedKey) {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, dto.Response{Error: "User not authenticated", Data: nil})
+		c.AbortWithStatusJSON(http.StatusUnauthorized, dto.Response{Error: "User not authenticated", Data: false})
 	}
 }

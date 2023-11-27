@@ -1,9 +1,13 @@
 package models
 
 import (
+	"fmt"
 	"github.com/google/uuid"
 	"gitlab.com/odma1/odma-be/types"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
+	"log"
+	"strings"
 )
 
 type companyOrm struct {
@@ -11,17 +15,72 @@ type companyOrm struct {
 }
 
 type Company struct {
-	ID                uuid.UUID `gorm:"type:uuid;default:gen_random_uuid()"`
-	Name              string    `json:"name,omitempty"`
-	PhoneNumber       string    `json:"phoneNumber,omitempty"`
-	Email             string    `gorm:"unique" json:"email,omitempty"`
-	Address           string    `json:"address"`
-	PICName           string    `json:"PICName,omitempty"`
-	PICDesignation    string    `json:"PICDesignation"`
-	BankAccountName   string    `json:"bankAccountName,omitempty"`
-	BankAccountNumber string    `json:"bankAccountNumber,omitempty"`
-	CreatedBy         uuid.UUID `json:"createdBy,omitempty"`
+	ID                uuid.UUID `gorm:"index:id,unique;type:uuid;default:gen_random_uuid();" json:"id"`
+	Name              string    `json:"name" gorm:"not null"`
+	PhoneNumber       string    `json:"phoneNumber" gorm:"not null"`
+	Email             string    `gorm:"index:email,unique;not null" json:"email"`
+	Address           string    `json:"address,omitempty" gorm:"default:NULL"`
+	PICName           string    `json:"picName" gorm:"not null"`
+	PICDesignation    string    `json:"picDesignation" gorm:"not null"`
+	BankAccountName   string    `json:"bankAccountName" gorm:"not null"`
+	BankAccountNumber int       `json:"bankAccountNumber" gorm:"not null;default:0"`
 
-	User User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:CreatedBy"`
+	CompanyCreatedBy uuid.UUID `json:"createdBy" gorm:"type:uuid;not null;default:NULL;"`
+	CompanyUpdatedBy uuid.UUID `json:"updatedBy" gorm:"type:uuid;default:NULL;"`
+
+	CreatedByUser *User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:CompanyCreatedBy;references:ID" json:"createdByUser"`
+	UpdatedByUser *User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:CompanyUpdatedBy;references:ID" json:"updatedByUser"`
+
 	types.DefaultModelProperty
+}
+
+type CompanyModelAction interface {
+	GetOneCompanyByID(id uuid.UUID) (m Company, err error)
+	GetOneCompanyByName(name string) (m Company, err error)
+	GetOneCompanyByEmail(email string) (m Company, err error)
+
+	InsertCompany(p Company) (err error)
+
+	UpdateCompany(id uuid.UUID, p Company) (err error)
+}
+
+func NewCompanyAction(db *gorm.DB) CompanyModelAction {
+	return &companyOrm{db}
+}
+
+func (o *companyOrm) GetOneCompanyByID(id uuid.UUID) (m Company, err error) {
+	result := o.db.Model(&m).
+		Preload("CreatedByUser", func(db *gorm.DB) *gorm.DB {
+			return db.Select([]string{"ID", "Name", "CreatedBy", "UpdatedBy", "CreatedAt", "UpdatedAt"})
+		}).
+		Preload("UpdatedByUser", func(db *gorm.DB) *gorm.DB {
+			return db.Select([]string{"ID", "Name", "CreatedBy", "UpdatedBy", "CreatedAt", "UpdatedAt"})
+		}).
+		First(&m, id)
+
+	fmt.Printf("%v", &m)
+
+	return m, result.Error
+}
+
+func (o *companyOrm) GetOneCompanyByName(name string) (m Company, err error) {
+	result := o.db.Model(&m).Where("lower(name) = ?", strings.ToLower(name)).First(&m)
+	return m, result.Error
+}
+
+func (o *companyOrm) GetOneCompanyByEmail(email string) (m Company, err error) {
+	result := o.db.Model(&m).Where("email = ?", email).First(&m)
+	return m, result.Error
+}
+
+func (o *companyOrm) InsertCompany(p Company) (err error) {
+	result := o.db.Model(&p).Omit(clause.Associations).Create(&p)
+	return result.Error
+}
+
+func (o *companyOrm) UpdateCompany(id uuid.UUID, p Company) (err error) {
+	log.Println(id)
+	fmt.Printf("%v", p)
+	result := o.db.Model(&p).Where("id = ?", id).Updates(&p)
+	return result.Error
 }
