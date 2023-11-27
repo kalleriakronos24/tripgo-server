@@ -17,13 +17,13 @@ type companyOrm struct {
 type Company struct {
 	ID                uuid.UUID `gorm:"index:id,unique;type:uuid;default:gen_random_uuid();" json:"id"`
 	Name              string    `json:"name" gorm:"not null"`
-	PhoneNumber       string    `json:"phoneNumber" gorm:"not null"`
-	Email             string    `gorm:"index:email,unique;not null" json:"email"`
+	PhoneNumber       string    `json:",omitempty" gorm:"not null"`
+	Email             string    `gorm:"index:email,unique;not null" json:",omitempty"`
 	Address           string    `json:"address,omitempty" gorm:"default:NULL"`
-	PICName           string    `json:"picName" gorm:"not null"`
-	PICDesignation    string    `json:"picDesignation" gorm:"not null"`
-	BankAccountName   string    `json:"bankAccountName" gorm:"not null"`
-	BankAccountNumber int       `json:"bankAccountNumber" gorm:"not null;default:0"`
+	PICName           string    `json:"picName,omitempty" gorm:"not null"`
+	PICDesignation    string    `json:"picDesignation,omitempty" gorm:"not null"`
+	BankAccountName   string    `json:",omitempty" gorm:"not null"`
+	BankAccountNumber int       `json:",omitempty" gorm:"not null;default:0"`
 
 	CompanyCreatedBy uuid.UUID `json:"createdBy" gorm:"type:uuid;not null;default:NULL;"`
 	CompanyUpdatedBy uuid.UUID `json:"updatedBy" gorm:"type:uuid;default:NULL;"`

@@ -11,20 +11,20 @@ type UserLogin struct {
 }
 
 type UserSignup struct {
-	Name      string `json:"name,omitempty" binding:"required"`
+	Name      string `json:"name" binding:"required"`
 	Address   string `json:"address"`
-	Username  string `json:"username,omitempty" binding:"required"`
+	Username  string `json:"username" binding:"required"`
 	Email     string `gorm:"unique" json:"email,omitempty" binding:"required"`
-	Password  string `json:"password,omitempty" binding:"required"`
+	Password  string `json:"password" binding:"required"`
 	CreatedBy uuid.UUID
 }
 
 type UserSignupSuperAdmin struct {
-	Name     string `json:"name,omitempty" binding:"required"`
+	Name     string `json:"name" binding:"required"`
 	Address  string `json:"address"`
-	Username string `json:"username,omitempty" binding:"required"`
+	Username string `json:"username" binding:"required"`
 	Email    string `gorm:"unique" json:"email" binding:"required"`
-	Password string `json:"password,omitempty" binding:"required"`
+	Password string `json:"password" binding:"required"`
 }
 
 type UserUpdate struct {

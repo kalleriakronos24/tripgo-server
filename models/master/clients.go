@@ -21,6 +21,9 @@ type Client struct {
 	ClientCreatedBy uuid.UUID `json:"createdBy" gorm:"type:uuid;not null;default:NULL"`
 	ClientUpdatedBy uuid.UUID `json:"updatedBy" gorm:"type:uuid;default:NULL"`
 
+	CompanyID uuid.UUID `json:"companyId" gorm:"type:uuid;default:NULL"`
+	Company   *Company  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:CompanyID;references:ID" json:"company"`
+
 	CreatedByUser *User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:ClientCreatedBy;references:ID" json:"createdByUser"`
 	UpdatedByUser *User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:ClientUpdatedBy;references:ID" json:"updatedByUser"`
 	types.DefaultModelProperty
@@ -46,7 +49,10 @@ func (o *clientOrm) GetOneClientByID(id uuid.UUID) (m Client, err error) {
 			return db.Select([]string{"ID", "Name", "CreatedBy", "UpdatedBy", "CreatedAt", "UpdatedAt"})
 		}).
 		Preload("UpdatedByUser", func(db *gorm.DB) *gorm.DB {
-			return db.Select([]string{"ID", "Name", "CreatedBy", "UpdatedBy", "CreatedAt", "UpdatedAt"})
+			return db.Select([]string{"ID", "Name", "CreatedBy", "UpdatedAt"})
+		}).
+		Preload("Company", func(db *gorm.DB) *gorm.DB {
+			return db.Select([]string{"ID", "Name", "CreatedAt", "UpdatedAt"})
 		}).
 		Where("id = ?", id).
 		First(&m)

@@ -27,6 +27,7 @@ func (module *module) InsertClient(p *dto.InsertClient) (err error) {
 		Email:           strings.ToLower(p.Email),
 		Address:         p.Address,
 		ClientCreatedBy: p.CreatedBy,
+		CompanyID:       p.CompanyID,
 	}); err != nil {
 		return errors.New(err.Error())
 	}
@@ -40,6 +41,7 @@ func (module *module) UpdateClient(id uuid.UUID, p *dto.UpdateClient) (err error
 		Email:           strings.ToLower(p.Email),
 		Address:         p.Address,
 		ClientUpdatedBy: p.UpdatedBy,
+		CompanyID:       p.CompanyID,
 	}); err != nil {
 		return errors.New(err.Error())
 	}
