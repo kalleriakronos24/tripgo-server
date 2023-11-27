@@ -13,6 +13,13 @@ type CheckExistingClientStruct struct {
 	*masterModels.Client
 }
 
+func (module *module) RetrieveAllClient(id uuid.UUID) (m []masterModels.Client, err error) {
+	if m, err = module.db.clientModel.GetAllClient(id); err != nil {
+		return m, fmt.Errorf(err.Error())
+	}
+	return
+}
+
 func (module *module) RetrieveClient(id uuid.UUID) (m masterModels.Client, err error) {
 	if m, err = module.db.clientModel.GetOneClientByID(id); err != nil {
 		return m, fmt.Errorf(err.Error())

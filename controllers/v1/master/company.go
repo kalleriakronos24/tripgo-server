@@ -12,6 +12,26 @@ import (
 	"gitlab.com/odma1/odma-be/services"
 )
 
+func GETAllCompany(c *gin.Context) {
+	var err error
+
+	userLoggedInId := c.GetString("user_id")
+	userId, err := uuid.Parse(userLoggedInId)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("uuid-error", err, ""))
+		return
+	}
+
+	var company []masterModels.Company
+	if company, err = services.Handler.RetrieveAllCompany(userId); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "client"))
+		return
+	}
+
+	c.JSON(http.StatusOK, dto.Response{Data: company})
+}
+
 func GETCompany(c *gin.Context) {
 	var err error
 

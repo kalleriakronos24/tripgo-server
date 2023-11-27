@@ -30,6 +30,7 @@ type Client struct {
 }
 
 type ClientModelAction interface {
+	GetAllClient(userId uuid.UUID) (m []Client, err error)
 	GetOneClientByID(id uuid.UUID) (m Client, err error)
 	GetOneClientByName(name string) (m Client, err error)
 	GetOneClientByEmail(email string) (m Client, err error)
@@ -41,6 +42,23 @@ type ClientModelAction interface {
 
 func NewClientAction(db *gorm.DB) ClientModelAction {
 	return &clientOrm{db}
+}
+
+func (o *clientOrm) GetAllClient(userId uuid.UUID) (m []Client, err error) {
+	result := o.db.Model(&m).
+		Preload("CreatedByUser", func(db *gorm.DB) *gorm.DB {
+			return db.
+				Select([]string{"ID", "Name", "CreatedBy", "UpdatedBy", "CreatedAt", "UpdatedAt"}).
+				First(&User{}, userId)
+		}).
+		Preload("UpdatedByUser", func(db *gorm.DB) *gorm.DB {
+			return db.Select([]string{"ID", "Name", "CreatedBy", "UpdatedAt"})
+		}).
+		Preload("Company", func(db *gorm.DB) *gorm.DB {
+			return db.Select([]string{"ID", "Name", "CreatedAt", "UpdatedAt"})
+		}).
+		Find(&m)
+	return m, result.Error
 }
 
 func (o *clientOrm) GetOneClientByID(id uuid.UUID) (m Client, err error) {

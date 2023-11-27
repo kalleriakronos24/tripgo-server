@@ -35,6 +35,7 @@ type Company struct {
 }
 
 type CompanyModelAction interface {
+	GetAllCompany(userId uuid.UUID) (m []Company, err error)
 	GetOneCompanyByID(id uuid.UUID) (m Company, err error)
 	GetOneCompanyByName(name string) (m Company, err error)
 	GetOneCompanyByEmail(email string) (m Company, err error)
@@ -46,6 +47,20 @@ type CompanyModelAction interface {
 
 func NewCompanyAction(db *gorm.DB) CompanyModelAction {
 	return &companyOrm{db}
+}
+
+func (o *companyOrm) GetAllCompany(userId uuid.UUID) (m []Company, err error) {
+	result := o.db.Model(&m).
+		Preload("CreatedByUser", func(db *gorm.DB) *gorm.DB {
+			return db.
+				Select([]string{"ID", "Name", "CreatedBy", "UpdatedBy", "CreatedAt", "UpdatedAt"}).
+				First(&User{}, userId)
+		}).
+		Preload("UpdatedByUser", func(db *gorm.DB) *gorm.DB {
+			return db.Select([]string{"ID", "Name", "CreatedBy", "UpdatedAt"})
+		}).
+		Find(&m)
+	return m, result.Error
 }
 
 func (o *companyOrm) GetOneCompanyByID(id uuid.UUID) (m Company, err error) {

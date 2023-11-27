@@ -24,4 +24,4 @@ into your .env file
 
 if you encounter issues when u run the command "docker compose up" containing texts "go.sum", try running "go mod tidy" in your project directory and try run "docker compose up" once again
 
-
+please check the postman.json file and refer to the respective api and head over to the documentation each tab of it for the details

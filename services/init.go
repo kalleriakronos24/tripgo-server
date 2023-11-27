@@ -23,11 +23,13 @@ type HandlerFunc interface {
 	UpdateUser(id uuid.UUID, p dto.UserUpdate) (err error)
 
 	CheckExistingCompany(id string, param CheckExistingCompanyStruct) (err error)
+	RetrieveAllCompany(id uuid.UUID) (m []masterModels.Company, err error)
 	RetrieveCompany(id uuid.UUID) (m masterModels.Company, err error)
 	InsertCompany(p *dto.InsertCompany) (err error)
 	UpdateCompany(id uuid.UUID, p *dto.UpdateCompany) (err error)
 
 	CheckExistingClient(id string, param CheckExistingClientStruct) (err error)
+	RetrieveAllClient(id uuid.UUID) (m []masterModels.Client, err error)
 	RetrieveClient(id uuid.UUID) (m masterModels.Client, err error)
 	InsertClient(p *dto.InsertClient) (err error)
 	UpdateClient(id uuid.UUID, p *dto.UpdateClient) (err error)

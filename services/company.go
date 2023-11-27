@@ -13,6 +13,13 @@ type CheckExistingCompanyStruct struct {
 	*masterModels.Company
 }
 
+func (module *module) RetrieveAllCompany(id uuid.UUID) (m []masterModels.Company, err error) {
+	if m, err = module.db.companyModel.GetAllCompany(id); err != nil {
+		return m, fmt.Errorf(err.Error())
+	}
+	return
+}
+
 func (module *module) RetrieveCompany(id uuid.UUID) (m masterModels.Company, err error) {
 	if m, err = module.db.companyModel.GetOneCompanyByID(id); err != nil {
 		return m, fmt.Errorf(err.Error())

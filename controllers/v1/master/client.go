@@ -12,6 +12,26 @@ import (
 	"gitlab.com/odma1/odma-be/services"
 )
 
+func GETAllClient(c *gin.Context) {
+	var err error
+
+	userLoggedInId := c.GetString("user_id")
+	userId, err := uuid.Parse(userLoggedInId)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("uuid-error", err, ""))
+		return
+	}
+
+	var client []masterModels.Client
+	if client, err = services.Handler.RetrieveAllClient(userId); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "client"))
+		return
+	}
+
+	c.JSON(http.StatusOK, dto.Response{Data: client})
+}
+
 func GETClient(c *gin.Context) {
 	var err error
 
@@ -31,6 +51,7 @@ func GETClient(c *gin.Context) {
 
 	c.JSON(http.StatusOK, dto.Response{Data: client})
 }
+
 func POSTClient(c *gin.Context) {
 	var err error
 	userLoggedInId := c.GetString("user_id")

@@ -25,27 +25,35 @@ func InitializeRouter() (router *gin.Engine) {
 
 		company := v1route.Group("/company")
 		{
-			company.GET("/:id", v1Master.GETCompany)
-			company.POST("/", v1Master.POSTCompany)
-			company.PUT("/:id", v1Master.PUTCompany)
+			company.GET("/", utils.AuthOnly, v1Master.GETAllCompany)
+			company.GET("/:id", utils.AuthOnly, v1Master.GETCompany)
+
+			company.POST("/", utils.AuthOnly, v1Master.POSTCompany)
+
+			company.PUT("/:id", utils.AuthOnly, v1Master.PUTCompany)
 		}
 
 		client := v1route.Group("/client")
 		{
+			client.GET("/", utils.AuthOnly, v1Master.GETAllClient)
 			client.GET("/:id", utils.AuthOnly, v1Master.GETClient)
+
 			client.POST("/", utils.AuthOnly, v1Master.POSTClient)
+
 			client.PUT("/:id", utils.AuthOnly, v1Master.PUTClient)
 		}
 
 		user := v1route.Group("/user")
 		{
 			user.GET("/:id", utils.AuthOnly, v1Master.GETUser)
+
 			user.PUT("/:id", utils.AuthOnly, v1Master.PUTUser)
 		}
 
 		misc := v1route.Group("/misc")
 		{
 			misc.GET("/ping", v1.Pong)
+
 			misc.POST("/upload", v1.UploadFileSingle)
 			misc.POST("/upload-multiple", v1.UploadFileMultiple)
 		}

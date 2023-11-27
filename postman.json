@@ -249,6 +249,34 @@
 			"name": "Company",
 			"item": [
 				{
+					"name": "get all company",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{golang_local_v1}}/company",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"company"
+							]
+						},
+						"description": "``` json\nSample  API Response\n{\n    \"data\": [\n        {\n            \"id\": \"deab654a-ceb1-4942-b2d6-6a4a473d131d\",\n            \"name\": \"Fantasy Fantasia 123\",\n            \"PhoneNumber\": \"+62 834123 123\",\n            \"Email\": \"mada.cool@gmail.com\",\n            \"address\": \"this is optional\",\n            \"picName\": \"mada nugraha\",\n            \"picDesignation\": \"IT\",\n            \"BankAccountName\": \"BCA\",\n            \"BankAccountNumber\": 12345678,\n            \"createdBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n            \"updatedBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n            \"createdByUser\": {\n                \"id\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n                \"name\": \"mada nugraha\",\n                \"createdBy\": \"00000000-0000-0000-0000-000000000000\",\n                \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n                \"createdBySuperAdmin\": null,\n                \"updatedBySuperAdmin\": null,\n                \"createdAt\": \"2023-11-28T03:59:44.744894+07:00\",\n                \"updatedAt\": \"2023-11-28T03:59:44.744894+07:00\",\n                \"deletedAt\": null\n            },\n            \"updatedByUser\": {\n                \"id\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n                \"name\": \"mada nugraha\",\n                \"createdBy\": \"00000000-0000-0000-0000-000000000000\",\n                \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n                \"createdBySuperAdmin\": null,\n                \"updatedBySuperAdmin\": null,\n                \"createdAt\": \"0001-01-01T00:00:00Z\",\n                \"updatedAt\": \"2023-11-28T03:59:44.744894+07:00\",\n                \"deletedAt\": null\n            },\n            \"createdAt\": \"2023-11-28T04:00:03.086097+07:00\",\n            \"updatedAt\": \"2023-11-28T04:20:38.248206+07:00\",\n            \"deletedAt\": null\n        }\n    ]\n}\nSample API Response Error\n{\n    \"data\": false,\n    \"kind\": \"data-not-found\",\n    \"message\": \"Data is not found\"\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
 					"name": "get company by id",
 					"request": {
 						"auth": {
@@ -273,7 +301,7 @@
 								"deab654a-ceb1-4942-b2d6-6a4a473d131d"
 							]
 						},
-						"description": "``` json\nSample  API Response\n{\n    \"data\": {\n        \"id\": \"8e684d0c-57ca-4c39-907f-3d4ae2ea6f46\",\n        \"name\": \"Fantasy Fantazia\",\n        \"phoneNumber\": \"+62 834123 123\",\n        \"email\": \"mada.cool@gmail.com\",\n        \"address\": \"this is optional\",\n        \"picName\": \"mada nugraha\",\n        \"picDesignation\": \"IT\",\n        \"bankAccountName\": \"BCA\",\n        \"bankAccountNumber\": 12345678,\n        \"createdAt\": \"2023-11-26T17:58:09.424273+07:00\",\n        \"updatedAt\": \"2023-11-26T17:58:09.424273+07:00\",\n        \"deletedAt\": null\n    }\n}\n ```"
+						"description": "``` json\nSample  API Response\n{\n    \"data\": {\n        \"id\": \"deab654a-ceb1-4942-b2d6-6a4a473d131d\",\n        \"name\": \"Fantasy Fantazia  test\",\n        \"phoneNumber\": \"+62 834123 123\",\n        \"email\": \"mada.22cool@gmail.com\",\n        \"address\": \"this is optional\",\n        \"picName\": \"mada nugraha\",\n        \"picDesignation\": \"IT\",\n        \"bankAccountName\": \"BCA\",\n        \"bankAccountNumber\": 12345678,\n        \"createdBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n        \"updatedBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n        \"createdByUser\": {\n            \"id\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n            \"name\": \"mada nugraha\",\n            \"createdBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"createdBySuperAdmin\": null,\n            \"updatedBySuperAdmin\": null,\n            \"createdAt\": \"2023-11-28T03:59:44.744894+07:00\",\n            \"updatedAt\": \"2023-11-28T03:59:44.744894+07:00\",\n            \"deletedAt\": null\n        },\n        \"updatedByUser\": {\n            \"id\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n            \"name\": \"mada nugraha\",\n            \"createdBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"createdBySuperAdmin\": null,\n            \"updatedBySuperAdmin\": null,\n            \"createdAt\": \"2023-11-28T03:59:44.744894+07:00\",\n            \"updatedAt\": \"2023-11-28T03:59:44.744894+07:00\",\n            \"deletedAt\": null\n        },\n        \"createdAt\": \"2023-11-28T04:00:03.086097+07:00\",\n        \"updatedAt\": \"2023-11-28T04:00:03.086097+07:00\",\n        \"deletedAt\": null\n    }\n}\n\nSample API Response Error\n{\n    \"data\": false,\n    \"kind\": \"data-not-found\",\n    \"message\": \"Data is not found\"\n}\n\n ```"
 					},
 					"response": []
 				},
@@ -302,13 +330,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{golang_local_v1}}/company/deab654a-ceb1-4942-b2d6-6a4a473d131d",
+							"raw": "{{golang_local_v1}}/company/deab654a-ceb1-4942-b2d6-6a4a473d131e",
 							"host": [
 								"{{golang_local_v1}}"
 							],
 							"path": [
 								"company",
-								"deab654a-ceb1-4942-b2d6-6a4a473d131d"
+								"deab654a-ceb1-4942-b2d6-6a4a473d131e"
 							]
 						},
 						"description": "``` json\nSample  API Response Error\n{\n    \"data\": false,\n    \"kind\": \"data-not-found\",\n    \"message\": \"Data is not found\"\n}\n\nSample API Response \n{\n    \"message\": \"success\"\n}\n\n\n ```"
@@ -358,6 +386,34 @@
 		{
 			"name": "Client",
 			"item": [
+				{
+					"name": "get all client",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{golang_local_v1}}/client",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"client"
+							]
+						},
+						"description": "``` json\nSample  API Response\n{\n    \"data\": [\n        {\n            \"id\": \"da4f7a8f-2c1b-4097-b92c-512c817d9fb0\",\n            \"name\": \"Fantasy Fantazia Client\",\n            \"phoneNumber\": \"+62 834123 123\",\n            \"email\": \"mada.zxczxczxc@gmail.com\",\n            \"address\": \"this is optional\",\n            \"createdBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n            \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"companyId\": \"deab654a-ceb1-4942-b2d6-6a4a473d131d\",\n            \"company\": {\n                \"id\": \"deab654a-ceb1-4942-b2d6-6a4a473d131d\",\n                \"name\": \"Fantasy Fantasia 123\",\n                \"createdBy\": \"00000000-0000-0000-0000-000000000000\",\n                \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n                \"createdByUser\": null,\n                \"updatedByUser\": null,\n                \"createdAt\": \"2023-11-28T04:00:03.086097+07:00\",\n                \"updatedAt\": \"2023-11-28T04:20:38.248206+07:00\",\n                \"deletedAt\": null\n            },\n            \"createdByUser\": {\n                \"id\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n                \"name\": \"mada nugraha\",\n                \"createdBy\": \"00000000-0000-0000-0000-000000000000\",\n                \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n                \"createdBySuperAdmin\": null,\n                \"updatedBySuperAdmin\": null,\n                \"createdAt\": \"2023-11-28T03:59:44.744894+07:00\",\n                \"updatedAt\": \"2023-11-28T03:59:44.744894+07:00\",\n                \"deletedAt\": null\n            },\n            \"updatedByUser\": null,\n            \"createdAt\": \"2023-11-28T04:50:55.280181+07:00\",\n            \"updatedAt\": \"2023-11-28T04:50:55.280181+07:00\",\n            \"deletedAt\": null\n        }\n    ]\n}\nSample API Response Error\n{\n    \"data\": false,\n    \"kind\": \"data-not-found\",\n    \"message\": \"Data is not found\"\n}\n\n ```"
+					},
+					"response": []
+				},
 				{
 					"name": "get client by id",
 					"request": {
