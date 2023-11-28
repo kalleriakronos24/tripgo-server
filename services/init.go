@@ -40,6 +40,12 @@ type HandlerFunc interface {
 	RetrieveOperatingActivity(id uuid.UUID) (m models.OperatingActivity, err error)
 	InsertOperatingActivity(p *dto.InsertOperatingActivity) (err error)
 	UpdateOperatingActivity(id uuid.UUID, p *dto.UpdateOperatingActivity) (err error)
+
+	CheckExistingProduct(id string, param CheckExistingProductStruct) (err error)
+	RetrieveAllProduct(id uuid.UUID) (m []models.Product, err error)
+	RetrieveProduct(id uuid.UUID) (m models.Product, err error)
+	InsertProduct(p *dto.InsertProduct) (err error)
+	UpdateProduct(id uuid.UUID, p *dto.UpdateProduct) (err error)
 }
 
 type module struct {
@@ -52,6 +58,7 @@ type dbEntity struct {
 	companyModel           masterModels.CompanyModelAction
 	clientModel            masterModels.ClientModelAction
 	operatingActivityModel models.OperatingActivityModelAction
+	productModel           models.ProductModelAction
 }
 
 func InitializeServices() (err error) {
@@ -71,6 +78,7 @@ func InitializeServices() (err error) {
 			companyModel:           masterModels.NewCompanyAction(db),
 			clientModel:            masterModels.NewClientAction(db),
 			operatingActivityModel: models.NewOperatingActivtyAction(db),
+			productModel:           models.NewProductAction(db),
 		},
 	}
 	return

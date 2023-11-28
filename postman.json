@@ -597,7 +597,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"taxInvoiceNumber\": \"F/12/23/1111-X333\",\r\n    \"deliveryReceiptNumber\": \"D123456\",\r\n    \"clientId\": \"da4f7a8f-2c1b-4097-b92c-512c817d9fb0\"\r\n}",
+							"raw": "{\r\n    \"taxInvoiceNumber\": \"F/12/23/1111-X333\",\r\n    \"deliveryReceiptNumber\": \"D123456\",\r\n    \"clientId\": \"da4f7a8f-2c1b-4097-b92c-512c817d9fb0\",\r\n    \"status\": \"ongoing\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -635,7 +635,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"taxInvoiceNumber\": \"F/12/23/1111-X1\",\r\n    \"deliveryReceiptNumber\": \"D123456\",\r\n    \"clientId\": \"da4f7a8f-2c1b-4097-b92c-512c817d9fb0\"\r\n}",
+							"raw": "{\r\n    \"taxInvoiceNumber\": \"F/12/23/1111-X1\",\r\n    \"deliveryReceiptNumber\": \"D123456\",\r\n    \"clientId\": \"da4f7a8f-2c1b-4097-b92c-512c817d9fb0\",\r\n    \"status\" : \"ongoing\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -649,6 +649,143 @@
 							],
 							"path": [
 								"operating-activity"
+							]
+						},
+						"description": "``` json\nSample API Response \n{\n  \"message\" : \"success\"\n}\n\n ```\n\n``` json\nSample API Response Error\n\n{\n    \"data\": false,\n    \"kind\": \"data-existing\",\n    \"message\": \"Data is already exist with email \"\n}\n\n ```"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Product",
+			"item": [
+				{
+					"name": "get all product",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{golang_local_v1}}/product",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"product"
+							]
+						},
+						"description": "``` json\nSample  API Response\n{\n    \"data\": [\n        {\n            \"id\": \"5e850d07-9003-40cd-a47e-f0fda3bfbce2\",\n            \"name\": \"ABC Moka\",\n            \"unitPrice\": 12000,\n            \"packaging\": \"sachets\",\n            \"stock\": 40,\n            \"note\": \"still lot of stocks\",\n            \"companyId\": \"deab654a-ceb1-4942-b2d6-6a4a473d131d\",\n            \"company\": {\n                \"id\": \"deab654a-ceb1-4942-b2d6-6a4a473d131d\",\n                \"name\": \"Fantasy Fantasia 123\",\n                \"createdBy\": \"00000000-0000-0000-0000-000000000000\",\n                \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n                \"createdByUser\": null,\n                \"updatedByUser\": null,\n                \"createdAt\": \"2023-11-28T04:00:03.086097+07:00\",\n                \"updatedAt\": \"2023-11-28T04:20:38.248206+07:00\",\n                \"deletedAt\": null\n            },\n            \"createdBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n            \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"createdByUser\": {\n                \"id\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n                \"name\": \"mada nugraha\",\n                \"createdBy\": \"00000000-0000-0000-0000-000000000000\",\n                \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n                \"createdBySuperAdmin\": null,\n                \"updatedBySuperAdmin\": null,\n                \"createdAt\": \"2023-11-28T03:59:44.744894+07:00\",\n                \"updatedAt\": \"2023-11-28T03:59:44.744894+07:00\",\n                \"deletedAt\": null\n            },\n            \"updatedByUser\": null,\n            \"createdAt\": \"2023-11-28T08:08:33.306943+07:00\",\n            \"updatedAt\": \"2023-11-28T08:08:33.306943+07:00\",\n            \"deletedAt\": null\n        }\n    ]\n}\nSample API Response Error\n{\n    \"data\": false,\n    \"kind\": \"data-not-found\",\n    \"message\": \"Data is not found\"\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "get product by id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{golang_local_v1}}/product/5e850d07-9003-40cd-a47e-f0fda3bfbce2",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"product",
+								"5e850d07-9003-40cd-a47e-f0fda3bfbce2"
+							]
+						},
+						"description": "``` json\nSample  API Response\n{\n    \"data\": {\n        \"id\": \"5e850d07-9003-40cd-a47e-f0fda3bfbce2\",\n        \"name\": \"ABC Moka\",\n        \"unitPrice\": 12000,\n        \"packaging\": \"sachets\",\n        \"stock\": 40,\n        \"note\": \"still lot of stocks\",\n        \"companyId\": \"deab654a-ceb1-4942-b2d6-6a4a473d131d\",\n        \"company\": {\n            \"id\": \"deab654a-ceb1-4942-b2d6-6a4a473d131d\",\n            \"name\": \"Fantasy Fantasia 123\",\n            \"createdBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"createdByUser\": null,\n            \"updatedByUser\": null,\n            \"createdAt\": \"2023-11-28T04:00:03.086097+07:00\",\n            \"updatedAt\": \"2023-11-28T04:20:38.248206+07:00\",\n            \"deletedAt\": null\n        },\n        \"createdBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n        \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n        \"createdByUser\": {\n            \"id\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n            \"name\": \"mada nugraha\",\n            \"createdBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"createdBySuperAdmin\": null,\n            \"updatedBySuperAdmin\": null,\n            \"createdAt\": \"2023-11-28T03:59:44.744894+07:00\",\n            \"updatedAt\": \"2023-11-28T03:59:44.744894+07:00\",\n            \"deletedAt\": null\n        },\n        \"updatedByUser\": null,\n        \"createdAt\": \"2023-11-28T08:08:33.306943+07:00\",\n        \"updatedAt\": \"2023-11-28T08:08:33.306943+07:00\",\n        \"deletedAt\": null\n    }\n}\nSample API Response Error\n{\n    \"data\": false,\n    \"kind\": \"data-not-found\",\n    \"message\": \"Data is not found\"\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "update product",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"ABC Moka 123\",\r\n    \"unitPrice\": 12000.00,\r\n    \"packaging\": \"sachets\",\r\n    \"stock\" : 40,\r\n    \"note\" : \"still lot of stocks\",\r\n    \"companyId\" : \"deab654a-ceb1-4942-b2d6-6a4a473d131d\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{golang_local_v1}}/product/5e850d07-9003-40cd-a47e-f0fda3bfbce2",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"product",
+								"5e850d07-9003-40cd-a47e-f0fda3bfbce2"
+							]
+						},
+						"description": "``` json\nSample  API Response Error\n{\n    \"data\": false,\n    \"kind\": \"data-not-found\",\n    \"message\": \"Data is not found\"\n}\n\nSample API Response \n{\n    \"message\": \"success\"\n}\n\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "create product",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"ABC Moka\",\r\n    \"unitPrice\": 12000.00,\r\n    \"packaging\": \"sachets\",\r\n    \"stock\" : 40,\r\n    \"note\" : \"still lot of stocks\",\r\n    \"companyId\" : \"deab654a-ceb1-4942-b2d6-6a4a473d131d\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{golang_local_v1}}/product",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"product"
 							]
 						},
 						"description": "``` json\nSample API Response \n{\n  \"message\" : \"success\"\n}\n\n ```\n\n``` json\nSample API Response Error\n\n{\n    \"data\": false,\n    \"kind\": \"data-existing\",\n    \"message\": \"Data is already exist with email \"\n}\n\n ```"

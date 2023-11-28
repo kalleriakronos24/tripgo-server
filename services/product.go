@@ -1,0 +1,75 @@
+package services
+
+import (
+	"errors"
+	"fmt"
+	"github.com/google/uuid"
+	"gitlab.com/odma1/odma-be/dto"
+	"gitlab.com/odma1/odma-be/models"
+)
+
+type CheckExistingProductStruct struct {
+	*models.Product
+}
+
+func (module *module) RetrieveAllProduct(id uuid.UUID) (m []models.Product, err error) {
+	if m, err = module.db.productModel.GetAllProduct(id); err != nil {
+		return m, fmt.Errorf(err.Error())
+	}
+	return
+}
+
+func (module *module) RetrieveProduct(id uuid.UUID) (m models.Product, err error) {
+	if m, err = module.db.productModel.GetOneProductByID(id); err != nil {
+		return m, fmt.Errorf(err.Error())
+	}
+	return
+}
+
+func (module *module) InsertProduct(p *dto.InsertProduct) (err error) {
+	if err = module.db.productModel.InsertProduct(models.Product{
+		Name:             p.Name,
+		UnitPrice:        p.UnitPrice,
+		Packaging:        p.Packaging,
+		Stock:            p.Stock,
+		Note:             p.Note,
+		CompanyID:        p.CompanyID,
+		ProductCreatedBy: p.CreatedBy,
+	}); err != nil {
+		return errors.New(err.Error())
+	}
+	return
+}
+
+func (module *module) UpdateProduct(id uuid.UUID, p *dto.UpdateProduct) (err error) {
+	if err = module.db.productModel.UpdateProduct(id, models.Product{
+		Name:             p.Name,
+		UnitPrice:        p.UnitPrice,
+		Packaging:        p.Packaging,
+		Stock:            p.Stock,
+		Note:             p.Note,
+		CompanyID:        p.CompanyID,
+		ProductUpdatedBy: p.UpdatedBy,
+	}); err != nil {
+		return errors.New(err.Error())
+	}
+	return
+}
+
+func (module *module) CheckExistingProduct(id string, param CheckExistingProductStruct) (err error) {
+
+	if param.Name != "" {
+		if _, dbErr := module.db.productModel.GetOneProductByName(param.Name); dbErr != nil {
+			return errors.New(dbErr.Error())
+		}
+		return
+	}
+
+	if id != "" {
+		uid, _ := uuid.Parse(id)
+		if _, dbErr := module.db.productModel.GetOneProductByID(uid); dbErr != nil {
+			return errors.New(dbErr.Error())
+		}
+	}
+	return
+}

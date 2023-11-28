@@ -24,7 +24,7 @@ func GETAllOperatingActivity(c *gin.Context) {
 
 	var operatingActivity []models.OperatingActivity
 	if operatingActivity, err = services.Handler.RetrieveAllOperatingActivity(userId); err != nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "client"))
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "operating activity"))
 		return
 	}
 
@@ -44,7 +44,7 @@ func GETOperatingActivity(c *gin.Context) {
 
 	var operatingActivity models.OperatingActivity
 	if operatingActivity, err = services.Handler.RetrieveOperatingActivity(operatingActivityId); err != nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "client"))
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "operating activity"))
 		return
 	}
 

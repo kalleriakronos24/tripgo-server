@@ -53,6 +53,16 @@ func InitializeRouter() (router *gin.Engine) {
 			operatingActivity.PUT("/:id", utils.AuthOnly, v1.PUTOperatingActivity)
 		}
 
+		product := v1route.Group("/product")
+		{
+			product.GET("/", utils.AuthOnly, v1.GETAllProduct)
+			product.GET("/:id", utils.AuthOnly, v1.GETProduct)
+
+			product.POST("/", utils.AuthOnly, v1.POSTProduct)
+
+			product.PUT("/:id", utils.AuthOnly, v1.PUTProduct)
+		}
+
 		user := v1route.Group("/user")
 		{
 			user.GET("/:id", utils.AuthOnly, v1Master.GETUser)
