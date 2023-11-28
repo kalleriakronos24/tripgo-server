@@ -519,6 +519,143 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Operating Activity",
+			"item": [
+				{
+					"name": "get all operating activity",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{golang_local_v1}}/operating-activity",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"operating-activity"
+							]
+						},
+						"description": "``` json\nSample  API Response\n{\n    \"data\": [\n        {\n            \"id\": \"8e1b82eb-6c89-420d-928b-9f43676b3d64\",\n            \"taxInvoiceNumber\": \"F/12/23/1111-X1\",\n            \"deliveryReceiptNumber\": \"D123456\",\n            \"clientId\": \"da4f7a8f-2c1b-4097-b92c-512c817d9fb0\",\n            \"client\": {\n                \"id\": \"da4f7a8f-2c1b-4097-b92c-512c817d9fb0\",\n                \"name\": \"Fantasy Fantazia Client\",\n                \"phoneNumber\": \"\",\n                \"email\": \"\",\n                \"createdBy\": \"00000000-0000-0000-0000-000000000000\",\n                \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n                \"companyId\": \"00000000-0000-0000-0000-000000000000\",\n                \"company\": null,\n                \"createdByUser\": null,\n                \"updatedByUser\": null,\n                \"createdAt\": \"2023-11-28T04:50:55.280181+07:00\",\n                \"updatedAt\": \"2023-11-28T04:50:55.280181+07:00\",\n                \"deletedAt\": null\n            },\n            \"createdBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n            \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"createdByUser\": {\n                \"id\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n                \"name\": \"mada nugraha\",\n                \"createdBy\": \"00000000-0000-0000-0000-000000000000\",\n                \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n                \"createdBySuperAdmin\": null,\n                \"updatedBySuperAdmin\": null,\n                \"createdAt\": \"2023-11-28T03:59:44.744894+07:00\",\n                \"updatedAt\": \"2023-11-28T03:59:44.744894+07:00\",\n                \"deletedAt\": null\n            },\n            \"updatedByUser\": null,\n            \"createdAt\": \"2023-11-28T07:01:44.331457+07:00\",\n            \"updatedAt\": \"2023-11-28T07:01:44.331457+07:00\",\n            \"deletedAt\": null\n        }\n    ]\n}\nSample API Response Error\n{\n    \"data\": false,\n    \"kind\": \"data-not-found\",\n    \"message\": \"Data is not found\"\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "get operating activity by id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{golang_local_v1}}/operating-activity/8e1b82eb-6c89-420d-928b-9f43676b3d64",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"operating-activity",
+								"8e1b82eb-6c89-420d-928b-9f43676b3d64"
+							]
+						},
+						"description": "``` json\nSample  API Response\n{\n    \"data\": {\n        \"id\": \"8e1b82eb-6c89-420d-928b-9f43676b3d64\",\n        \"taxInvoiceNumber\": \"F/12/23/1111-X1\",\n        \"deliveryReceiptNumber\": \"D123456\",\n        \"clientId\": \"da4f7a8f-2c1b-4097-b92c-512c817d9fb0\",\n        \"client\": {\n            \"id\": \"da4f7a8f-2c1b-4097-b92c-512c817d9fb0\",\n            \"name\": \"Fantasy Fantazia Client\",\n            \"createdBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"companyId\": \"00000000-0000-0000-0000-000000000000\",\n            \"company\": null,\n            \"createdByUser\": null,\n            \"updatedByUser\": null,\n            \"createdAt\": \"2023-11-28T04:50:55.280181+07:00\",\n            \"updatedAt\": \"2023-11-28T04:50:55.280181+07:00\",\n            \"deletedAt\": null\n        },\n        \"createdBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n        \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n        \"createdByUser\": {\n            \"id\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n            \"name\": \"mada nugraha\",\n            \"createdBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"createdBySuperAdmin\": null,\n            \"updatedBySuperAdmin\": null,\n            \"createdAt\": \"2023-11-28T03:59:44.744894+07:00\",\n            \"updatedAt\": \"2023-11-28T03:59:44.744894+07:00\",\n            \"deletedAt\": null\n        },\n        \"updatedByUser\": null,\n        \"createdAt\": \"2023-11-28T07:01:44.331457+07:00\",\n        \"updatedAt\": \"2023-11-28T07:01:44.331457+07:00\",\n        \"deletedAt\": null\n    }\n}\nSample API Response Error\n{\n    \"data\": false,\n    \"kind\": \"data-not-found\",\n    \"message\": \"Data is not found\"\n}\n\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "update operating activity",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"taxInvoiceNumber\": \"F/12/23/1111-X333\",\r\n    \"deliveryReceiptNumber\": \"D123456\",\r\n    \"clientId\": \"da4f7a8f-2c1b-4097-b92c-512c817d9fb0\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{golang_local_v1}}/operating-activity/8e1b82eb-6c89-420d-928b-9f43676b3d64",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"operating-activity",
+								"8e1b82eb-6c89-420d-928b-9f43676b3d64"
+							]
+						},
+						"description": "``` json\nSample  API Response Error\n{\n    \"data\": false,\n    \"kind\": \"data-not-found\",\n    \"message\": \"Data is not found\"\n}\n\nSample API Response \n{\n    \"message\": \"success\"\n}\n\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "create operating activity",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"taxInvoiceNumber\": \"F/12/23/1111-X1\",\r\n    \"deliveryReceiptNumber\": \"D123456\",\r\n    \"clientId\": \"da4f7a8f-2c1b-4097-b92c-512c817d9fb0\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{golang_local_v1}}/operating-activity",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"operating-activity"
+							]
+						},
+						"description": "``` json\nSample API Response \n{\n  \"message\" : \"success\"\n}\n\n ```\n\n``` json\nSample API Response Error\n\n{\n    \"data\": false,\n    \"kind\": \"data-existing\",\n    \"message\": \"Data is already exist with email \"\n}\n\n ```"
+					},
+					"response": []
+				}
+			]
 		}
 	]
 }
