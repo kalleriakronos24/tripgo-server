@@ -20,6 +20,7 @@ func Migrate() {
 		models.OperatingActivity{},
 		models.Product{},
 		models.Quotation{},
+		models.ProductHistory{},
 	); err != nil {
 		panic(err)
 	}

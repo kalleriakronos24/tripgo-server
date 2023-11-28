@@ -1,4 +1,4 @@
-package models
+package master
 
 import (
 	"fmt"
@@ -25,11 +25,12 @@ type Company struct {
 	BankAccountName   string    `json:",omitempty" gorm:"not null"`
 	BankAccountNumber int       `json:",omitempty" gorm:"not null;default:0"`
 
+	Client []*Client `json:"client,omitempty"`
+
 	CompanyCreatedBy uuid.UUID `json:"createdBy" gorm:"type:uuid;not null;default:NULL;"`
 	CompanyUpdatedBy uuid.UUID `json:"updatedBy" gorm:"type:uuid;default:NULL;"`
-
-	CreatedByUser *User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:CompanyCreatedBy;references:ID" json:"createdByUser"`
-	UpdatedByUser *User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:CompanyUpdatedBy;references:ID" json:"updatedByUser"`
+	CreatedByUser    *User     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:CompanyCreatedBy;references:ID" json:"createdByUser"`
+	UpdatedByUser    *User     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:CompanyUpdatedBy;references:ID" json:"updatedByUser"`
 
 	types.DefaultModelProperty
 }
@@ -59,6 +60,7 @@ func (o *companyOrm) GetAllCompany(userId uuid.UUID) (m []Company, err error) {
 		Preload("UpdatedByUser", func(db *gorm.DB) *gorm.DB {
 			return db.Select([]string{"ID", "Name", "CreatedBy", "UpdatedAt"})
 		}).
+		Preload("Client").
 		Find(&m)
 	return m, result.Error
 }
@@ -71,6 +73,7 @@ func (o *companyOrm) GetOneCompanyByID(id uuid.UUID) (m Company, err error) {
 		Preload("UpdatedByUser", func(db *gorm.DB) *gorm.DB {
 			return db.Select([]string{"ID", "Name", "CreatedBy", "UpdatedBy", "CreatedAt", "UpdatedAt"})
 		}).
+		Preload("Client").
 		First(&m, id)
 
 	fmt.Printf("%v", &m)

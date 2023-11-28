@@ -1,4 +1,4 @@
-package models
+package master
 
 import (
 	"github.com/google/uuid"
@@ -18,14 +18,14 @@ type Client struct {
 	Email       string    `gorm:"index:email,unique;not null;default:NULL" json:"email,omitempty"`
 	Address     string    `json:"address,omitempty" gorm:"default:NULL"`
 
-	ClientCreatedBy uuid.UUID `json:"createdBy" gorm:"type:uuid;not null;default:NULL"`
-	ClientUpdatedBy uuid.UUID `json:"updatedBy" gorm:"type:uuid;default:NULL"`
-
 	CompanyID uuid.UUID `json:"companyId" gorm:"type:uuid;default:NULL"`
 	Company   *Company  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:CompanyID;references:ID" json:"company"`
 
-	CreatedByUser *User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:ClientCreatedBy;references:ID" json:"createdByUser"`
-	UpdatedByUser *User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:ClientUpdatedBy;references:ID" json:"updatedByUser"`
+	ClientCreatedBy uuid.UUID `json:"createdBy" gorm:"type:uuid;not null;default:NULL"`
+	ClientUpdatedBy uuid.UUID `json:"updatedBy" gorm:"type:uuid;default:NULL"`
+	CreatedByUser   *User     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:ClientCreatedBy;references:ID" json:"createdByUser"`
+	UpdatedByUser   *User     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:ClientUpdatedBy;references:ID" json:"updatedByUser"`
+
 	types.DefaultModelProperty
 }
 

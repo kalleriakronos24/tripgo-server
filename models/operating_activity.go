@@ -19,8 +19,10 @@ type OperatingActivity struct {
 	DeliveryReceiptNumber string    `json:"deliveryReceiptNumber,omitempty" gorm:"not null"`
 	Status                string    `json:"status,omitempty" gorm:"not null;default:ongoing"`
 
-	ClientID uuid.UUID            `json:"clientId" gorm:"type:uuid;not null;default:NULL;"`
-	Client   *masterModels.Client `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:ClientID;references:ID" json:"client"`
+	ClientID       uuid.UUID            `json:"clientId" gorm:"type:uuid;not null;default:NULL;"`
+	Client         *masterModels.Client `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:ClientID;references:ID" json:"client"`
+	ProductHistory []*ProductHistory    `json:"productHistory,omitempty"`
+	Quotation      []*Quotation         `json:"quotation,omitempty"`
 
 	OperatingActivityCreatedBy uuid.UUID          `json:"createdBy" gorm:"type:uuid;not null;default:NULL;"`
 	OperatingActivityUpdatedBy uuid.UUID          `json:"updatedBy" gorm:"type:uuid;default:NULL;"`
@@ -39,7 +41,7 @@ type OperatingActivityModelAction interface {
 	UpdateOperatingActivity(id uuid.UUID, p OperatingActivity) (err error)
 }
 
-func NewOperatingActivtyAction(db *gorm.DB) OperatingActivityModelAction {
+func NewOperatingActivityAction(db *gorm.DB) OperatingActivityModelAction {
 	return &operatingActivityOrm{db}
 }
 
@@ -56,6 +58,8 @@ func (o *operatingActivityOrm) GetAllOperatingActivity(userId uuid.UUID) (m []Op
 		Preload("Client", func(db *gorm.DB) *gorm.DB {
 			return db.Select([]string{"ID", "Name", "CreatedAt", "UpdatedAt"})
 		}).
+		Preload("Quotation").
+		Preload("ProductHistory").
 		Find(&m)
 	return m, result.Error
 }

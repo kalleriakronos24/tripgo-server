@@ -21,8 +21,9 @@ type Product struct {
 	Stock     int8      `json:"stock,omitempty" gorm:"not null;default:0"`
 	Note      string    `json:"note,omitempty"`
 
-	CompanyID uuid.UUID             `json:"companyId" gorm:"type:uuid;not null;default:NULL;"`
-	Company   *masterModels.Company `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:CompanyID;references:ID" json:"company"`
+	CompanyID      uuid.UUID             `json:"companyId" gorm:"type:uuid;not null;default:NULL;"`
+	Company        *masterModels.Company `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:CompanyID;references:ID" json:"company"`
+	ProductHistory []*ProductHistory     `json:"productHistory,omitempty"`
 
 	ProductCreatedBy uuid.UUID          `json:"createdBy" gorm:"type:uuid;not null;default:NULL;"`
 	ProductUpdatedBy uuid.UUID          `json:"updatedBy" gorm:"type:uuid;default:NULL;"`
@@ -58,6 +59,7 @@ func (o *productOrm) GetAllProduct(userId uuid.UUID) (m []Product, err error) {
 		Preload("Company", func(db *gorm.DB) *gorm.DB {
 			return db.Select([]string{"ID", "Name", "CreatedAt", "UpdatedAt"})
 		}).
+		Preload("ProductHistory").
 		Find(&m)
 	return m, result.Error
 }
