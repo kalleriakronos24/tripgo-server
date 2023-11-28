@@ -14,8 +14,8 @@ type clientOrm struct {
 type Client struct {
 	ID          uuid.UUID `json:"id" gorm:"index:id,unique;type:uuid;default:gen_random_uuid();"`
 	Name        string    `json:"name" gorm:"not null;default:NULL" `
-	PhoneNumber string    `json:"phoneNumber" gorm:"not null;default:NULL"`
-	Email       string    `gorm:"index:email,unique;not null;default:NULL" json:"email"`
+	PhoneNumber string    `json:"phoneNumber,omitempty" gorm:"not null;default:NULL"`
+	Email       string    `gorm:"index:email,unique;not null;default:NULL" json:"email,omitempty"`
 	Address     string    `json:"address,omitempty" gorm:"default:NULL"`
 
 	ClientCreatedBy uuid.UUID `json:"createdBy" gorm:"type:uuid;not null;default:NULL"`

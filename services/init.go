@@ -2,6 +2,7 @@ package services
 
 import (
 	"gitlab.com/odma1/odma-be/config"
+	"gitlab.com/odma1/odma-be/models"
 	"log"
 
 	"github.com/google/uuid"
@@ -33,6 +34,12 @@ type HandlerFunc interface {
 	RetrieveClient(id uuid.UUID) (m masterModels.Client, err error)
 	InsertClient(p *dto.InsertClient) (err error)
 	UpdateClient(id uuid.UUID, p *dto.UpdateClient) (err error)
+
+	CheckExistingOperatingActivity(id string, param CheckExistingOperatingActivityStruct) (err error)
+	RetrieveAllOperatingActivity(id uuid.UUID) (m []models.OperatingActivity, err error)
+	RetrieveOperatingActivity(id uuid.UUID) (m models.OperatingActivity, err error)
+	InsertOperatingActivity(p *dto.InsertOperatingActivity) (err error)
+	UpdateOperatingActivity(id uuid.UUID, p *dto.UpdateOperatingActivity) (err error)
 }
 
 type module struct {
@@ -40,10 +47,11 @@ type module struct {
 }
 
 type dbEntity struct {
-	conn         *gorm.DB
-	userModel    masterModels.UserModelAction
-	companyModel masterModels.CompanyModelAction
-	clientModel  masterModels.ClientModelAction
+	conn                   *gorm.DB
+	userModel              masterModels.UserModelAction
+	companyModel           masterModels.CompanyModelAction
+	clientModel            masterModels.ClientModelAction
+	operatingActivityModel models.OperatingActivityModelAction
 }
 
 func InitializeServices() (err error) {
@@ -58,10 +66,11 @@ func InitializeServices() (err error) {
 
 	Handler = &module{
 		db: &dbEntity{
-			conn:         db,
-			userModel:    masterModels.NewUserAction(db),
-			companyModel: masterModels.NewCompanyAction(db),
-			clientModel:  masterModels.NewClientAction(db),
+			conn:                   db,
+			userModel:              masterModels.NewUserAction(db),
+			companyModel:           masterModels.NewCompanyAction(db),
+			clientModel:            masterModels.NewClientAction(db),
+			operatingActivityModel: models.NewOperatingActivtyAction(db),
 		},
 	}
 	return

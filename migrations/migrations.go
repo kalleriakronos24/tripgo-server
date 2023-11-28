@@ -17,6 +17,7 @@ func Migrate() {
 		masterModels.Client{},
 		// common
 		models.UserLog{},
+		models.OperatingActivity{},
 	); err != nil {
 		panic(err)
 	}
