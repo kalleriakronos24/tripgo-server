@@ -23,6 +23,7 @@ type OperatingActivity struct {
 	Client         *masterModels.Client `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:ClientID;references:ID" json:"client"`
 	ProductHistory []*ProductHistory    `json:"productHistory,omitempty"`
 	Quotation      []*Quotation         `json:"quotation,omitempty"`
+	Payment        []*Payment           `json:"payment,omitempty"`
 
 	OperatingActivityCreatedBy uuid.UUID          `json:"createdBy" gorm:"type:uuid;not null;default:NULL;"`
 	OperatingActivityUpdatedBy uuid.UUID          `json:"updatedBy" gorm:"type:uuid;default:NULL;"`

@@ -932,6 +932,143 @@
 			]
 		},
 		{
+			"name": "Payment",
+			"item": [
+				{
+					"name": "get all payment",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{golang_local_v1}}/payment",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"payment"
+							]
+						},
+						"description": "``` json\nSample  API Response\n{\n    \"data\": [\n        {\n            \"id\": \"d0efa48e-1e75-4fa2-82cc-22c2004ac138\",\n            \"currency\": \"Rp.\",\n            \"amount\": 5000000,\n            \"term\": \"yes\",\n            \"araging\": 15,\n            \"remarks\": \"some remarks\",\n            \"dueDate\": \"2023-11-29T00:29:41.219+07:00\",\n            \"settlementDate\": \"2023-11-29T00:29:41.219+07:00\",\n            \"operatingActivityId\": \"8e1b82eb-6c89-420d-928b-9f43676b3d64\",\n            \"operatingActivity\": {\n                \"id\": \"8e1b82eb-6c89-420d-928b-9f43676b3d64\",\n                \"taxInvoiceNumber\": \"F/12/23/1111-X333\",\n                \"deliveryReceiptNumber\": \"D123456\",\n                \"status\": \"ongoing\",\n                \"clientId\": \"da4f7a8f-2c1b-4097-b92c-512c817d9fb0\",\n                \"client\": null,\n                \"createdBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n                \"updatedBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n                \"createdByUser\": null,\n                \"updatedByUser\": null,\n                \"createdAt\": \"2023-11-28T07:01:44.331457+07:00\",\n                \"updatedAt\": \"2023-11-28T07:06:43.256378+07:00\",\n                \"deletedAt\": null\n            },\n            \"createdBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n            \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"createdByUser\": {\n                \"id\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n                \"name\": \"mada nugraha\",\n                \"createdBy\": \"00000000-0000-0000-0000-000000000000\",\n                \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n                \"createdBySuperAdmin\": null,\n                \"updatedBySuperAdmin\": null,\n                \"createdAt\": \"2023-11-28T03:59:44.744894+07:00\",\n                \"updatedAt\": \"2023-11-28T03:59:44.744894+07:00\",\n                \"deletedAt\": null\n            },\n            \"updatedByUser\": null,\n            \"createdAt\": \"2023-11-29T00:29:41.244959+07:00\",\n            \"updatedAt\": \"2023-11-29T00:29:41.244959+07:00\",\n            \"deletedAt\": null\n        }\n    ]\n}\nSample API Response Error\n{\n    \"data\": false,\n    \"kind\": \"data-not-found\",\n    \"message\": \"Data is not found\"\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "get payment by id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{golang_local_v1}}/payment/d0efa48e-1e75-4fa2-82cc-22c2004ac138",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"payment",
+								"d0efa48e-1e75-4fa2-82cc-22c2004ac138"
+							]
+						},
+						"description": "``` json\nSample  API Response\n{\n    \"data\": {\n        \"id\": \"d0efa48e-1e75-4fa2-82cc-22c2004ac138\",\n        \"currency\": \"Rp.\",\n        \"amount\": 5000000,\n        \"term\": \"yes\",\n        \"araging\": 15,\n        \"remarks\": \"some remarks\",\n        \"dueDate\": \"2023-11-29T00:29:41.219+07:00\",\n        \"settlementDate\": \"2023-11-29T00:29:41.219+07:00\",\n        \"operatingActivityId\": \"8e1b82eb-6c89-420d-928b-9f43676b3d64\",\n        \"operatingActivity\": {\n            \"id\": \"8e1b82eb-6c89-420d-928b-9f43676b3d64\",\n            \"taxInvoiceNumber\": \"F/12/23/1111-X333\",\n            \"deliveryReceiptNumber\": \"D123456\",\n            \"status\": \"ongoing\",\n            \"clientId\": \"da4f7a8f-2c1b-4097-b92c-512c817d9fb0\",\n            \"client\": null,\n            \"createdBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n            \"updatedBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n            \"createdByUser\": null,\n            \"updatedByUser\": null,\n            \"createdAt\": \"2023-11-28T07:01:44.331457+07:00\",\n            \"updatedAt\": \"2023-11-28T07:06:43.256378+07:00\",\n            \"deletedAt\": null\n        },\n        \"createdBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n        \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n        \"createdByUser\": {\n            \"id\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n            \"name\": \"mada nugraha\",\n            \"createdBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"createdBySuperAdmin\": null,\n            \"updatedBySuperAdmin\": null,\n            \"createdAt\": \"2023-11-28T03:59:44.744894+07:00\",\n            \"updatedAt\": \"2023-11-28T03:59:44.744894+07:00\",\n            \"deletedAt\": null\n        },\n        \"updatedByUser\": null,\n        \"createdAt\": \"2023-11-29T00:29:41.244959+07:00\",\n        \"updatedAt\": \"2023-11-29T00:29:41.244959+07:00\",\n        \"deletedAt\": null\n    }\n}{\n    \"data\": {\n        \"id\": \"d0efa48e-1e75-4fa2-82cc-22c2004ac138\",\n        \"currency\": \"Rp.\",\n        \"amount\": 5000000,\n        \"term\": \"yes\",\n        \"araging\": 15,\n        \"remarks\": \"some remarks\",\n        \"dueDate\": \"2023-11-29T00:29:41.219+07:00\",\n        \"settlementDate\": \"2023-11-29T00:29:41.219+07:00\",\n        \"operatingActivityId\": \"8e1b82eb-6c89-420d-928b-9f43676b3d64\",\n        \"operatingActivity\": {\n            \"id\": \"8e1b82eb-6c89-420d-928b-9f43676b3d64\",\n            \"taxInvoiceNumber\": \"F/12/23/1111-X333\",\n            \"deliveryReceiptNumber\": \"D123456\",\n            \"status\": \"ongoing\",\n            \"clientId\": \"da4f7a8f-2c1b-4097-b92c-512c817d9fb0\",\n            \"client\": null,\n            \"createdBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n            \"updatedBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n            \"createdByUser\": null,\n            \"updatedByUser\": null,\n            \"createdAt\": \"2023-11-28T07:01:44.331457+07:00\",\n            \"updatedAt\": \"2023-11-28T07:06:43.256378+07:00\",\n            \"deletedAt\": null\n        },\n        \"createdBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n        \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n        \"createdByUser\": {\n            \"id\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n            \"name\": \"mada nugraha\",\n            \"createdBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"createdBySuperAdmin\": null,\n            \"updatedBySuperAdmin\": null,\n            \"createdAt\": \"2023-11-28T03:59:44.744894+07:00\",\n            \"updatedAt\": \"2023-11-28T03:59:44.744894+07:00\",\n            \"deletedAt\": null\n        },\n        \"updatedByUser\": null,\n        \"createdAt\": \"2023-11-29T00:29:41.244959+07:00\",\n        \"updatedAt\": \"2023-11-29T00:29:41.244959+07:00\",\n        \"deletedAt\": null\n    }\n}\nSample API Response Error\n{\n    \"data\": false,\n    \"kind\": \"data-not-found\",\n    \"message\": \"Data is not found\"\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "update payment",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"currency\": \"Rp.\",\r\n    \"amount\": 5000000,\r\n    \"term\": \"yeszzxczxc\",\r\n    \"araging\": 15,\r\n    \"remarks\": \"some remarks\",\r\n    \"dueDate\": \"{{$isoTimestamp}}\",\r\n    \"settlementDate\": \"{{$isoTimestamp}}\",\r\n    \"operatingActivityId\": \"8e1b82eb-6c89-420d-928b-9f43676b3d64\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{golang_local_v1}}/payment/d0efa48e-1e75-4fa2-82cc-22c2004ac138",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"payment",
+								"d0efa48e-1e75-4fa2-82cc-22c2004ac138"
+							]
+						},
+						"description": "``` json\nSample  API Response Error\n{\n    \"data\": false,\n    \"kind\": \"data-not-found\",\n    \"message\": \"Data is not found\"\n}\n\nSample API Response \n{\n    \"message\": \"success\"\n}\n\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "create payment",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"currency\": \"Rp.\",\r\n    \"amount\": 5000000,\r\n    \"term\": \"yes\",\r\n    \"araging\": \"??\",\r\n    \"remarks\": \"some remarks\",\r\n    \"dueDate\": \"{{$isoTimestamp}}\",\r\n    \"settlementDate\": \"{{$isoTimestamp}}\",\r\n    \"operatingActivityId\": \"8e1b82eb-6c89-420d-928b-9f43676b3d64\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{golang_local_v1}}/payment",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"payment"
+							]
+						},
+						"description": "``` json\nSample API Response \n{\n  \"message\" : \"success\"\n}\n\n ```\n\n``` json\nSample API Response Error\n\n{\n    \"data\": false,\n    \"kind\": \"data-existing\",\n    \"message\": \"Data is already exist with email \"\n}\n\n ```"
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Quotation",
 			"item": [
 				{

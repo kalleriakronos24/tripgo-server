@@ -58,6 +58,12 @@ type HandlerFunc interface {
 	RetrieveProductHistory(id uuid.UUID) (m models.ProductHistory, err error)
 	InsertProductHistory(p *dto.InsertProductHistory) (err error)
 	UpdateProductHistory(id uuid.UUID, p *dto.UpdateProductHistory) (err error)
+
+	CheckExistingPayment(id string, param CheckExistingPaymentStruct) (err error)
+	RetrieveAllPayment(id uuid.UUID) (m []models.Payment, err error)
+	RetrievePayment(id uuid.UUID) (m models.Payment, err error)
+	InsertPayment(p *dto.InsertPayment) (err error)
+	UpdatePayment(id uuid.UUID, p *dto.UpdatePayment) (err error)
 }
 
 type module struct {
@@ -73,6 +79,7 @@ type dbEntity struct {
 	productModel           models.ProductModelAction
 	productHistoryModel    models.ProductHistoryModelAction
 	quotationModel         models.QuotationModelAction
+	paymentModel           models.PaymentModelAction
 }
 
 func InitializeServices() (err error) {
@@ -95,6 +102,7 @@ func InitializeServices() (err error) {
 			productModel:           models.NewProductAction(db),
 			quotationModel:         models.NewQuotationAction(db),
 			productHistoryModel:    models.NewProductHistoryAction(db),
+			paymentModel:           models.NewPaymentAction(db),
 		},
 	}
 	return
