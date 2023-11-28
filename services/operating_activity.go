@@ -32,6 +32,7 @@ func (module *module) InsertOperatingActivity(p *dto.InsertOperatingActivity) (e
 		DeliveryReceiptNumber:      p.DeliveryReceiptNumber,
 		ClientID:                   p.ClientID,
 		OperatingActivityCreatedBy: p.CreatedBy,
+		Status:                     p.Status,
 	}); err != nil {
 		return errors.New(err.Error())
 	}
@@ -44,6 +45,7 @@ func (module *module) UpdateOperatingActivity(id uuid.UUID, p *dto.UpdateOperati
 		DeliveryReceiptNumber:      p.DeliveryReceiptNumber,
 		ClientID:                   p.ClientID,
 		OperatingActivityUpdatedBy: p.UpdatedBy,
+		Status:                     p.Status,
 	}); err != nil {
 		return errors.New(err.Error())
 	}

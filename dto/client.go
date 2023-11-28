@@ -8,7 +8,7 @@ type InsertClient struct {
 	Name        string `json:"name" binding:"required"`
 	PhoneNumber string `json:"phoneNumber" binding:"required"`
 	Email       string `json:"email" binding:"required"`
-	Address     string `json:"address" gorm:"default:NULL"`
+	Address     string `json:"address"`
 	CreatedBy   uuid.UUID
 	CompanyID   uuid.UUID `json:"companyId" binding:"required"`
 }
