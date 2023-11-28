@@ -22,6 +22,7 @@ func Migrate() {
 		models.Quotation{},
 		models.ProductHistory{},
 		models.Payment{},
+		models.PaymentInstallment{},
 	); err != nil {
 		panic(err)
 	}

@@ -64,6 +64,12 @@ type HandlerFunc interface {
 	RetrievePayment(id uuid.UUID) (m models.Payment, err error)
 	InsertPayment(p *dto.InsertPayment) (err error)
 	UpdatePayment(id uuid.UUID, p *dto.UpdatePayment) (err error)
+
+	CheckExistingPaymentInstallment(id string, param CheckExistingPaymentInstallmentStruct) (err error)
+	RetrieveAllPaymentInstallment(id uuid.UUID) (m []models.PaymentInstallment, err error)
+	RetrievePaymentInstallment(id uuid.UUID) (m models.PaymentInstallment, err error)
+	InsertPaymentInstallment(p *dto.InsertPaymentInstallment) (err error)
+	UpdatePaymentInstallment(id uuid.UUID, p *dto.UpdatePaymentInstallment) (err error)
 }
 
 type module struct {
@@ -71,15 +77,16 @@ type module struct {
 }
 
 type dbEntity struct {
-	conn                   *gorm.DB
-	userModel              masterModels.UserModelAction
-	companyModel           masterModels.CompanyModelAction
-	clientModel            masterModels.ClientModelAction
-	operatingActivityModel models.OperatingActivityModelAction
-	productModel           models.ProductModelAction
-	productHistoryModel    models.ProductHistoryModelAction
-	quotationModel         models.QuotationModelAction
-	paymentModel           models.PaymentModelAction
+	conn                    *gorm.DB
+	userModel               masterModels.UserModelAction
+	companyModel            masterModels.CompanyModelAction
+	clientModel             masterModels.ClientModelAction
+	operatingActivityModel  models.OperatingActivityModelAction
+	productModel            models.ProductModelAction
+	productHistoryModel     models.ProductHistoryModelAction
+	quotationModel          models.QuotationModelAction
+	paymentModel            models.PaymentModelAction
+	paymentInstallmentModel models.PaymentInstallmentModelAction
 }
 
 func InitializeServices() (err error) {
@@ -94,15 +101,16 @@ func InitializeServices() (err error) {
 
 	Handler = &module{
 		db: &dbEntity{
-			conn:                   db,
-			userModel:              masterModels.NewUserAction(db),
-			companyModel:           masterModels.NewCompanyAction(db),
-			clientModel:            masterModels.NewClientAction(db),
-			operatingActivityModel: models.NewOperatingActivityAction(db),
-			productModel:           models.NewProductAction(db),
-			quotationModel:         models.NewQuotationAction(db),
-			productHistoryModel:    models.NewProductHistoryAction(db),
-			paymentModel:           models.NewPaymentAction(db),
+			conn:                    db,
+			userModel:               masterModels.NewUserAction(db),
+			companyModel:            masterModels.NewCompanyAction(db),
+			clientModel:             masterModels.NewClientAction(db),
+			operatingActivityModel:  models.NewOperatingActivityAction(db),
+			productModel:            models.NewProductAction(db),
+			quotationModel:          models.NewQuotationAction(db),
+			productHistoryModel:     models.NewProductHistoryAction(db),
+			paymentModel:            models.NewPaymentAction(db),
+			paymentInstallmentModel: models.NewPaymentInstallmentAction(db),
 		},
 	}
 	return

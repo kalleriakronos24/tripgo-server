@@ -93,6 +93,16 @@ func InitializeRouter() (router *gin.Engine) {
 			payment.PUT("/:id", utils.AuthOnly, v1.PUTPayment)
 		}
 
+		paymentInstallment := v1route.Group("/payment-installment")
+		{
+			paymentInstallment.GET("/", utils.AuthOnly, v1.GETAllPaymentInstallment)
+			paymentInstallment.GET("/:id", utils.AuthOnly, v1.GETPaymentInstallment)
+
+			paymentInstallment.POST("/", utils.AuthOnly, v1.POSTPaymentInstallment)
+
+			paymentInstallment.PUT("/:id", utils.AuthOnly, v1.PUTPaymentInstallment)
+		}
+
 		user := v1route.Group("/user")
 		{
 			user.GET("/:id", utils.AuthOnly, v1Master.GETUser)
