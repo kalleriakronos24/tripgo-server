@@ -63,6 +63,16 @@ func InitializeRouter() (router *gin.Engine) {
 			product.PUT("/:id", utils.AuthOnly, v1.PUTProduct)
 		}
 
+		quotation := v1route.Group("/quotation")
+		{
+			quotation.GET("/", utils.AuthOnly, v1.GETAllQuotation)
+			quotation.GET("/:id", utils.AuthOnly, v1.GETQuotation)
+
+			quotation.POST("/", utils.AuthOnly, v1.POSTQuotation)
+
+			quotation.PUT("/:id", utils.AuthOnly, v1.PUTQuotation)
+		}
+
 		user := v1route.Group("/user")
 		{
 			user.GET("/:id", utils.AuthOnly, v1Master.GETUser)

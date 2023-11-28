@@ -19,6 +19,7 @@ func Migrate() {
 		models.UserLog{},
 		models.OperatingActivity{},
 		models.Product{},
+		models.Quotation{},
 	); err != nil {
 		panic(err)
 	}

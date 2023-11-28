@@ -46,6 +46,12 @@ type HandlerFunc interface {
 	RetrieveProduct(id uuid.UUID) (m models.Product, err error)
 	InsertProduct(p *dto.InsertProduct) (err error)
 	UpdateProduct(id uuid.UUID, p *dto.UpdateProduct) (err error)
+
+	CheckExistingQuotation(id string, param CheckExistingQuotationStruct) (err error)
+	RetrieveAllQuotation(id uuid.UUID) (m []models.Quotation, err error)
+	RetrieveQuotation(id uuid.UUID) (m models.Quotation, err error)
+	InsertQuotation(p *dto.InsertQuotation) (err error)
+	UpdateQuotation(id uuid.UUID, p *dto.UpdateQuotation) (err error)
 }
 
 type module struct {
@@ -59,6 +65,7 @@ type dbEntity struct {
 	clientModel            masterModels.ClientModelAction
 	operatingActivityModel models.OperatingActivityModelAction
 	productModel           models.ProductModelAction
+	quotationModel         models.QuotationModelAction
 }
 
 func InitializeServices() (err error) {
@@ -79,6 +86,7 @@ func InitializeServices() (err error) {
 			clientModel:            masterModels.NewClientAction(db),
 			operatingActivityModel: models.NewOperatingActivtyAction(db),
 			productModel:           models.NewProductAction(db),
+			quotationModel:         models.NewQuotationAction(db),
 		},
 	}
 	return
