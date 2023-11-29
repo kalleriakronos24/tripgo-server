@@ -658,6 +658,143 @@
 			]
 		},
 		{
+			"name": "Operating Activity Product",
+			"item": [
+				{
+					"name": "get all operating activity product",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{golang_local_v1}}/operating-activity-product",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"operating-activity-product"
+							]
+						},
+						"description": "``` json\nSample  API Response\n{\n    \"data\": [\n        {\n            \"id\": \"6295ef0b-3c61-4f0b-9f15-c6a359cd0838\",\n            \"quantity\": 400,\n            \"vatRate\": 2000,\n            \"subTotal\": 40000,\n            \"grandTotal\": 50000,\n            \"operatingActivityId\": \"8e1b82eb-6c89-420d-928b-9f43676b3d64\",\n            \"operatingActivity\": {\n                \"id\": \"8e1b82eb-6c89-420d-928b-9f43676b3d64\",\n                \"taxInvoiceNumber\": \"F/12/23/1111-X333\",\n                \"deliveryReceiptNumber\": \"D123456\",\n                \"status\": \"ongoing\",\n                \"clientId\": \"da4f7a8f-2c1b-4097-b92c-512c817d9fb0\",\n                \"client\": null,\n                \"createdBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n                \"updatedBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n                \"createdByUser\": null,\n                \"updatedByUser\": null,\n                \"createdAt\": \"2023-11-28T07:01:44.331457+07:00\",\n                \"updatedAt\": \"2023-11-28T07:06:43.256378+07:00\",\n                \"deletedAt\": null\n            },\n            \"productId\": \"5e850d07-9003-40cd-a47e-f0fda3bfbce2\",\n            \"product\": {\n                \"id\": \"5e850d07-9003-40cd-a47e-f0fda3bfbce2\",\n                \"name\": \"ABC Moka 123\",\n                \"unitPrice\": 12000,\n                \"packaging\": \"sachets\",\n                \"stock\": 40,\n                \"note\": \"still lot of stocks\",\n                \"companyId\": \"deab654a-ceb1-4942-b2d6-6a4a473d131d\",\n                \"company\": null,\n                \"createdBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n                \"updatedBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n                \"createdByUser\": null,\n                \"updatedByUser\": null,\n                \"createdAt\": \"2023-11-28T08:08:33.306943+07:00\",\n                \"updatedAt\": \"2023-11-28T08:12:32.751313+07:00\",\n                \"deletedAt\": null\n            },\n            \"createdBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n            \"updatedBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n            \"createdByUser\": {\n                \"id\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n                \"name\": \"mada nugraha\",\n                \"createdBy\": \"00000000-0000-0000-0000-000000000000\",\n                \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n                \"createdBySuperAdmin\": null,\n                \"updatedBySuperAdmin\": null,\n                \"createdAt\": \"2023-11-28T03:59:44.744894+07:00\",\n                \"updatedAt\": \"2023-11-28T03:59:44.744894+07:00\",\n                \"deletedAt\": null\n            },\n            \"updatedByUser\": {\n                \"id\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n                \"name\": \"mada nugraha\",\n                \"createdBy\": \"00000000-0000-0000-0000-000000000000\",\n                \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n                \"createdBySuperAdmin\": null,\n                \"updatedBySuperAdmin\": null,\n                \"createdAt\": \"2023-11-28T03:59:44.744894+07:00\",\n                \"updatedAt\": \"2023-11-28T03:59:44.744894+07:00\",\n                \"deletedAt\": null\n            },\n            \"createdAt\": \"2023-11-30T03:23:47.348209+07:00\",\n            \"updatedAt\": \"2023-11-30T03:25:03.870218+07:00\",\n            \"deletedAt\": null\n        }\n    ]\n}\nSample API Response Error\n{\n    \"data\": false,\n    \"kind\": \"data-not-found\",\n    \"message\": \"Data is not found\"\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "get operating activity product by id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{golang_local_v1}}/operating-activity-product/6295ef0b-3c61-4f0b-9f15-c6a359cd0838",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"operating-activity-product",
+								"6295ef0b-3c61-4f0b-9f15-c6a359cd0838"
+							]
+						},
+						"description": "``` json\nSample  API Response\n{\n    \"data\": {\n        \"id\": \"6295ef0b-3c61-4f0b-9f15-c6a359cd0838\",\n        \"quantity\": 400,\n        \"vatRate\": 2000,\n        \"subTotal\": 40000,\n        \"grandTotal\": 50000,\n        \"operatingActivityId\": \"8e1b82eb-6c89-420d-928b-9f43676b3d64\",\n        \"operatingActivity\": {\n            \"id\": \"8e1b82eb-6c89-420d-928b-9f43676b3d64\",\n            \"taxInvoiceNumber\": \"F/12/23/1111-X333\",\n            \"deliveryReceiptNumber\": \"D123456\",\n            \"status\": \"ongoing\",\n            \"clientId\": \"da4f7a8f-2c1b-4097-b92c-512c817d9fb0\",\n            \"client\": null,\n            \"createdBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n            \"updatedBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n            \"createdByUser\": null,\n            \"updatedByUser\": null,\n            \"createdAt\": \"2023-11-28T07:01:44.331457+07:00\",\n            \"updatedAt\": \"2023-11-28T07:06:43.256378+07:00\",\n            \"deletedAt\": null\n        },\n        \"productId\": \"5e850d07-9003-40cd-a47e-f0fda3bfbce2\",\n        \"product\": {\n            \"id\": \"5e850d07-9003-40cd-a47e-f0fda3bfbce2\",\n            \"name\": \"ABC Moka 123\",\n            \"unitPrice\": 12000,\n            \"packaging\": \"sachets\",\n            \"stock\": 40,\n            \"note\": \"still lot of stocks\",\n            \"companyId\": \"deab654a-ceb1-4942-b2d6-6a4a473d131d\",\n            \"company\": null,\n            \"createdBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n            \"updatedBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n            \"createdByUser\": null,\n            \"updatedByUser\": null,\n            \"createdAt\": \"2023-11-28T08:08:33.306943+07:00\",\n            \"updatedAt\": \"2023-11-28T08:12:32.751313+07:00\",\n            \"deletedAt\": null\n        },\n        \"createdBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n        \"updatedBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n        \"createdByUser\": {\n            \"id\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n            \"name\": \"mada nugraha\",\n            \"createdBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"createdBySuperAdmin\": null,\n            \"updatedBySuperAdmin\": null,\n            \"createdAt\": \"2023-11-28T03:59:44.744894+07:00\",\n            \"updatedAt\": \"2023-11-28T03:59:44.744894+07:00\",\n            \"deletedAt\": null\n        },\n        \"updatedByUser\": {\n            \"id\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n            \"name\": \"mada nugraha\",\n            \"createdBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"createdBySuperAdmin\": null,\n            \"updatedBySuperAdmin\": null,\n            \"createdAt\": \"2023-11-28T03:59:44.744894+07:00\",\n            \"updatedAt\": \"2023-11-28T03:59:44.744894+07:00\",\n            \"deletedAt\": null\n        },\n        \"createdAt\": \"2023-11-30T03:23:47.348209+07:00\",\n        \"updatedAt\": \"2023-11-30T03:25:03.870218+07:00\",\n        \"deletedAt\": null\n    }\n}\nSample API Response Error\n{\n    \"data\": false,\n    \"kind\": \"data-not-found\",\n    \"message\": \"Data is not found\"\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "update operating activity product",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"quantity\": 400,\r\n    \"vatRate\": 2000,\r\n    \"subTotal\" : 40000,\r\n    \"grandTotal\" : 50000,\r\n    \"operatingActivityId\": \"8e1b82eb-6c89-420d-928b-9f43676b3d64\",\r\n    \"productId\": \"5e850d07-9003-40cd-a47e-f0fda3bfbce2\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{golang_local_v1}}/operating-activity-product/6295ef0b-3c61-4f0b-9f15-c6a359cd0838",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"operating-activity-product",
+								"6295ef0b-3c61-4f0b-9f15-c6a359cd0838"
+							]
+						},
+						"description": "``` json\nSample  API Response Error\n{\n    \"data\": false,\n    \"kind\": \"data-not-found\",\n    \"message\": \"Data is not found\"\n}\n\nSample API Response \n{\n    \"message\": \"success\"\n}\n\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "create operating activity product",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"quantity\": 40,\r\n    \"vatRate\": 2000,\r\n    \"subTotal\" : 40000,\r\n    \"grandTotal\" : 50000,\r\n    \"operatingActivityId\": \"8e1b82eb-6c89-420d-928b-9f43676b3d64\",\r\n    \"productId\": \"5e850d07-9003-40cd-a47e-f0fda3bfbce2\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{golang_local_v1}}/operating-activity-product",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"operating-activity-product"
+							]
+						},
+						"description": "``` json\nSample API Response \n{\n  \"message\" : \"success\"\n}\n\n ```\n\n``` json\nSample API Response Error\n\n{\n    \"data\": false,\n    \"kind\": \"data-existing\",\n    \"message\": \"Data is already exist with email \"\n}\n\n ```"
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Product",
 			"item": [
 				{

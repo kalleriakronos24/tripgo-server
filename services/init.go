@@ -70,6 +70,12 @@ type HandlerFunc interface {
 	RetrievePaymentInstallment(id uuid.UUID) (m models.PaymentInstallment, err error)
 	InsertPaymentInstallment(p *dto.InsertPaymentInstallment) (err error)
 	UpdatePaymentInstallment(id uuid.UUID, p *dto.UpdatePaymentInstallment) (err error)
+
+	CheckExistingOperatingActivityProduct(id string, param CheckExistingOperatingActivityProductStruct) (err error)
+	RetrieveAllOperatingActivityProduct(id uuid.UUID) (m []models.OperatingActivityProduct, err error)
+	RetrieveOperatingActivityProduct(id uuid.UUID) (m models.OperatingActivityProduct, err error)
+	InsertOperatingActivityProduct(p *dto.InsertOperatingActivityProduct) (err error)
+	UpdateOperatingActivityProduct(id uuid.UUID, p *dto.UpdateOperatingActivityProduct) (err error)
 }
 
 type module struct {
@@ -77,16 +83,17 @@ type module struct {
 }
 
 type dbEntity struct {
-	conn                    *gorm.DB
-	userModel               masterModels.UserModelAction
-	companyModel            masterModels.CompanyModelAction
-	clientModel             masterModels.ClientModelAction
-	operatingActivityModel  models.OperatingActivityModelAction
-	productModel            models.ProductModelAction
-	productHistoryModel     models.ProductHistoryModelAction
-	quotationModel          models.QuotationModelAction
-	paymentModel            models.PaymentModelAction
-	paymentInstallmentModel models.PaymentInstallmentModelAction
+	conn                          *gorm.DB
+	userModel                     masterModels.UserModelAction
+	companyModel                  masterModels.CompanyModelAction
+	clientModel                   masterModels.ClientModelAction
+	operatingActivityModel        models.OperatingActivityModelAction
+	productModel                  models.ProductModelAction
+	productHistoryModel           models.ProductHistoryModelAction
+	quotationModel                models.QuotationModelAction
+	paymentModel                  models.PaymentModelAction
+	paymentInstallmentModel       models.PaymentInstallmentModelAction
+	operatingActivityProductModel models.OperatingActivityProductModelAction
 }
 
 func InitializeServices() (err error) {
@@ -101,16 +108,17 @@ func InitializeServices() (err error) {
 
 	Handler = &module{
 		db: &dbEntity{
-			conn:                    db,
-			userModel:               masterModels.NewUserAction(db),
-			companyModel:            masterModels.NewCompanyAction(db),
-			clientModel:             masterModels.NewClientAction(db),
-			operatingActivityModel:  models.NewOperatingActivityAction(db),
-			productModel:            models.NewProductAction(db),
-			quotationModel:          models.NewQuotationAction(db),
-			productHistoryModel:     models.NewProductHistoryAction(db),
-			paymentModel:            models.NewPaymentAction(db),
-			paymentInstallmentModel: models.NewPaymentInstallmentAction(db),
+			conn:                          db,
+			userModel:                     masterModels.NewUserAction(db),
+			companyModel:                  masterModels.NewCompanyAction(db),
+			clientModel:                   masterModels.NewClientAction(db),
+			operatingActivityModel:        models.NewOperatingActivityAction(db),
+			productModel:                  models.NewProductAction(db),
+			quotationModel:                models.NewQuotationAction(db),
+			productHistoryModel:           models.NewProductHistoryAction(db),
+			paymentModel:                  models.NewPaymentAction(db),
+			paymentInstallmentModel:       models.NewPaymentInstallmentAction(db),
+			operatingActivityProductModel: models.NewOperatingActivityProductAction(db),
 		},
 	}
 	return
