@@ -42,7 +42,7 @@ func GETPurchaseOrder(c *gin.Context) {
 		return
 	}
 
-	var PurchaseOrder models.PurchaseOrder
+	var PurchaseOrder models.CustomResponsePurchaseOrder
 	if PurchaseOrder, err = services.Handler.RetrievePurchaseOrder(PurchaseOrderId); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "purchase order"))
 		return
@@ -104,6 +104,8 @@ func PUTPurchaseOrder(c *gin.Context) {
 	var err error
 	userLoggedInId := c.GetString("user_id")
 	userId, err := uuid.Parse(userLoggedInId)
+
+	fPurchaseOrderDocument, err := c.FormFile("document")
 	p := &dto.UpdateFormDataPurchaseOrder{UpdatedBy: userId}
 
 	if err = c.Bind(&p); err != nil {
@@ -130,6 +132,7 @@ func PUTPurchaseOrder(c *gin.Context) {
 		Recipient:           p.Recipient,
 		RecipientEmail:      p.RecipientEmail,
 		Date:                p.Date,
+		Document:            fPurchaseOrderDocument,
 		OperatingActivityID: operatingActivityID,
 	}
 

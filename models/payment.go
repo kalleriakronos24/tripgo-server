@@ -24,7 +24,7 @@ type Payment struct {
 	SettlementDate time.Time `json:"settlementDate,omitempty" gorm:"not null"`
 
 	OperatingActivityID uuid.UUID          `json:"operatingActivityId" gorm:"type:uuid;not null;default:NULL;"`
-	OperatingActivity   *OperatingActivity `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:OperatingActivityID;references:ID" json:"operatingActivity"`
+	OperatingActivity   *OperatingActivity `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;foreignKey:OperatingActivityID;references:ID" json:"operatingActivity"`
 
 	PaymentCreatedBy uuid.UUID    `json:"createdBy" gorm:"type:uuid;not null;default:NULL;"`
 	PaymentUpdatedBy uuid.UUID    `json:"updatedBy" gorm:"type:uuid;default:NULL;"`

@@ -74,13 +74,14 @@ type HandlerFunc interface {
 
 	CheckExistingOperatingActivityProduct(id string, param CheckExistingOperatingActivityProductStruct) (err error)
 	RetrieveAllOperatingActivityProduct(id uuid.UUID) (m []models.OperatingActivityProduct, err error)
+	RetrieveManyOperatingActivityProductByOperatingActivityID(id uuid.UUID) (m []models.OperatingActivityProduct, err error)
 	RetrieveOperatingActivityProduct(id uuid.UUID) (m models.OperatingActivityProduct, err error)
 	InsertOperatingActivityProduct(p *dto.InsertOperatingActivityProduct) (err error)
 	UpdateOperatingActivityProduct(id uuid.UUID, p *dto.UpdateOperatingActivityProduct) (err error)
 
 	CheckExistingPurchaseOrder(id string, param CheckExistingPurchaseOrderStruct) (err error)
 	RetrieveAllPurchaseOrder(id uuid.UUID) (m []models.PurchaseOrder, err error)
-	RetrievePurchaseOrder(id uuid.UUID) (m models.PurchaseOrder, err error)
+	RetrievePurchaseOrder(id uuid.UUID) (m models.CustomResponsePurchaseOrder, err error)
 	InsertPurchaseOrder(c *gin.Context, p *dto.InsertPurchaseOrder) (err error)
 	UpdatePurchaseOrder(c *gin.Context, id uuid.UUID, p *dto.UpdatePurchaseOrder) (err error)
 }

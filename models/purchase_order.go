@@ -4,6 +4,7 @@ import (
 	"github.com/google/uuid"
 	masterModels "gitlab.com/odma1/odma-be/models/master"
 	"gitlab.com/odma1/odma-be/types"
+	"gitlab.com/odma1/odma-be/utils"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	"time"
@@ -22,7 +23,7 @@ type PurchaseOrder struct {
 	Date           time.Time `json:"date,omitempty" gorm:"not null"`
 
 	DocumentID          uuid.UUID          `json:"documentId,omitempty" gorm:"not null;"`
-	Document            *Document          `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:DocumentID;references:ID" json:"document"`
+	Document            *Document          `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;foreignKey:DocumentID;references:ID" json:"document"`
 	OperatingActivityID uuid.UUID          `json:"operatingActivityId" gorm:"type:uuid;not null;default:NULL;"`
 	OperatingActivity   *OperatingActivity `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:OperatingActivityID;references:ID" json:"operatingActivity"`
 
@@ -34,9 +35,29 @@ type PurchaseOrder struct {
 	types.DefaultModelProperty
 }
 
+type CustomResponsePurchaseOrder struct {
+	ID             uuid.UUID `json:"id"`
+	Number         string    `json:"number,omitempty"`
+	Type           string    `json:"type,omitempty"`
+	Recipient      string    `json:"recipient,omitempty"`
+	RecipientEmail string    `json:"recipientEmail,omitempty"`
+	Date           time.Time `json:"date,omitempty"`
+
+	OperatingActivityID uuid.UUID          `json:"operatingActivityId"`
+	DocumentID          uuid.UUID          `json:"documentId,omitempty"`
+	Document            *Document          `json:"document"`
+	OperatingActivity   *OperatingActivity `json:"operatingActivity"`
+	Product             []any              `json:"product"`
+
+	CreatedByUser *masterModels.User `json:"createdByUser"`
+	UpdatedByUser *masterModels.User `json:"updatedByUser"`
+
+	types.DefaultModelProperty
+}
+
 type PurchaseOrderModelAction interface {
 	GetAllPurchaseOrder(userId uuid.UUID) (m []PurchaseOrder, err error)
-	GetOnePurchaseOrderByID(id uuid.UUID) (m PurchaseOrder, err error)
+	GetOnePurchaseOrderByID(id uuid.UUID) (m CustomResponsePurchaseOrder, err error)
 	GetOnePurchaseOrderByOperatingActivityId(operatingActivityId uuid.UUID) (m PurchaseOrder, err error)
 
 	InsertPurchaseOrder(p PurchaseOrder) (err error)
@@ -63,8 +84,9 @@ func (o *PurchaseOrderOrm) GetAllPurchaseOrder(userId uuid.UUID) (m []PurchaseOr
 	return m, result.Error
 }
 
-func (o *PurchaseOrderOrm) GetOnePurchaseOrderByID(id uuid.UUID) (m PurchaseOrder, err error) {
-	result := o.db.Model(&m).
+func (o *PurchaseOrderOrm) GetOnePurchaseOrderByID(id uuid.UUID) (m CustomResponsePurchaseOrder, err error) {
+	purchaseOrderModel := PurchaseOrder{}
+	result := o.db.Model(&purchaseOrderModel).
 		Preload("CreatedByUser", func(db *gorm.DB) *gorm.DB {
 			return db.Select([]string{"ID", "Name", "CreatedBy", "UpdatedBy", "CreatedAt", "UpdatedAt"})
 		}).
@@ -73,7 +95,35 @@ func (o *PurchaseOrderOrm) GetOnePurchaseOrderByID(id uuid.UUID) (m PurchaseOrde
 		}).
 		Preload("OperatingActivity").
 		Preload("Document").
-		First(&m, id)
+		First(&purchaseOrderModel, id)
+
+	if purchaseOrderModel.Type == "in" {
+
+		var operatingActivityProduct []OperatingActivityProduct
+		err := o.db.Model(&operatingActivityProduct).Preload("Product").Where("operating_activity_id = ?", purchaseOrderModel.OperatingActivityID).Find(&operatingActivityProduct)
+
+		if err.Error != nil {
+			return m, err.Error
+		}
+
+		converted := utils.UnpackArray(operatingActivityProduct)
+
+		m := CustomResponsePurchaseOrder{
+			ID:                purchaseOrderModel.ID,
+			Number:            purchaseOrderModel.Number,
+			Type:              purchaseOrderModel.Type,
+			Recipient:         purchaseOrderModel.Recipient,
+			RecipientEmail:    purchaseOrderModel.RecipientEmail,
+			Date:              purchaseOrderModel.Date,
+			DocumentID:        purchaseOrderModel.DocumentID,
+			Document:          purchaseOrderModel.Document,
+			OperatingActivity: purchaseOrderModel.OperatingActivity,
+			Product:           converted,
+			CreatedByUser:     purchaseOrderModel.CreatedByUser,
+			UpdatedByUser:     purchaseOrderModel.UpdatedByUser,
+		}
+		return m, result.Error
+	}
 	return m, result.Error
 }
 

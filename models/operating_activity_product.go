@@ -36,6 +36,7 @@ type OperatingActivityProductModelAction interface {
 	GetAllOperatingActivityProduct(userId uuid.UUID) (m []OperatingActivityProduct, err error)
 	GetOneOperatingActivityProductByID(id uuid.UUID) (m OperatingActivityProduct, err error)
 	GetOneOperatingActivityProductByOperatingActivityId(operatingActivityId uuid.UUID) (m OperatingActivityProduct, err error)
+	GetManyOperatingActivityProductByOperatingActivityId(operatingActivityId uuid.UUID) (m []OperatingActivityProduct, err error)
 
 	InsertOperatingActivityProduct(p OperatingActivityProduct) (err error)
 	UpdateOperatingActivityProduct(id uuid.UUID, p OperatingActivityProduct) (err error)
@@ -77,6 +78,11 @@ func (o *OperatingActivityProductOrm) GetOneOperatingActivityProductByID(id uuid
 
 func (o *OperatingActivityProductOrm) GetOneOperatingActivityProductByOperatingActivityId(operatingActivityId uuid.UUID) (m OperatingActivityProduct, err error) {
 	result := o.db.Model(&m).Where("operating_activity_id = ?", operatingActivityId).First(&m)
+	return m, result.Error
+}
+
+func (o *OperatingActivityProductOrm) GetManyOperatingActivityProductByOperatingActivityId(operatingActivityId uuid.UUID) (m []OperatingActivityProduct, err error) {
+	result := o.db.Model(&m).Where("operating_activity_id = ?", operatingActivityId).Find(&m)
 	return m, result.Error
 }
 

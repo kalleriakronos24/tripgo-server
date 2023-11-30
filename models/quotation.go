@@ -23,7 +23,7 @@ type Quotation struct {
 	Date        time.Time `json:"date,omitempty" gorm:"not null;default:CURRENT_TIMESTAMP"`
 
 	OperatingActivityID uuid.UUID          `json:"operatingActivityId" gorm:"type:uuid;not null;default:NULL"`
-	OperatingActivity   *OperatingActivity `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:OperatingActivityID;references:ID" json:"operatingActivity"`
+	OperatingActivity   *OperatingActivity `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;foreignKey:OperatingActivityID;references:ID" json:"operatingActivity"`
 
 	QuotationCreatedBy uuid.UUID          `json:"createdBy" gorm:"type:uuid;not null;default:NULL"`
 	QuotationUpdatedBy uuid.UUID          `json:"updatedBy" gorm:"type:uuid;default:NULL"`

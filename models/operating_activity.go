@@ -20,7 +20,7 @@ type OperatingActivity struct {
 	Status                string    `json:"status,omitempty" gorm:"not null;default:ongoing"`
 
 	ClientID       uuid.UUID            `json:"clientId" gorm:"type:uuid;not null;default:NULL;"`
-	Client         *masterModels.Client `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:ClientID;references:ID" json:"client"`
+	Client         *masterModels.Client `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;foreignKey:ClientID;references:ID" json:"client"`
 	ProductHistory []*ProductHistory    `json:"productHistory,omitempty"`
 	Quotation      []*Quotation         `json:"quotation,omitempty"`
 	Payment        []*Payment           `json:"payment,omitempty"`

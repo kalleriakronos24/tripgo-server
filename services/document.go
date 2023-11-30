@@ -73,3 +73,8 @@ func (module *module) CheckExistingDocument(id string, param CheckExistingDocume
 	}
 	return
 }
+
+func (module *module) DeleteDocument(id string) (err error) {
+
+	return
+}

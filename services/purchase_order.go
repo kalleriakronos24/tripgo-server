@@ -24,7 +24,7 @@ func (module *module) RetrieveAllPurchaseOrder(id uuid.UUID) (m []models.Purchas
 	return
 }
 
-func (module *module) RetrievePurchaseOrder(id uuid.UUID) (m models.PurchaseOrder, err error) {
+func (module *module) RetrievePurchaseOrder(id uuid.UUID) (m models.CustomResponsePurchaseOrder, err error) {
 	if m, err = module.db.purchaseOrderModel.GetOnePurchaseOrderByID(id); err != nil {
 		return m, fmt.Errorf(err.Error())
 	}
@@ -85,18 +85,78 @@ func (module *module) InsertPurchaseOrder(c *gin.Context, p *dto.InsertPurchaseO
 }
 
 func (module *module) UpdatePurchaseOrder(c *gin.Context, id uuid.UUID, p *dto.UpdatePurchaseOrder) (err error) {
-	if err = module.db.purchaseOrderModel.UpdatePurchaseOrder(id, models.PurchaseOrder{
+
+	tx := database.GetDatabaseConnection().Begin()
+
+	var operatingActivity models.OperatingActivity
+	var operatingActivityErr error
+
+	if operatingActivity, operatingActivityErr = module.db.operatingActivityModel.GetOneOperatingActivityByID(p.OperatingActivityID); operatingActivityErr != nil {
+		return errors.New(operatingActivityErr.Error())
+	}
+
+	currentPurchaseOrder, err := module.RetrievePurchaseOrder(id)
+
+	if err != nil {
+		return errors.New(err.Error())
+	}
+
+	currentDocument, err := module.RetrieveDocument(currentPurchaseOrder.DocumentID)
+
+	if err != nil {
+		return errors.New(err.Error())
+	}
+
+	/**
+	in here we just update the document's values regardless the user upload a new file or the same
+
+	because the docker logic, if it's same file, it will replaces the old one.
+
+	if it's different than the old one, it will adds the new file, keeping the old one.
+
+	but since we update the values in our table, we will retrieve the latest file that user updated
+	*/
+	clientData := operatingActivity.Client
+	documentPath := fmt.Sprintf("/client/%s/purchase-order/%s", clientData.Name, p.Document.Filename)
+	fileExt := path.Ext(p.Document.Filename)
+
+	document := models.Document{
+		ID:                currentDocument.ID,
+		Base64:            "",
+		Path:              documentPath,
+		AbsolutePath:      fmt.Sprintf("%s/%s/%s/client/%s/purchase-order/%s", config.AppConfig.APPUrl, config.AppConfig.APPUrlStaticFileGroupRoute, config.AppConfig.AppUrlStaticFileMainRoute, clientData.Name, p.Document.Filename),
+		FileName:          p.Document.Filename,
+		Extension:         fileExt,
+		Location:          "local",
+		DocumentUpdatedBy: p.UpdatedBy,
+	}
+
+	if errDocument := tx.Updates(&document); err != nil {
+		tx.Rollback()
+		return errDocument.Error
+	}
+
+	documentTypePath := fmt.Sprintf("%s/purchase-order", clientData.Name)
+
+	if saveFileErr := utils.SaveFileToDockerVolume(c, "client", documentTypePath, p.Document); saveFileErr != nil {
+		return errors.New(saveFileErr.Error())
+	}
+
+	purchaseOrder := models.PurchaseOrder{
+		ID:                     id,
 		Number:                 p.Number,
 		Type:                   p.Type,
 		Recipient:              p.Recipient,
 		RecipientEmail:         p.RecipientEmail,
 		Date:                   p.Date,
-		DocumentID:             p.OperatingActivityID,
 		OperatingActivityID:    p.OperatingActivityID,
 		PurchaseOrderUpdatedBy: p.UpdatedBy,
-	}); err != nil {
-		return errors.New(err.Error())
 	}
+	if purchaseOrderErr := tx.Updates(&purchaseOrder); err != nil {
+		tx.Rollback()
+		return purchaseOrderErr.Error
+	}
+	tx.Commit()
 	return
 }
 

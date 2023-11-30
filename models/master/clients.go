@@ -19,7 +19,7 @@ type Client struct {
 	Address     string    `json:"address,omitempty" gorm:"default:NULL"`
 
 	CompanyID uuid.UUID `json:"companyId" gorm:"type:uuid;default:NULL"`
-	Company   *Company  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:CompanyID;references:ID" json:"company"`
+	Company   *Company  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;foreignKey:CompanyID;references:ID" json:"company"`
 
 	ClientCreatedBy uuid.UUID `json:"createdBy" gorm:"type:uuid;not null;default:NULL"`
 	ClientUpdatedBy uuid.UUID `json:"updatedBy" gorm:"type:uuid;default:NULL"`

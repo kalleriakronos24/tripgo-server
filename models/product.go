@@ -22,7 +22,7 @@ type Product struct {
 	Note      string    `json:"note,omitempty"`
 
 	CompanyID      uuid.UUID             `json:"companyId" gorm:"type:uuid;not null;default:NULL;"`
-	Company        *masterModels.Company `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:CompanyID;references:ID" json:"company"`
+	Company        *masterModels.Company `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;foreignKey:CompanyID;references:ID" json:"company"`
 	ProductHistory []*ProductHistory     `json:"productHistory,omitempty"`
 
 	ProductCreatedBy uuid.UUID          `json:"createdBy" gorm:"type:uuid;not null;default:NULL;"`

@@ -26,6 +26,13 @@ func (module *module) RetrieveOperatingActivityProduct(id uuid.UUID) (m models.O
 	return
 }
 
+func (module *module) RetrieveManyOperatingActivityProductByOperatingActivityID(id uuid.UUID) (m []models.OperatingActivityProduct, err error) {
+	if m, err = module.db.operatingActivityProductModel.GetManyOperatingActivityProductByOperatingActivityId(id); err != nil {
+		return m, fmt.Errorf(err.Error())
+	}
+	return
+}
+
 func (module *module) InsertOperatingActivityProduct(p *dto.InsertOperatingActivityProduct) (err error) {
 	if err = module.db.operatingActivityProductModel.InsertOperatingActivityProduct(models.OperatingActivityProduct{
 		Quantity:                          p.Quantity,
