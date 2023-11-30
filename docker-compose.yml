@@ -12,6 +12,7 @@ services:
       - 3009
     volumes:
       - .:/opt/app/api
+      - files-uploaded:/opt/app/files-uploaded
     ports:
       - "3009:8000"
     depends_on:
@@ -70,4 +71,6 @@ networks:
       driver: bridge
 volumes:
     odma-db:
+      driver: local
+    files-uploaded:
       driver: local

@@ -13,14 +13,7 @@
 					"name": "login",
 					"request": {
 						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{golang_dev_token}}",
-									"type": "string"
-								}
-							]
+							"type": "noauth"
 						},
 						"method": "POST",
 						"header": [],
@@ -43,7 +36,7 @@
 								"signin"
 							]
 						},
-						"description": "``` json\nSample API Response\n{\n    \"data\": \"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyYzgyMmRhMC1mZGNlLTQ3YmMtYTY0Ny0yYzZlMjdiNjMzZWQiLCJleHAiOjE3MDExMjE2MzMsImlhdCI6MTcwMDk0ODgzM30.FapSfGaVXJVFJtmpSbmwBz6frXieu1LVbQgmAgbqCf8\"\n}\n\n ```\n\n```\nSample  API Response Error\n{\n    \"data\": false,\n    \"kind\": \"logical\",\n    \"message\": \"Incorrect username or password. Please try again\",\n    \"error\": \"incorrect credentials\"\n}\n\n ```\n\nReturned token is valid for 2 days / 48 hours"
+						"description": "``` json\nSample API Response\n{\n    \"data\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmNTEwYWQ5MS0wNGRlLTRjY2YtYjYxYi1mYmIyYWI2M2VlN2IiLCJleHAiOjE3MDE0Njg3NTAsImlhdCI6MTcwMTI5NTk1MH0.UIB9rtsc8te0THUWLlIclSNp3lhzf2eCsvpnHDfI4JA\"\n}\n\n ```\n\n```\nSample  API Response Error\n{\n    \"data\": false,\n    \"kind\": \"logical\",\n    \"message\": \"Incorrect username or password. Please try again\",\n    \"error\": \"incorrect credentials\"\n}\n\n ```\n\nReturned token is valid for 2 days / 48 hours"
 					},
 					"response": []
 				},
@@ -166,6 +159,29 @@
 							],
 							"path": [
 								"upload-multiple"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Static Files",
+			"item": [
+				{
+					"name": "get file",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{golang_local_v1}}/GsnRd5hU6Uj426ynWmnNXUcCy8bM7W/N2H9ujApix2W2tNB5B2bOApye0uDZ7",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"GsnRd5hU6Uj426ynWmnNXUcCy8bM7W",
+								"N2H9ujApix2W2tNB5B2bOApye0uDZ7"
 							]
 						}
 					},
@@ -786,6 +802,174 @@
 							],
 							"path": [
 								"operating-activity-product"
+							]
+						},
+						"description": "``` json\nSample API Response \n{\n  \"message\" : \"success\"\n}\n\n ```\n\n``` json\nSample API Response Error\n\n{\n    \"data\": false,\n    \"kind\": \"data-existing\",\n    \"message\": \"Data is already exist with email \"\n}\n\n ```"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Purchase Order",
+			"item": [
+				{
+					"name": "get all purchase order",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{golang_local_v1}}/purchase-order",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"purchase-order"
+							]
+						},
+						"description": "``` json\nSample  API Response\n{\n    \"data\": [\n        {\n            \"id\": \"aa6ab103-9f8d-4d05-8429-287d012cdf0b\",\n            \"number\": \"PO-123/23/XXI\",\n            \"type\": \"in\",\n            \"recipient\": \"Mada Nugraha\",\n            \"recipientEmail\": \"madanugraha@123.com\",\n            \"date\": \"2023-12-01T04:53:47.191+07:00\",\n            \"documentId\": \"776b8d00-5471-419a-9958-50685f022ed4\",\n            \"document\": {\n                \"id\": \"776b8d00-5471-419a-9958-50685f022ed4\",\n                \"path\": \"/client/Fantasy Fantazia Client/purchase-order/cosiri-banner.jpg\",\n                \"absolutePath\": \"http://localhost:8000/GsnRd5hU6Uj426ynWmnNXUcCy8bM7W/N2H9ujApix2W2tNB5B2bOApye0uDZ7/client/Fantasy Fantazia Client/purchase-order/cosiri-banner.jpg\",\n                \"filename\": \"cosiri-banner.jpg\",\n                \"extension\": \".jpg\",\n                \"location\": \"local\",\n                \"createdBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n                \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n                \"createdByUser\": null,\n                \"updatedByUser\": null,\n                \"createdAt\": \"2023-12-01T04:53:47.319053+07:00\",\n                \"updatedAt\": \"2023-12-01T04:53:47.319053+07:00\",\n                \"deletedAt\": null\n            },\n            \"operatingActivityId\": \"8e1b82eb-6c89-420d-928b-9f43676b3d64\",\n            \"operatingActivity\": {\n                \"id\": \"8e1b82eb-6c89-420d-928b-9f43676b3d64\",\n                \"taxInvoiceNumber\": \"F/12/23/1111-X333\",\n                \"deliveryReceiptNumber\": \"D123456\",\n                \"status\": \"ongoing\",\n                \"clientId\": \"da4f7a8f-2c1b-4097-b92c-512c817d9fb0\",\n                \"client\": null,\n                \"createdBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n                \"updatedBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n                \"createdByUser\": null,\n                \"updatedByUser\": null,\n                \"createdAt\": \"2023-11-28T07:01:44.331457+07:00\",\n                \"updatedAt\": \"2023-11-28T07:06:43.256378+07:00\",\n                \"deletedAt\": null\n            },\n            \"createdBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n            \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"createdByUser\": {\n                \"id\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n                \"name\": \"mada nugraha\",\n                \"createdBy\": \"00000000-0000-0000-0000-000000000000\",\n                \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n                \"createdBySuperAdmin\": null,\n                \"updatedBySuperAdmin\": null,\n                \"createdAt\": \"2023-11-28T03:59:44.744894+07:00\",\n                \"updatedAt\": \"2023-11-28T03:59:44.744894+07:00\",\n                \"deletedAt\": null\n            },\n            \"updatedByUser\": null,\n            \"createdAt\": \"2023-12-01T04:53:47.329922+07:00\",\n            \"updatedAt\": \"2023-12-01T04:53:47.329922+07:00\",\n            \"deletedAt\": null\n        }\n    ]\n}\nSample API Response Error\n{\n    \"data\": false,\n    \"kind\": \"data-not-found\",\n    \"message\": \"Data is not found\"\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "get purchase order by id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{golang_local_v1}}/purchase-order/aa6ab103-9f8d-4d05-8429-287d012cdf0b",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"purchase-order",
+								"aa6ab103-9f8d-4d05-8429-287d012cdf0b"
+							]
+						},
+						"description": "``` json\nSample  API Response\n{\n    \"data\": {\n        \"id\": \"aa6ab103-9f8d-4d05-8429-287d012cdf0b\",\n        \"number\": \"PO-123/23/XXI\",\n        \"type\": \"in\",\n        \"recipient\": \"Mada Nugraha\",\n        \"recipientEmail\": \"madanugraha@123.com\",\n        \"date\": \"2023-12-01T04:53:47.191+07:00\",\n        \"documentId\": \"776b8d00-5471-419a-9958-50685f022ed4\",\n        \"document\": {\n            \"id\": \"776b8d00-5471-419a-9958-50685f022ed4\",\n            \"path\": \"/client/Fantasy Fantazia Client/purchase-order/cosiri-banner.jpg\",\n            \"absolutePath\": \"http://localhost:8000/GsnRd5hU6Uj426ynWmnNXUcCy8bM7W/N2H9ujApix2W2tNB5B2bOApye0uDZ7/client/Fantasy Fantazia Client/purchase-order/cosiri-banner.jpg\",\n            \"filename\": \"cosiri-banner.jpg\",\n            \"extension\": \".jpg\",\n            \"location\": \"local\",\n            \"createdBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n            \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"createdByUser\": null,\n            \"updatedByUser\": null,\n            \"createdAt\": \"2023-12-01T04:53:47.319053+07:00\",\n            \"updatedAt\": \"2023-12-01T04:53:47.319053+07:00\",\n            \"deletedAt\": null\n        },\n        \"operatingActivityId\": \"8e1b82eb-6c89-420d-928b-9f43676b3d64\",\n        \"operatingActivity\": {\n            \"id\": \"8e1b82eb-6c89-420d-928b-9f43676b3d64\",\n            \"taxInvoiceNumber\": \"F/12/23/1111-X333\",\n            \"deliveryReceiptNumber\": \"D123456\",\n            \"status\": \"ongoing\",\n            \"clientId\": \"da4f7a8f-2c1b-4097-b92c-512c817d9fb0\",\n            \"client\": null,\n            \"createdBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n            \"updatedBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n            \"createdByUser\": null,\n            \"updatedByUser\": null,\n            \"createdAt\": \"2023-11-28T07:01:44.331457+07:00\",\n            \"updatedAt\": \"2023-11-28T07:06:43.256378+07:00\",\n            \"deletedAt\": null\n        },\n        \"createdBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n        \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n        \"createdByUser\": {\n            \"id\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n            \"name\": \"mada nugraha\",\n            \"createdBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"createdBySuperAdmin\": null,\n            \"updatedBySuperAdmin\": null,\n            \"createdAt\": \"2023-11-28T03:59:44.744894+07:00\",\n            \"updatedAt\": \"2023-11-28T03:59:44.744894+07:00\",\n            \"deletedAt\": null\n        },\n        \"updatedByUser\": null,\n        \"createdAt\": \"2023-12-01T04:53:47.329922+07:00\",\n        \"updatedAt\": \"2023-12-01T04:53:47.329922+07:00\",\n        \"deletedAt\": null\n    }\n}\nSample API Response Error\n{\n    \"data\": false,\n    \"kind\": \"data-not-found\",\n    \"message\": \"Data is not found\"\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "update purchase order",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"quantity\": 400,\r\n    \"vatRate\": 2000,\r\n    \"subTotal\" : 40000,\r\n    \"grandTotal\" : 50000,\r\n    \"operatingActivityId\": \"8e1b82eb-6c89-420d-928b-9f43676b3d64\",\r\n    \"productId\": \"5e850d07-9003-40cd-a47e-f0fda3bfbce2\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{golang_local_v1}}/purchase-order/6295ef0b-3c61-4f0b-9f15-c6a359cd0838",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"purchase-order",
+								"6295ef0b-3c61-4f0b-9f15-c6a359cd0838"
+							]
+						},
+						"description": "``` json\nSample  API Response Error\n{\n    \"data\": false,\n    \"kind\": \"data-not-found\",\n    \"message\": \"Data is not found\"\n}\n\nSample API Response \n{\n    \"message\": \"success\"\n}\n\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "create purchase order",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "number",
+									"value": "PO-123/23/XXI",
+									"type": "text"
+								},
+								{
+									"key": "type",
+									"value": "in",
+									"type": "text"
+								},
+								{
+									"key": "recipient",
+									"value": "Mada Nugraha",
+									"type": "text"
+								},
+								{
+									"key": "recipientEmail",
+									"value": "madanugraha@123.com",
+									"type": "text"
+								},
+								{
+									"key": "date",
+									"value": "{{$isoTimestamp}}",
+									"type": "text"
+								},
+								{
+									"key": "document",
+									"type": "file",
+									"src": "/C:/Users/kalle/Downloads/cosiri-banner.jpg"
+								},
+								{
+									"key": "operatingActivityId",
+									"value": "8e1b82eb-6c89-420d-928b-9f43676b3d64",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{golang_local_v1}}/purchase-order",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"purchase-order"
 							]
 						},
 						"description": "``` json\nSample API Response \n{\n  \"message\" : \"success\"\n}\n\n ```\n\n``` json\nSample API Response Error\n\n{\n    \"data\": false,\n    \"kind\": \"data-existing\",\n    \"message\": \"Data is already exist with email \"\n}\n\n ```"
