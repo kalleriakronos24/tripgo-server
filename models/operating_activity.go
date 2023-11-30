@@ -15,8 +15,8 @@ type operatingActivityOrm struct {
 
 type OperatingActivity struct {
 	ID                    uuid.UUID `gorm:"index:id,unique;type:uuid;default:gen_random_uuid();" json:"id"`
-	TaxInvoiceNumber      string    `json:"taxInvoiceNumber,omitempty" gorm:"not null"`
-	DeliveryReceiptNumber string    `json:"deliveryReceiptNumber,omitempty" gorm:"not null"`
+	TaxInvoiceNumber      string    `json:"taxInvoiceNumber,omitempty" gorm:"not null;unique"`
+	DeliveryReceiptNumber string    `json:"deliveryReceiptNumber,omitempty" gorm:"not null;unique"`
 	Status                string    `json:"status,omitempty" gorm:"not null;default:ongoing"`
 
 	ClientID       uuid.UUID            `json:"clientId" gorm:"type:uuid;not null;default:NULL;"`

@@ -22,11 +22,15 @@ func POSTLogin(c *gin.Context) {
 		return
 	}
 
+	log.Println("is this working")
+
 	var token string
 	if token, err = services.Handler.AuthenticateUser(p); err != nil {
 		c.JSON(http.StatusNotFound, constants.GetErrorResponse("logical", err, "Incorrect username or password. Please try again"))
 		return
 	}
+
+	log.Println("???")
 
 	c.JSON(http.StatusOK, dto.Response{Data: token})
 }

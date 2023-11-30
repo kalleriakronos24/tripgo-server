@@ -1,6 +1,7 @@
 package services
 
 import (
+	"github.com/gin-gonic/gin"
 	"gitlab.com/odma1/odma-be/config"
 	"gitlab.com/odma1/odma-be/models"
 	"log"
@@ -76,6 +77,12 @@ type HandlerFunc interface {
 	RetrieveOperatingActivityProduct(id uuid.UUID) (m models.OperatingActivityProduct, err error)
 	InsertOperatingActivityProduct(p *dto.InsertOperatingActivityProduct) (err error)
 	UpdateOperatingActivityProduct(id uuid.UUID, p *dto.UpdateOperatingActivityProduct) (err error)
+
+	CheckExistingPurchaseOrder(id string, param CheckExistingPurchaseOrderStruct) (err error)
+	RetrieveAllPurchaseOrder(id uuid.UUID) (m []models.PurchaseOrder, err error)
+	RetrievePurchaseOrder(id uuid.UUID) (m models.PurchaseOrder, err error)
+	InsertPurchaseOrder(c *gin.Context, p *dto.InsertPurchaseOrder) (err error)
+	UpdatePurchaseOrder(c *gin.Context, id uuid.UUID, p *dto.UpdatePurchaseOrder) (err error)
 }
 
 type module struct {
@@ -94,6 +101,8 @@ type dbEntity struct {
 	paymentModel                  models.PaymentModelAction
 	paymentInstallmentModel       models.PaymentInstallmentModelAction
 	operatingActivityProductModel models.OperatingActivityProductModelAction
+	purchaseOrderModel            models.PurchaseOrderModelAction
+	documentModel                 models.DocumentModelAction
 }
 
 func InitializeServices() (err error) {
@@ -119,6 +128,8 @@ func InitializeServices() (err error) {
 			paymentModel:                  models.NewPaymentAction(db),
 			paymentInstallmentModel:       models.NewPaymentInstallmentAction(db),
 			operatingActivityProductModel: models.NewOperatingActivityProductAction(db),
+			purchaseOrderModel:            models.NewPurchaseOrderAction(db),
+			documentModel:                 models.NewDocumentAction(db),
 		},
 	}
 	return

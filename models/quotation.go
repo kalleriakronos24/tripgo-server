@@ -16,7 +16,7 @@ type quotationOrm struct {
 
 type Quotation struct {
 	ID          uuid.UUID `gorm:"index:id,unique;type:uuid;default:gen_random_uuid();" json:"id"`
-	Number      string    `json:"number,omitempty" gorm:"not null"`
+	Number      string    `json:"number,omitempty" gorm:"not null;unique"`
 	FrancoArea  string    `json:"francoArea,omitempty" gorm:"not null"`
 	PaymentTerm string    `json:"paymentTerm,omitempty" gorm:"not null"`
 	SendAfter   string    `json:"sendAfter,omitempty" gorm:"not null"`

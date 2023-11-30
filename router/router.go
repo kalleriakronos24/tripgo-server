@@ -2,14 +2,21 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
+	"gitlab.com/odma1/odma-be/config"
 	middleware "gitlab.com/odma1/odma-be/controllers/middlewares"
 	v1 "gitlab.com/odma1/odma-be/controllers/v1"
 	v1Master "gitlab.com/odma1/odma-be/controllers/v1/master"
 	"gitlab.com/odma1/odma-be/utils"
+	"net/http"
+	"os"
+	"path/filepath"
 )
 
 func InitializeRouter() (router *gin.Engine) {
 	router = gin.Default()
+
+	commonRoute := router.Group("/")
+
 	v1route := router.Group("/api/v1")
 	v1route.Use(
 		middleware.CORSMiddleware,
@@ -113,6 +120,16 @@ func InitializeRouter() (router *gin.Engine) {
 			paymentInstallment.PUT("/:id", utils.AuthOnly, v1.PUTPaymentInstallment)
 		}
 
+		purchaseOrder := v1route.Group("/purchase-order")
+		{
+			purchaseOrder.GET("/", utils.AuthOnly, v1.GETAllPurchaseOrder)
+			purchaseOrder.GET("/:id", utils.AuthOnly, v1.GETPurchaseOrder)
+
+			purchaseOrder.POST("/", utils.AuthOnly, v1.POSTPurchaseOrder)
+
+			purchaseOrder.PUT("/:id", utils.AuthOnly, v1.PUTPurchaseOrder)
+		}
+
 		user := v1route.Group("/user")
 		{
 			user.GET("/:id", utils.AuthOnly, v1Master.GETUser)
@@ -126,6 +143,16 @@ func InitializeRouter() (router *gin.Engine) {
 
 			misc.POST("/upload", v1.UploadFileSingle)
 			misc.POST("/upload-multiple", v1.UploadFileMultiple)
+		}
+
+		fileServingGroupRoute := config.AppConfig.APPUrlStaticFileGroupRoute
+		fileServingMainRoute := config.AppConfig.AppUrlStaticFileMainRoute
+		fileServing := commonRoute.Group(fileServingGroupRoute)
+		{
+			//todo improve static file serving security
+			workdir, _ := os.Getwd()
+			path := filepath.Join(workdir, "../files-uploaded")
+			fileServing.StaticFS(fileServingMainRoute, http.Dir(path))
 		}
 	}
 	return

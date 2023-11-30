@@ -2,11 +2,12 @@ package v1
 
 import (
 	"fmt"
-	"log"
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"gitlab.com/odma1/odma-be/dto"
+	"log"
+	"net/http"
+	"os"
+	"path/filepath"
 )
 
 func Pong(c *gin.Context) {
@@ -38,11 +39,12 @@ func UploadFileSingle(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, dto.Response{Code: 401, Data: nil, Error: "No Form file input found"})
 	}
-	log.Println(file.Filename)
+	workdir, err := os.Getwd()
 
 	// Upload the file to specific dst.
-	err = c.SaveUploadedFile(file, ".")
+	err = c.SaveUploadedFile(file, filepath.Join(workdir, "../files-uploaded", file.Filename))
 	if err != nil {
+		c.JSON(http.StatusBadRequest, dto.Response{Code: 401, Data: nil, Error: err})
 		return
 	}
 
