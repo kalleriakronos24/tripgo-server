@@ -15,12 +15,15 @@ type Config struct {
 	APPUrlStaticFileGroupRoute string
 	AppUrlStaticFileMainRoute  string
 
-	DBHost     string
-	DBPort     int
-	DBDatabase string
-	DBUsername string
-	DBPassword string
-	DBUrl      string
+	DBHost                 string
+	DBPort                 int
+	DBDatabase             string
+	DBUsername             string
+	DBPassword             string
+	DBUrl                  string
+	DBContainerName        string
+	DBBackupTimerInMinutes uint64
+	DBRestoreApiKey        string
 
 	JWTSecret string
 
@@ -59,6 +62,9 @@ func InitializeAppConfig() Config {
 	AppConfig.DBUsername = viper.GetString("DB_USERNAME")
 	AppConfig.DBPassword = viper.GetString("DB_PASSWORD")
 	AppConfig.DBUrl = viper.GetString("DATABASE_URL")
+	AppConfig.DBContainerName = viper.GetString("DB_CONTAINER_NAME")
+	AppConfig.DBBackupTimerInMinutes = viper.GetUint64("DB_BACKUP_TIMER_IN_MINUTES")
+	AppConfig.DBRestoreApiKey = viper.GetString("DB_RESTORE_API_KEY")
 
 	AppConfig.JWTSecret = viper.GetString("JWT_SECRET")
 	AppConfig.SOCKETEnabled = viper.GetBool("SOCKET_ENABLED")

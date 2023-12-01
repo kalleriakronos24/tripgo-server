@@ -2,15 +2,14 @@ package services
 
 import (
 	"github.com/gin-gonic/gin"
-	"gitlab.com/odma1/odma-be/config"
-	"gitlab.com/odma1/odma-be/models"
-	"log"
-
 	"github.com/google/uuid"
+	"gitlab.com/odma1/odma-be/config"
 	"gitlab.com/odma1/odma-be/dto"
+	"gitlab.com/odma1/odma-be/models"
 	masterModels "gitlab.com/odma1/odma-be/models/master"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"log"
 )
 
 var Handler HandlerFunc

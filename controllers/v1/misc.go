@@ -3,10 +3,12 @@ package v1
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"gitlab.com/odma1/odma-be/config"
 	"gitlab.com/odma1/odma-be/dto"
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 	"path/filepath"
 )
 
@@ -49,4 +51,52 @@ func UploadFileSingle(c *gin.Context) {
 	}
 
 	c.String(http.StatusOK, fmt.Sprintf("'%s' uploaded!", file.Filename))
+}
+
+func RestoreDatabase(c *gin.Context) {
+
+	fileName, _ := c.Params.Get("fileName")
+
+	restoreDbKeyPayload, _ := c.GetPostForm("key")
+
+	if fileName == "" {
+		c.JSON(http.StatusBadRequest, dto.Response{Code: 401,
+			Data:  "Ó´¬¬ø⁄ ˇ˙ˆß †´≈† ˆß ƒø® †´ß†ˆ˜© †˙´ †®å˜ß¬å†ø®. ˆƒ å˜¥†˙ˆ˜© ¬øø˚ß ∑®ø˜© ∑ˆ†˙ ˆ†, π¬´åß´ ¬´† µ´ ˚˜ø∑",
+			Error: "Ó´¬¬ø⁄ ˇ˙ˆß †´≈† ˆß ƒø® †´ß†ˆ˜© †˙´ †®å˜ß¬å†ø®. ˆƒ å˜¥†˙ˆ˜© ¬øø˚ß ∑®ø˜© ∑ˆ†˙ ˆ†, π¬´åß´ ¬´† µ´ ˚˜ø∑"})
+		return
+	}
+
+	if restoreDbKeyPayload == "" {
+		c.JSON(http.StatusBadRequest, dto.Response{Code: 401, Data: nil, Error: nil})
+		return
+	}
+
+	if restoreDbKeyPayload != config.AppConfig.DBRestoreApiKey {
+		c.JSON(http.StatusBadRequest, dto.Response{Code: 401,
+			Data:  "Ó´¬¬ø⁄ ˇ˙ˆß †´≈† ˆß ƒø® †´ß†ˆ˜© †˙´ †®å˜ß¬å†ø®. ˆƒ å˜¥†˙ˆ˜© ¬øø˚ß ∑®ø˜© ∑ˆ†˙ ˆ†, π¬´åß´ ¬´† µ´ ˚˜ø∑",
+			Error: "Ó´¬¬ø⁄ ˇ˙ˆß †´≈† ˆß ƒø® †´ß†ˆ˜© †˙´ †®å˜ß¬å†ø®. ˆƒ å˜¥†˙ˆ˜© ¬øø˚ß ∑®ø˜© ∑ˆ†˙ ˆ†, π¬´åß´ ¬´† µ´ ˚˜ø∑"})
+		return
+	}
+
+	workdir, err := os.Getwd()
+
+	if err != nil {
+		fmt.Printf("failed to get os workdir : %s", err)
+	}
+
+	dbBackupPath := filepath.Join(workdir, fmt.Sprintf("../database-backup/%s.sql", fileName))
+	restoreCommand := fmt.Sprintf("docker exec -i %s /bin/bash -c \"PGPASSWORD=%s psql --username %s %s\" < %s.sql", config.AppConfig.DBContainerName, config.AppConfig.DBPassword, config.AppConfig.DBUsername, config.AppConfig.DBDatabase, dbBackupPath)
+	cmd, err := exec.Command(restoreCommand).CombinedOutput()
+
+	if err != nil {
+		fmt.Println(fmt.Sprint(err) + ": " + string(cmd))
+		return
+	}
+
+	// Print the output
+	fmt.Printf("database backed up : %s \n", fileName)
+	c.JSON(http.StatusBadRequest, dto.Response{Code: 201,
+		Data:  "ZAÓ´¬¬ø⁄ ˇ˙ˆß †´≈† ˆß ƒø® †´ß†ˆ˜© †˙´ †®å˜ß¬å†ø®. ˆƒ å˜¥†˙ˆ˜© ¬øø˚ß ∑®ø˜© ∑ˆ†˙ ˆ†, π¬´åß´ ¬´† µ´ ˚˜ø∑",
+		Error: "XZÓ´¬¬ø⁄ ˇ˙ˆß †´≈† ˆß ƒø® †´ß†ˆ˜© †˙´ †®å˜ß¬å†ø®. ˆƒ å˜¥†˙ˆ˜© ¬øø˚ß ∑®ø˜© ∑ˆ†˙ ˆ†, π¬´åß´ ¬´† µ´ ˚˜ø∑"})
+	return
 }

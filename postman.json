@@ -163,6 +163,49 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "restore db",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"key\" : {{odma_restore_api_key}}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{golang_local_v1}}/restore/:fileName",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"restore",
+								":fileName"
+							],
+							"variable": [
+								{
+									"key": "fileName",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},

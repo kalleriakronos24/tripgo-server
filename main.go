@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"gitlab.com/odma1/odma-be/utils"
 	"log"
 	"net/http"
 	"time"
@@ -24,11 +25,6 @@ func init() {
 }
 
 func runServer() {
-	// initialize db and migrations
-	if err := services.InitializeServices(); err != nil {
-		log.Fatalln(err)
-	}
-	migrations.Migrate()
 
 	// set application timezone globally
 	loc, err := time.LoadLocation("Asia/Jakarta")
@@ -37,6 +33,14 @@ func runServer() {
 		return
 	}
 	time.Local = loc
+
+	go utils.DatabaseBackupCron()
+
+	// initialize db and migrations
+	if err := services.InitializeServices(); err != nil {
+		log.Fatalln(err)
+	}
+	migrations.Migrate()
 
 	// serve all routes and routes configuration
 	s := &http.Server{
