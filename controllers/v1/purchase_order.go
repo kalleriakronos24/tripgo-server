@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -8,6 +9,7 @@ import (
 	"gitlab.com/odma1/odma-be/dto"
 	"gitlab.com/odma1/odma-be/models"
 	"gitlab.com/odma1/odma-be/services"
+	"gitlab.com/odma1/odma-be/utils"
 	"net/http"
 )
 
@@ -71,6 +73,11 @@ func POSTPurchaseOrder(c *gin.Context) {
 		return
 	}
 
+	if err := utils.EmailFormatValidation(p.RecipientEmail); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, "Invalid email format"))
+		return
+	}
+
 	repopulateFormDataPayload := &dto.InsertPurchaseOrder{
 		Number:              p.Number,
 		Type:                p.Type,
@@ -89,7 +96,7 @@ func POSTPurchaseOrder(c *gin.Context) {
 	}{&models.PurchaseOrder{
 		OperatingActivityID: operatingActivityID,
 	}}); err == nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-existing", err, ""))
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", errors.New("data cannot be duplicated"), fmt.Sprintf("data is already existing with operating activity id %s", p.OperatingActivityID)))
 		return
 	}
 
@@ -120,6 +127,11 @@ func PUTPurchaseOrder(c *gin.Context) {
 		return
 	}
 
+	if err := utils.EmailFormatValidation(p.RecipientEmail); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, "Invalid email recipient format"))
+		return
+	}
+
 	operatingActivityID, err := uuid.Parse(p.OperatingActivityID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, "invalid operating activity id"))
@@ -144,7 +156,7 @@ func PUTPurchaseOrder(c *gin.Context) {
 			}{&models.PurchaseOrder{
 				OperatingActivityID: repopulateFormDataPayload.OperatingActivityID,
 			}}); err == nil {
-				c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-existing", err, PurchaseOrder.OperatingActivity.DeliveryReceiptNumber))
+				c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", errors.New("data cannot be duplicated"), fmt.Sprintf("data is already existing with operating activity's tax number %s", PurchaseOrder.OperatingActivity.TaxInvoiceNumber)))
 				return
 			}
 		}

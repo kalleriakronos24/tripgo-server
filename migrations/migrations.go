@@ -25,6 +25,8 @@ func Migrate() {
 		models.PaymentInstallment{},
 		models.OperatingActivityProduct{},
 		models.PurchaseOrder{},
+		models.Document{},
+		models.PurchaseOrderProduct{},
 	); err != nil {
 		panic(err)
 	}

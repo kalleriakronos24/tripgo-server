@@ -1,6 +1,8 @@
 package v1
 
 import (
+	"errors"
+	"fmt"
 	"gitlab.com/odma1/odma-be/constants"
 	"gitlab.com/odma1/odma-be/models"
 	"net/http"
@@ -65,7 +67,7 @@ func POSTProduct(c *gin.Context) {
 	if err := services.Handler.CheckExistingProduct("", struct{ *models.Product }{&models.Product{
 		Name: p.Name,
 	}}); err == nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-existing", err, ""))
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", errors.New("data cannot be duplicated"), fmt.Sprintf("data is already existing with product name %s", p.Name)))
 		return
 	}
 
@@ -94,12 +96,11 @@ func PUTProduct(c *gin.Context) {
 	}
 
 	if product, err := services.Handler.RetrieveProduct(productId); err == nil {
-
 		if product.Name != p.Name {
 			if err := services.Handler.CheckExistingProduct(id, struct{ *models.Product }{&models.Product{
 				Name: p.Name,
 			}}); err == nil {
-				c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-existing", err, p.Name))
+				c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", errors.New("data cannot be duplicated"), fmt.Sprintf("data is already existing with product name %s", p.Name)))
 				return
 			}
 		}

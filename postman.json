@@ -355,7 +355,7 @@
 								"deab654a-ceb1-4942-b2d6-6a4a473d131e"
 							]
 						},
-						"description": "``` json\nSample  API Response Error\n{\n    \"data\": false,\n    \"kind\": \"data-not-found\",\n    \"message\": \"Data is not found\"\n}\n\nSample API Response \n{\n    \"message\": \"success\"\n}\n\n\n ```"
+						"description": "``` json\nSample  API Response Error\n{\n    \"data\": false,\n    \"kind\": \"data-not-found\",\n    \"message\": \"Data is not found\"\n}\n\n{\n    \"data\": false,\n    \"kind\": \"logical\",\n    \"message\": \"Invalid email format\",\n    \"error\": \"mail: missing '@' or angle-addr\"\n}\n\nSample API Response \n{\n    \"message\": \"success\"\n}\n\n ```"
 					},
 					"response": []
 				},
@@ -393,7 +393,7 @@
 								""
 							]
 						},
-						"description": "``` json\nSample API Response \n{\n  \"message\" : \"success\"\n}\n\n ```\n\n``` json\nSample API Response Error\n\n{\n    \"data\": false,\n    \"kind\": \"data-existing\",\n    \"message\": \"Data is already exist with email \"\n}\n\n ```"
+						"description": "``` json\nSample API Response \n{\n  \"message\" : \"success\"\n}\n\n ```\n\n``` json\nSample API Response Error\n{\n    \"data\": false,\n    \"kind\": \"data-existing\",\n    \"message\": \"Data is already exist with email \"\n}\n{\n    \"data\": false,\n    \"kind\": \"logical\",\n    \"message\": \"Invalid email format\",\n    \"error\": \"mail: missing '@' or angle-addr\"\n}\n\n\n ```"
 					},
 					"response": []
 				}
@@ -767,7 +767,7 @@
 								"6295ef0b-3c61-4f0b-9f15-c6a359cd0838"
 							]
 						},
-						"description": "``` json\nSample  API Response Error\n{\n    \"data\": false,\n    \"kind\": \"data-not-found\",\n    \"message\": \"Data is not found\"\n}\n\nSample API Response \n{\n    \"message\": \"success\"\n}\n\n\n ```"
+						"description": "``` json\nSample  API Response Error\n{\n    \"data\": false,\n    \"kind\": \"data-not-found\",\n    \"message\": \"Data is not found\"\n}\n\n{\n    \"data\": false,\n    \"kind\": \"logical\",\n    \"message\": \"data is already existing with operating activity id 8e1b82eb-6c89-420d-928b-9f43676b3d64\",\n    \"error\": \"data cannot be duplicated\"\n}\nSample API Response \n{\n    \"message\": \"success\"\n}\n\n ```"
 					},
 					"response": []
 				},
@@ -804,7 +804,144 @@
 								"operating-activity-product"
 							]
 						},
-						"description": "``` json\nSample API Response \n{\n  \"message\" : \"success\"\n}\n\n ```\n\n``` json\nSample API Response Error\n\n{\n    \"data\": false,\n    \"kind\": \"data-existing\",\n    \"message\": \"Data is already exist with email \"\n}\n\n ```"
+						"description": "``` json\nSample API Response \n{\n  \"message\" : \"success\"\n}\n\n ```\n\n``` json\nSample API Response Error\n{\n    \"data\": false,\n    \"kind\": \"logical\",\n    \"message\": \"data is already existing with operating activity id 8e1b82eb-6c89-420d-928b-9f43676b3d64\",\n    \"error\": \"data cannot be duplicated\"\n}\n\n ```"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Purchase Order Product",
+			"item": [
+				{
+					"name": "get all purchase order product",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{golang_local_v1}}/purchase-order-product",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"purchase-order-product"
+							]
+						},
+						"description": "``` json\nSample  API Response\n{\n    \"data\": [\n        {\n            \"id\": \"6e42e205-e74d-4ff9-8de3-7628abdd28ca\",\n            \"quantity\": 23,\n            \"vatRate\": 2000,\n            \"subTotal\": 40000,\n            \"grandTotal\": 50000,\n            \"purchaseOrderId\": \"aa6ab103-9f8d-4d05-8429-287d012cdf0b\",\n            \"purchaseOrder\": {\n                \"id\": \"aa6ab103-9f8d-4d05-8429-287d012cdf0b\",\n                \"number\": \"PO-123/23/XXIXX\",\n                \"type\": \"in\",\n                \"recipient\": \"Mada Nugraha\",\n                \"recipientEmail\": \"madanugraha@123.com\",\n                \"date\": \"2023-12-01T05:42:45.439+07:00\",\n                \"documentId\": \"776b8d00-5471-419a-9958-50685f022ed4\",\n                \"document\": null,\n                \"operatingActivityId\": \"8e1b82eb-6c89-420d-928b-9f43676b3d64\",\n                \"operatingActivity\": null,\n                \"PurchaseOrderProduct\": null,\n                \"createdBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n                \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n                \"createdByUser\": null,\n                \"updatedByUser\": null,\n                \"createdAt\": \"2023-12-01T04:53:47.329922+07:00\",\n                \"updatedAt\": \"2023-12-01T05:42:45.492662+07:00\",\n                \"deletedAt\": null\n            },\n            \"productId\": \"5e850d07-9003-40cd-a47e-f0fda3bfbce2\",\n            \"product\": {\n                \"id\": \"5e850d07-9003-40cd-a47e-f0fda3bfbce2\",\n                \"name\": \"ABC Moka 123\",\n                \"unitPrice\": 12000,\n                \"packaging\": \"sachets\",\n                \"stock\": 40,\n                \"note\": \"still lot of stocks\",\n                \"companyId\": \"deab654a-ceb1-4942-b2d6-6a4a473d131d\",\n                \"company\": null,\n                \"PurchaseOrderProduct\": null,\n                \"createdBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n                \"updatedBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n                \"createdByUser\": null,\n                \"updatedByUser\": null,\n                \"createdAt\": \"2023-11-28T08:08:33.306943+07:00\",\n                \"updatedAt\": \"2023-11-28T08:12:32.751313+07:00\",\n                \"deletedAt\": null\n            },\n            \"clientId\": \"da4f7a8f-2c1b-4097-b92c-512c817d9fb0\",\n            \"client\": {\n                \"id\": \"da4f7a8f-2c1b-4097-b92c-512c817d9fb0\",\n                \"name\": \"Fantasy Fantazia Client\",\n                \"phoneNumber\": \"+62 834123 123\",\n                \"email\": \"mada.zxczxczxc@gmail.com\",\n                \"address\": \"this is optional\",\n                \"companyId\": \"deab654a-ceb1-4942-b2d6-6a4a473d131d\",\n                \"company\": null,\n                \"createdBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n                \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n                \"createdByUser\": null,\n                \"updatedByUser\": null,\n                \"createdAt\": \"2023-11-28T04:50:55.280181+07:00\",\n                \"updatedAt\": \"2023-11-28T04:50:55.280181+07:00\",\n                \"deletedAt\": null\n            },\n            \"createdBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n            \"updatedBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n            \"createdByUser\": {\n                \"id\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n                \"name\": \"mada nugraha\",\n                \"createdBy\": \"00000000-0000-0000-0000-000000000000\",\n                \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n                \"createdBySuperAdmin\": null,\n                \"updatedBySuperAdmin\": null,\n                \"createdAt\": \"2023-11-28T03:59:44.744894+07:00\",\n                \"updatedAt\": \"2023-11-28T03:59:44.744894+07:00\",\n                \"deletedAt\": null\n            },\n            \"updatedByUser\": {\n                \"id\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n                \"name\": \"mada nugraha\",\n                \"createdBy\": \"00000000-0000-0000-0000-000000000000\",\n                \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n                \"createdBySuperAdmin\": null,\n                \"updatedBySuperAdmin\": null,\n                \"createdAt\": \"2023-11-28T03:59:44.744894+07:00\",\n                \"updatedAt\": \"2023-11-28T03:59:44.744894+07:00\",\n                \"deletedAt\": null\n            },\n            \"createdAt\": \"2023-12-01T17:23:26.884873+07:00\",\n            \"updatedAt\": \"2023-12-01T17:39:22.614717+07:00\",\n            \"deletedAt\": null\n        }\n    ]\n}\nSample API Response Error\n{\n    \"data\": false,\n    \"kind\": \"data-not-found\",\n    \"message\": \"Data is not found\"\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "get purchase order product",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{golang_local_v1}}/purchase-order-product/6e42e205-e74d-4ff9-8de3-7628abdd28ca",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"purchase-order-product",
+								"6e42e205-e74d-4ff9-8de3-7628abdd28ca"
+							]
+						},
+						"description": "``` json\nSample  API Response\n{\n    \"data\": {\n        \"id\": \"6e42e205-e74d-4ff9-8de3-7628abdd28ca\",\n        \"quantity\": 23,\n        \"vatRate\": 2000,\n        \"subTotal\": 40000,\n        \"grandTotal\": 50000,\n        \"purchaseOrderId\": \"aa6ab103-9f8d-4d05-8429-287d012cdf0b\",\n        \"purchaseOrder\": {\n            \"id\": \"aa6ab103-9f8d-4d05-8429-287d012cdf0b\",\n            \"number\": \"PO-123/23/XXIXX\",\n            \"type\": \"in\",\n            \"recipient\": \"Mada Nugraha\",\n            \"recipientEmail\": \"madanugraha@123.com\",\n            \"date\": \"2023-12-01T05:42:45.439+07:00\",\n            \"documentId\": \"776b8d00-5471-419a-9958-50685f022ed4\",\n            \"document\": null,\n            \"operatingActivityId\": \"8e1b82eb-6c89-420d-928b-9f43676b3d64\",\n            \"operatingActivity\": null,\n            \"PurchaseOrderProduct\": null,\n            \"createdBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n            \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"createdByUser\": null,\n            \"updatedByUser\": null,\n            \"createdAt\": \"2023-12-01T04:53:47.329922+07:00\",\n            \"updatedAt\": \"2023-12-01T05:42:45.492662+07:00\",\n            \"deletedAt\": null\n        },\n        \"productId\": \"5e850d07-9003-40cd-a47e-f0fda3bfbce2\",\n        \"product\": {\n            \"id\": \"5e850d07-9003-40cd-a47e-f0fda3bfbce2\",\n            \"name\": \"ABC Moka 123\",\n            \"unitPrice\": 12000,\n            \"packaging\": \"sachets\",\n            \"stock\": 40,\n            \"note\": \"still lot of stocks\",\n            \"companyId\": \"deab654a-ceb1-4942-b2d6-6a4a473d131d\",\n            \"company\": null,\n            \"PurchaseOrderProduct\": null,\n            \"createdBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n            \"updatedBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n            \"createdByUser\": null,\n            \"updatedByUser\": null,\n            \"createdAt\": \"2023-11-28T08:08:33.306943+07:00\",\n            \"updatedAt\": \"2023-11-28T08:12:32.751313+07:00\",\n            \"deletedAt\": null\n        },\n        \"clientId\": \"da4f7a8f-2c1b-4097-b92c-512c817d9fb0\",\n        \"client\": {\n            \"id\": \"da4f7a8f-2c1b-4097-b92c-512c817d9fb0\",\n            \"name\": \"Fantasy Fantazia Client\",\n            \"phoneNumber\": \"+62 834123 123\",\n            \"email\": \"mada.zxczxczxc@gmail.com\",\n            \"address\": \"this is optional\",\n            \"companyId\": \"deab654a-ceb1-4942-b2d6-6a4a473d131d\",\n            \"company\": null,\n            \"createdBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n            \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"createdByUser\": null,\n            \"updatedByUser\": null,\n            \"createdAt\": \"2023-11-28T04:50:55.280181+07:00\",\n            \"updatedAt\": \"2023-11-28T04:50:55.280181+07:00\",\n            \"deletedAt\": null\n        },\n        \"createdBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n        \"updatedBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n        \"createdByUser\": {\n            \"id\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n            \"name\": \"mada nugraha\",\n            \"createdBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"createdBySuperAdmin\": null,\n            \"updatedBySuperAdmin\": null,\n            \"createdAt\": \"2023-11-28T03:59:44.744894+07:00\",\n            \"updatedAt\": \"2023-11-28T03:59:44.744894+07:00\",\n            \"deletedAt\": null\n        },\n        \"updatedByUser\": {\n            \"id\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n            \"name\": \"mada nugraha\",\n            \"createdBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"createdBySuperAdmin\": null,\n            \"updatedBySuperAdmin\": null,\n            \"createdAt\": \"2023-11-28T03:59:44.744894+07:00\",\n            \"updatedAt\": \"2023-11-28T03:59:44.744894+07:00\",\n            \"deletedAt\": null\n        },\n        \"createdAt\": \"2023-12-01T17:23:26.884873+07:00\",\n        \"updatedAt\": \"2023-12-01T17:39:22.614717+07:00\",\n        \"deletedAt\": null\n    }\n}\nSample API Response Error\n{\n    \"data\": false,\n    \"kind\": \"data-not-found\",\n    \"message\": \"Data is not found\"\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "update purchase order product",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"quantity\": 23,\r\n    \"vatRate\": 2000,\r\n    \"subTotal\" : 40000,\r\n    \"grandTotal\" : 50000,\r\n    \"purchaseOrderId\": \"aa6ab103-9f8d-4d05-8429-287d012cdf0b\",\r\n    \"productId\": \"5e850d07-9003-40cd-a47e-f0fda3bfbce2\",\r\n    \"clientId\": \"da4f7a8f-2c1b-4097-b92c-512c817d9fb0\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{golang_local_v1}}/purchase-order-product/6e42e205-e74d-4ff9-8de3-7628abdd28ca",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"purchase-order-product",
+								"6e42e205-e74d-4ff9-8de3-7628abdd28ca"
+							]
+						},
+						"description": "``` json\nSample  API Response Error\n{\n    \"data\": false,\n    \"kind\": \"data-not-found\",\n    \"message\": \"Data is not found\"\n}\n{\n    \"data\": false,\n    \"kind\": \"logical\",\n    \"message\": \"data is already existing with purchase order id aa6ab103-9f8d-4d05-8429-287d012cdf0b\",\n    \"error\": \"data cannot be duplicated\"\n}\nSample API Response \n{\n    \"message\": \"success\"\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "create purchase order product",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"quantity\": 40,\r\n    \"vatRate\": 2000,\r\n    \"subTotal\" : 40000,\r\n    \"grandTotal\" : 50000,\r\n    \"purchaseOrderId\": \"aa6ab103-9f8d-4d05-8429-287d012cdf0b\",\r\n    \"productId\": \"5e850d07-9003-40cd-a47e-f0fda3bfbce2\",\r\n    \"clientId\": \"da4f7a8f-2c1b-4097-b92c-512c817d9fb0\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{golang_local_v1}}/purchase-order-product",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"purchase-order-product"
+							]
+						},
+						"description": "``` json\nSample API Response \n{\n  \"message\" : \"success\"\n}\n\n ```\n\n``` json\nSample API Response Error\n{\n    \"data\": false,\n    \"kind\": \"logical\",\n    \"message\": \"data is already existing with purchase order id aa6ab103-9f8d-4d05-8429-287d012cdf0b\",\n    \"error\": \"data cannot be duplicated\"\n}\n\n ```"
 					},
 					"response": []
 				}
@@ -1003,7 +1140,7 @@
 								"purchase-order"
 							]
 						},
-						"description": "``` json\nSample API Response \n{\n  \"message\" : \"success\"\n}\n\n ```\n\n``` json\nSample API Response Error\n\n{\n    \"data\": false,\n    \"kind\": \"data-existing\",\n    \"message\": \"Data is already exist with email \"\n}\n\n ```"
+						"description": "``` json\nSample API Response \n{\n  \"message\" : \"success\"\n}\n\n ```\n\n``` json\nSample API Response Error\n{\n    \"data\": false,\n    \"kind\": \"logical\",\n    \"message\": \"data is already existing with operating activity id 8e1b82eb-6c89-420d-928b-9f43676b3d64\",\n    \"error\": \"data cannot be duplicated\"\n}\n{\n    \"data\": false,\n    \"kind\": \"logical\",\n    \"message\": \"Invalid recipient email format\",\n    \"error\": \"mail: missing '@' or angle-addr\"\n}\n\n ```"
 					},
 					"response": []
 				}

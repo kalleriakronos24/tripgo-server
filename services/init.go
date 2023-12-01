@@ -84,6 +84,12 @@ type HandlerFunc interface {
 	RetrievePurchaseOrder(id uuid.UUID) (m models.CustomResponsePurchaseOrder, err error)
 	InsertPurchaseOrder(c *gin.Context, p *dto.InsertPurchaseOrder) (err error)
 	UpdatePurchaseOrder(c *gin.Context, id uuid.UUID, p *dto.UpdatePurchaseOrder) (err error)
+
+	CheckExistingPurchaseOrderProduct(id string, param CheckExistingPurchaseOrderProductStruct) (err error)
+	RetrieveAllPurchaseOrderProduct(id uuid.UUID) (m []models.PurchaseOrderProduct, err error)
+	RetrievePurchaseOrderProduct(id uuid.UUID) (m models.PurchaseOrderProduct, err error)
+	InsertPurchaseOrderProduct(p *dto.InsertPurchaseOrderProduct) (err error)
+	UpdatePurchaseOrderProduct(id uuid.UUID, p *dto.UpdatePurchaseOrderProduct) (err error)
 }
 
 type module struct {
@@ -104,6 +110,7 @@ type dbEntity struct {
 	operatingActivityProductModel models.OperatingActivityProductModelAction
 	purchaseOrderModel            models.PurchaseOrderModelAction
 	documentModel                 models.DocumentModelAction
+	purchaseOrderProductModel     models.PurchaseOrderProductModelAction
 }
 
 func InitializeServices() (err error) {
@@ -131,6 +138,7 @@ func InitializeServices() (err error) {
 			operatingActivityProductModel: models.NewOperatingActivityProductAction(db),
 			purchaseOrderModel:            models.NewPurchaseOrderAction(db),
 			documentModel:                 models.NewDocumentAction(db),
+			purchaseOrderProductModel:     models.NewPurchaseOrderProductAction(db),
 		},
 	}
 	return

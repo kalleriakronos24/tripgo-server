@@ -1,6 +1,8 @@
 package v1
 
 import (
+	"errors"
+	"fmt"
 	"gitlab.com/odma1/odma-be/constants"
 	"gitlab.com/odma1/odma-be/models"
 	"net/http"
@@ -67,7 +69,7 @@ func POSTOperatingActivityProduct(c *gin.Context) {
 	}{&models.OperatingActivityProduct{
 		OperatingActivityID: p.OperatingActivityID,
 	}}); err == nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-existing", err, ""))
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", errors.New("data cannot be duplicated"), fmt.Sprintf("data is already existing with operating activity id %s", p.OperatingActivityID)))
 		return
 	}
 
@@ -103,7 +105,7 @@ func PUTOperatingActivityProduct(c *gin.Context) {
 			}{&models.OperatingActivityProduct{
 				OperatingActivityID: p.OperatingActivityID,
 			}}); err == nil {
-				c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-existing", err, operatingActivityProduct.OperatingActivity.DeliveryReceiptNumber))
+				c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", errors.New("data cannot be duplicated"), fmt.Sprintf("data is already existing with operating activity's tax number %s", operatingActivityProduct.OperatingActivity.TaxInvoiceNumber)))
 				return
 			}
 		}

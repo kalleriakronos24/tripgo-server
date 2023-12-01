@@ -22,10 +22,11 @@ type PurchaseOrder struct {
 	RecipientEmail string    `json:"recipientEmail,omitempty" gorm:"not null;"`
 	Date           time.Time `json:"date,omitempty" gorm:"not null"`
 
-	DocumentID          uuid.UUID          `json:"documentId,omitempty" gorm:"not null;"`
-	Document            *Document          `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;foreignKey:DocumentID;references:ID" json:"document"`
-	OperatingActivityID uuid.UUID          `json:"operatingActivityId" gorm:"type:uuid;not null;default:NULL;"`
-	OperatingActivity   *OperatingActivity `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:OperatingActivityID;references:ID" json:"operatingActivity"`
+	DocumentID           uuid.UUID          `json:"documentId,omitempty" gorm:"not null;"`
+	Document             *Document          `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;foreignKey:DocumentID;references:ID" json:"document"`
+	OperatingActivityID  uuid.UUID          `json:"operatingActivityId" gorm:"type:uuid;not null;default:NULL;"`
+	OperatingActivity    *OperatingActivity `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:OperatingActivityID;references:ID" json:"operatingActivity"`
+	PurchaseOrderProduct []*PurchaseOrderProduct
 
 	PurchaseOrderCreatedBy uuid.UUID          `json:"createdBy" gorm:"type:uuid;not null;default:NULL;"`
 	PurchaseOrderUpdatedBy uuid.UUID          `json:"updatedBy" gorm:"type:uuid;default:NULL;"`
