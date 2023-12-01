@@ -150,7 +150,7 @@ func PUTPurchaseOrder(c *gin.Context) {
 
 	if PurchaseOrder, err := services.Handler.RetrievePurchaseOrder(PurchaseOrderId); err == nil {
 
-		if PurchaseOrder.OperatingActivityID != repopulateFormDataPayload.OperatingActivityID {
+		if PurchaseOrder.OperatingActivity.ID != repopulateFormDataPayload.OperatingActivityID {
 			if err := services.Handler.CheckExistingPurchaseOrder(id, struct {
 				*models.PurchaseOrder
 			}{&models.PurchaseOrder{

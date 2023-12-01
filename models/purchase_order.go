@@ -125,6 +125,37 @@ func (o *PurchaseOrderOrm) GetOnePurchaseOrderByID(id uuid.UUID) (m CustomRespon
 		}
 		return m, result.Error
 	}
+
+	if purchaseOrderModel.Type == "out" {
+		var purchaseOrderProductModel []PurchaseOrderProduct
+		err := o.db.Model(&purchaseOrderProductModel).
+			Preload("Product").
+			Preload("Client").
+			Where("purchase_order_id = ?", purchaseOrderModel.ID).
+			Find(&purchaseOrderProductModel)
+
+		if err.Error != nil {
+			return m, err.Error
+		}
+
+		converted := utils.UnpackArray(purchaseOrderProductModel)
+
+		m := CustomResponsePurchaseOrder{
+			ID:                purchaseOrderModel.ID,
+			Number:            purchaseOrderModel.Number,
+			Type:              purchaseOrderModel.Type,
+			Recipient:         purchaseOrderModel.Recipient,
+			RecipientEmail:    purchaseOrderModel.RecipientEmail,
+			Date:              purchaseOrderModel.Date,
+			DocumentID:        purchaseOrderModel.DocumentID,
+			Document:          purchaseOrderModel.Document,
+			OperatingActivity: purchaseOrderModel.OperatingActivity,
+			Product:           converted,
+			CreatedByUser:     purchaseOrderModel.CreatedByUser,
+			UpdatedByUser:     purchaseOrderModel.UpdatedByUser,
+		}
+		return m, result.Error
+	}
 	return m, result.Error
 }
 
