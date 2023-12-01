@@ -489,13 +489,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{golang_local_v1}}/client/da4f7a8f-2c1b-4097-b92c-512c817d9fb0",
+							"raw": "{{golang_local_v1}}/client/2f3657e8-65b2-4eaa-bee0-803788b1fa68",
 							"host": [
 								"{{golang_local_v1}}"
 							],
 							"path": [
 								"client",
-								"da4f7a8f-2c1b-4097-b92c-512c817d9fb0"
+								"2f3657e8-65b2-4eaa-bee0-803788b1fa68"
 							]
 						},
 						"description": "``` json\nSample  API Response\n{\n    \"data\": {\n        \"id\": \"8e684d0c-57ca-4c39-907f-3d4ae2ea6f46\",\n        \"name\": \"Fantasy Fantazia\",\n        \"phoneNumber\": \"+62 834123 123\",\n        \"email\": \"mada.cool@gmail.com\",\n        \"address\": \"this is optional\",\n        \"picName\": \"mada nugraha\",\n        \"picDesignation\": \"IT\",\n        \"bankAccountName\": \"BCA\",\n        \"bankAccountNumber\": 12345678,\n        \"createdAt\": \"2023-11-26T17:58:09.424273+07:00\",\n        \"updatedAt\": \"2023-11-26T17:58:09.424273+07:00\",\n        \"deletedAt\": null\n    }\n}\n ```"
@@ -557,7 +557,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\" : \"Fantasy Fantazia Client\",\r\n    \"phoneNumber\": \"+62 834123 123\",\r\n    \"email\" : \"mada.zxczxczxc@gmail.com\",\r\n    \"address\": \"this is optional\",\r\n    \"companyID\" : \"deab654a-ceb1-4942-b2d6-6a4a473d131d\"\r\n}",
+							"raw": "{\r\n    \"name\" : \"Fantasy Fantazia Client\",\r\n    \"phoneNumber\": \"+62 834123 123\",\r\n    \"email\" : \"mada.zxczxczxc@gmail.com\",\r\n    \"address\": \"this is optional\",\r\n    \"companyID\" : \"07f45049-0b6e-4b8e-bdcc-47f36e8fcd3b\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -626,13 +626,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{golang_local_v1}}/operating-activity/8e1b82eb-6c89-420d-928b-9f43676b3d64",
+							"raw": "{{golang_local_v1}}/operating-activity/1e075fb8-9dcf-48b7-a84d-6a5d147a56f2",
 							"host": [
 								"{{golang_local_v1}}"
 							],
 							"path": [
 								"operating-activity",
-								"8e1b82eb-6c89-420d-928b-9f43676b3d64"
+								"1e075fb8-9dcf-48b7-a84d-6a5d147a56f2"
 							]
 						},
 						"description": "``` json\nSample  API Response\n{\n    \"data\": {\n        \"id\": \"8e1b82eb-6c89-420d-928b-9f43676b3d64\",\n        \"taxInvoiceNumber\": \"F/12/23/1111-X333\",\n        \"deliveryReceiptNumber\": \"D123456\",\n        \"status\": \"ongoing\",\n        \"clientId\": \"da4f7a8f-2c1b-4097-b92c-512c817d9fb0\",\n        \"client\": {\n            \"id\": \"da4f7a8f-2c1b-4097-b92c-512c817d9fb0\",\n            \"name\": \"Fantasy Fantazia Client\",\n            \"companyId\": \"00000000-0000-0000-0000-000000000000\",\n            \"company\": null,\n            \"createdBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"createdByUser\": null,\n            \"updatedByUser\": null,\n            \"createdAt\": \"2023-11-28T04:50:55.280181+07:00\",\n            \"updatedAt\": \"2023-11-28T04:50:55.280181+07:00\",\n            \"deletedAt\": null\n        },\n        \"createdBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n        \"updatedBy\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n        \"createdByUser\": {\n            \"id\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n            \"name\": \"mada nugraha\",\n            \"createdBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"createdBySuperAdmin\": null,\n            \"updatedBySuperAdmin\": null,\n            \"createdAt\": \"2023-11-28T03:59:44.744894+07:00\",\n            \"updatedAt\": \"2023-11-28T03:59:44.744894+07:00\",\n            \"deletedAt\": null\n        },\n        \"updatedByUser\": {\n            \"id\": \"f510ad91-04de-4ccf-b61b-fbb2ab63ee7b\",\n            \"name\": \"mada nugraha\",\n            \"createdBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"createdBySuperAdmin\": null,\n            \"updatedBySuperAdmin\": null,\n            \"createdAt\": \"2023-11-28T03:59:44.744894+07:00\",\n            \"updatedAt\": \"2023-11-28T03:59:44.744894+07:00\",\n            \"deletedAt\": null\n        },\n        \"createdAt\": \"2023-11-28T07:01:44.331457+07:00\",\n        \"updatedAt\": \"2023-11-28T07:06:43.256378+07:00\",\n        \"deletedAt\": null\n    }\n}\nSample API Response Error\n{\n    \"data\": false,\n    \"kind\": \"data-not-found\",\n    \"message\": \"Data is not found\"\n}\n\n ```"
@@ -694,7 +694,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"taxInvoiceNumber\": \"F/12/23/1111-X1\",\r\n    \"deliveryReceiptNumber\": \"D123456\",\r\n    \"clientId\": \"da4f7a8f-2c1b-4097-b92c-512c817d9fb0\",\r\n    \"status\" : \"ongoing\"\r\n}",
+							"raw": "{\r\n    \"taxInvoiceNumber\": \"F/12/23/1111-X1\",\r\n    \"deliveryReceiptNumber\": \"D123456\",\r\n    \"clientId\": \"2f3657e8-65b2-4eaa-bee0-803788b1fa68\",\r\n    \"status\" : \"ongoing\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -831,7 +831,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"quantity\": 40,\r\n    \"vatRate\": 2000,\r\n    \"subTotal\" : 40000,\r\n    \"grandTotal\" : 50000,\r\n    \"operatingActivityId\": \"8e1b82eb-6c89-420d-928b-9f43676b3d64\",\r\n    \"productId\": \"5e850d07-9003-40cd-a47e-f0fda3bfbce2\"\r\n}",
+							"raw": "{\r\n    \"quantity\": 40,\r\n    \"vatRate\": 2000,\r\n    \"subTotal\" : 40000,\r\n    \"grandTotal\" : 50000,\r\n    \"operatingActivityId\": \"1e075fb8-9dcf-48b7-a84d-6a5d147a56f2\",\r\n    \"productId\": \"4bab213a-48a2-4f55-9643-21669c8c0936\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -968,7 +968,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"quantity\": 40,\r\n    \"vatRate\": 2000,\r\n    \"subTotal\" : 40000,\r\n    \"grandTotal\" : 50000,\r\n    \"purchaseOrderId\": \"aa6ab103-9f8d-4d05-8429-287d012cdf0b\",\r\n    \"productId\": \"5e850d07-9003-40cd-a47e-f0fda3bfbce2\",\r\n    \"clientId\": \"da4f7a8f-2c1b-4097-b92c-512c817d9fb0\"\r\n}",
+							"raw": "{\r\n    \"quantity\": 40,\r\n    \"vatRate\": 2000,\r\n    \"subTotal\" : 40000,\r\n    \"grandTotal\" : 50000,\r\n    \"purchaseOrderId\": \"ec61fdb1-20cf-42ab-b72b-b1dcb7eb9b6b\",\r\n    \"productId\": \"4bab213a-48a2-4f55-9643-21669c8c0936\",\r\n    \"clientId\": \"2f3657e8-65b2-4eaa-bee0-803788b1fa68\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1154,7 +1154,7 @@
 								},
 								{
 									"key": "recipientEmail",
-									"value": "madanugraha@123.com",
+									"value": "madanugraha123@w.com",
 									"type": "text"
 								},
 								{
@@ -1169,7 +1169,7 @@
 								},
 								{
 									"key": "operatingActivityId",
-									"value": "8e1b82eb-6c89-420d-928b-9f43676b3d64",
+									"value": "1e075fb8-9dcf-48b7-a84d-6a5d147a56f2",
 									"type": "text"
 								}
 							]
@@ -1181,6 +1181,225 @@
 							],
 							"path": [
 								"purchase-order"
+							]
+						},
+						"description": "``` json\nSample API Response \n{\n  \"message\" : \"success\"\n}\n\n ```\n\n``` json\nSample API Response Error\n{\n    \"data\": false,\n    \"kind\": \"logical\",\n    \"message\": \"data is already existing with operating activity id 8e1b82eb-6c89-420d-928b-9f43676b3d64\",\n    \"error\": \"data cannot be duplicated\"\n}\n{\n    \"data\": false,\n    \"kind\": \"logical\",\n    \"message\": \"Invalid recipient email format\",\n    \"error\": \"mail: missing '@' or angle-addr\"\n}\n\n ```"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Delivery Order",
+			"item": [
+				{
+					"name": "get all delivery order",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{golang_local_v1}}/delivery-order",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"delivery-order"
+							]
+						},
+						"description": "``` json\nSample  API Response\n{\n    \"data\": [\n        {\n            \"id\": \"e976397b-e093-4a92-bbd7-8361a3972b13\",\n            \"number\": \"DO-123/23/XXI\",\n            \"contactPerson\": \"Mada Nugraha\",\n            \"phoneNumber\": \"8999999999\",\n            \"address\": \"my village address\",\n            \"note\": \"some notes, this is important\",\n            \"date\": \"2023-12-02T05:42:08.748+07:00\",\n            \"status\": \"shipped\",\n            \"documentId\": \"d1bfe2c1-164c-463e-b806-7d026df95f96\",\n            \"document\": {\n                \"id\": \"d1bfe2c1-164c-463e-b806-7d026df95f96\",\n                \"path\": \"/client/Fantasy Fantazia Client/delivery-order/certificate (15).pdf\",\n                \"absolutePath\": \"http://localhost:8000/GsnRd5hU6Uj426ynWmnNXUcCy8bM7W/N2H9ujApix2W2tNB5B2bOApye0uDZ7/client/Fantasy Fantazia Client/delivery-order/certificate (15).pdf\",\n                \"filename\": \"certificate (15).pdf\",\n                \"extension\": \".pdf\",\n                \"location\": \"local\",\n                \"createdBy\": \"a020697f-6119-4845-8b52-fa78dbff6312\",\n                \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n                \"createdByUser\": null,\n                \"updatedByUser\": null,\n                \"createdAt\": \"2023-12-02T05:42:09.492404+07:00\",\n                \"updatedAt\": \"2023-12-02T05:42:09.492404+07:00\",\n                \"deletedAt\": null\n            },\n            \"operatingActivityId\": \"1e075fb8-9dcf-48b7-a84d-6a5d147a56f2\",\n            \"operatingActivity\": {\n                \"id\": \"1e075fb8-9dcf-48b7-a84d-6a5d147a56f2\",\n                \"taxInvoiceNumber\": \"F/12/23/1111-X1\",\n                \"deliveryReceiptNumber\": \"D123456\",\n                \"status\": \"ongoing\",\n                \"clientId\": \"2f3657e8-65b2-4eaa-bee0-803788b1fa68\",\n                \"client\": null,\n                \"operatingActivityProduct\": {\n                    \"id\": \"7fc637a4-6e75-47c5-bbaa-401a12af474b\",\n                    \"quantity\": 40,\n                    \"vatRate\": 2000,\n                    \"subTotal\": 40000,\n                    \"grandTotal\": 50000,\n                    \"operatingActivityId\": \"1e075fb8-9dcf-48b7-a84d-6a5d147a56f2\",\n                    \"operatingActivity\": null,\n                    \"productId\": \"4bab213a-48a2-4f55-9643-21669c8c0936\",\n                    \"product\": null,\n                    \"createdBy\": \"a020697f-6119-4845-8b52-fa78dbff6312\",\n                    \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n                    \"createdByUser\": null,\n                    \"updatedByUser\": null,\n                    \"createdAt\": \"2023-12-02T05:32:10.914777+07:00\",\n                    \"updatedAt\": \"2023-12-02T05:32:10.914777+07:00\",\n                    \"deletedAt\": null\n                },\n                \"createdBy\": \"a020697f-6119-4845-8b52-fa78dbff6312\",\n                \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n                \"createdByUser\": null,\n                \"updatedByUser\": null,\n                \"createdAt\": \"2023-12-02T05:30:46.856182+07:00\",\n                \"updatedAt\": \"2023-12-02T05:30:46.856182+07:00\",\n                \"deletedAt\": null\n            },\n            \"createdBy\": \"a020697f-6119-4845-8b52-fa78dbff6312\",\n            \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"createdByUser\": {\n                \"id\": \"a020697f-6119-4845-8b52-fa78dbff6312\",\n                \"name\": \"mada nugraha\",\n                \"createdBy\": \"00000000-0000-0000-0000-000000000000\",\n                \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n                \"createdBySuperAdmin\": null,\n                \"updatedBySuperAdmin\": null,\n                \"createdAt\": \"2023-12-02T04:02:43.503978+07:00\",\n                \"updatedAt\": \"2023-12-02T04:02:43.503978+07:00\",\n                \"deletedAt\": null\n            },\n            \"updatedByUser\": null,\n            \"createdAt\": \"2023-12-02T05:42:09.500341+07:00\",\n            \"updatedAt\": \"2023-12-02T05:42:09.500341+07:00\",\n            \"deletedAt\": null\n        },\n        {\n            \"id\": \"d737f989-59e3-4256-ac55-d0e2bdf5c7c5\",\n            \"number\": \"DO-666/23/XXI\",\n            \"contactPerson\": \"Mada Nugraha\",\n            \"phoneNumber\": \"8999999999\",\n            \"address\": \"my village address\",\n            \"note\": \"some notes, this is important\",\n            \"date\": \"2023-12-02T06:00:14.341+07:00\",\n            \"status\": \"shipped\",\n            \"documentId\": \"fb28d85b-b34a-41a3-834a-9e9e1af75fca\",\n            \"document\": {\n                \"id\": \"fb28d85b-b34a-41a3-834a-9e9e1af75fca\",\n                \"path\": \"/client/Fantasy Fantazia Client/delivery-order/SIRI Prioritisation Matrix_Table of Values.pptx\",\n                \"absolutePath\": \"http://localhost:8000/GsnRd5hU6Uj426ynWmnNXUcCy8bM7W/N2H9ujApix2W2tNB5B2bOApye0uDZ7/client/Fantasy Fantazia Client/delivery-order/SIRI Prioritisation Matrix_Table of Values.pptx\",\n                \"filename\": \"SIRI Prioritisation Matrix_Table of Values.pptx\",\n                \"extension\": \".pptx\",\n                \"location\": \"local\",\n                \"createdBy\": \"a020697f-6119-4845-8b52-fa78dbff6312\",\n                \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n                \"createdByUser\": null,\n                \"updatedByUser\": null,\n                \"createdAt\": \"2023-12-02T06:00:14.455909+07:00\",\n                \"updatedAt\": \"2023-12-02T06:00:14.455909+07:00\",\n                \"deletedAt\": null\n            },\n            \"operatingActivityId\": \"1e075fb8-9dcf-48b7-a84d-6a5d147a56f2\",\n            \"operatingActivity\": {\n                \"id\": \"1e075fb8-9dcf-48b7-a84d-6a5d147a56f2\",\n                \"taxInvoiceNumber\": \"F/12/23/1111-X1\",\n                \"deliveryReceiptNumber\": \"D123456\",\n                \"status\": \"ongoing\",\n                \"clientId\": \"2f3657e8-65b2-4eaa-bee0-803788b1fa68\",\n                \"client\": null,\n                \"operatingActivityProduct\": {\n                    \"id\": \"7fc637a4-6e75-47c5-bbaa-401a12af474b\",\n                    \"quantity\": 40,\n                    \"vatRate\": 2000,\n                    \"subTotal\": 40000,\n                    \"grandTotal\": 50000,\n                    \"operatingActivityId\": \"1e075fb8-9dcf-48b7-a84d-6a5d147a56f2\",\n                    \"operatingActivity\": null,\n                    \"productId\": \"4bab213a-48a2-4f55-9643-21669c8c0936\",\n                    \"product\": null,\n                    \"createdBy\": \"a020697f-6119-4845-8b52-fa78dbff6312\",\n                    \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n                    \"createdByUser\": null,\n                    \"updatedByUser\": null,\n                    \"createdAt\": \"2023-12-02T05:32:10.914777+07:00\",\n                    \"updatedAt\": \"2023-12-02T05:32:10.914777+07:00\",\n                    \"deletedAt\": null\n                },\n                \"createdBy\": \"a020697f-6119-4845-8b52-fa78dbff6312\",\n                \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n                \"createdByUser\": null,\n                \"updatedByUser\": null,\n                \"createdAt\": \"2023-12-02T05:30:46.856182+07:00\",\n                \"updatedAt\": \"2023-12-02T05:30:46.856182+07:00\",\n                \"deletedAt\": null\n            },\n            \"createdBy\": \"a020697f-6119-4845-8b52-fa78dbff6312\",\n            \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"createdByUser\": {\n                \"id\": \"a020697f-6119-4845-8b52-fa78dbff6312\",\n                \"name\": \"mada nugraha\",\n                \"createdBy\": \"00000000-0000-0000-0000-000000000000\",\n                \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n                \"createdBySuperAdmin\": null,\n                \"updatedBySuperAdmin\": null,\n                \"createdAt\": \"2023-12-02T04:02:43.503978+07:00\",\n                \"updatedAt\": \"2023-12-02T04:02:43.503978+07:00\",\n                \"deletedAt\": null\n            },\n            \"updatedByUser\": null,\n            \"createdAt\": \"2023-12-02T06:00:14.470142+07:00\",\n            \"updatedAt\": \"2023-12-02T06:00:14.470142+07:00\",\n            \"deletedAt\": null\n        }\n    ]\n}\nSample API Response Error\n{\n    \"data\": false,\n    \"kind\": \"data-not-found\",\n    \"message\": \"Data is not found\"\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "get delivery order by id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{golang_local_v1}}/delivery-order/e976397b-e093-4a92-bbd7-8361a3972b13",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"delivery-order",
+								"e976397b-e093-4a92-bbd7-8361a3972b13"
+							]
+						},
+						"description": "``` json\nSample  API Response\n{\n    \"data\": {\n        \"id\": \"e976397b-e093-4a92-bbd7-8361a3972b13\",\n        \"number\": \"DO-123/23/XXI\",\n        \"contactPerson\": \"Mada Nugraha\",\n        \"phoneNumber\": \"8999999999\",\n        \"address\": \"my village address\",\n        \"note\": \"some notes, this is important\",\n        \"date\": \"2023-12-02T05:42:08.748+07:00\",\n        \"status\": \"shipped\",\n        \"documentId\": \"d1bfe2c1-164c-463e-b806-7d026df95f96\",\n        \"document\": {\n            \"id\": \"d1bfe2c1-164c-463e-b806-7d026df95f96\",\n            \"path\": \"/client/Fantasy Fantazia Client/delivery-order/certificate (15).pdf\",\n            \"absolutePath\": \"http://localhost:8000/GsnRd5hU6Uj426ynWmnNXUcCy8bM7W/N2H9ujApix2W2tNB5B2bOApye0uDZ7/client/Fantasy Fantazia Client/delivery-order/certificate (15).pdf\",\n            \"filename\": \"certificate (15).pdf\",\n            \"extension\": \".pdf\",\n            \"location\": \"local\",\n            \"createdBy\": \"a020697f-6119-4845-8b52-fa78dbff6312\",\n            \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"createdByUser\": null,\n            \"updatedByUser\": null,\n            \"createdAt\": \"2023-12-02T05:42:09.492404+07:00\",\n            \"updatedAt\": \"2023-12-02T05:42:09.492404+07:00\",\n            \"deletedAt\": null\n        },\n        \"operatingActivityId\": \"1e075fb8-9dcf-48b7-a84d-6a5d147a56f2\",\n        \"operatingActivity\": {\n            \"id\": \"1e075fb8-9dcf-48b7-a84d-6a5d147a56f2\",\n            \"taxInvoiceNumber\": \"F/12/23/1111-X1\",\n            \"deliveryReceiptNumber\": \"D123456\",\n            \"status\": \"ongoing\",\n            \"clientId\": \"2f3657e8-65b2-4eaa-bee0-803788b1fa68\",\n            \"client\": null,\n            \"operatingActivityProduct\": {\n                \"id\": \"7fc637a4-6e75-47c5-bbaa-401a12af474b\",\n                \"quantity\": 40,\n                \"vatRate\": 2000,\n                \"subTotal\": 40000,\n                \"grandTotal\": 50000,\n                \"operatingActivityId\": \"1e075fb8-9dcf-48b7-a84d-6a5d147a56f2\",\n                \"operatingActivity\": null,\n                \"productId\": \"4bab213a-48a2-4f55-9643-21669c8c0936\",\n                \"product\": null,\n                \"createdBy\": \"a020697f-6119-4845-8b52-fa78dbff6312\",\n                \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n                \"createdByUser\": null,\n                \"updatedByUser\": null,\n                \"createdAt\": \"2023-12-02T05:32:10.914777+07:00\",\n                \"updatedAt\": \"2023-12-02T05:32:10.914777+07:00\",\n                \"deletedAt\": null\n            },\n            \"createdBy\": \"a020697f-6119-4845-8b52-fa78dbff6312\",\n            \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"createdByUser\": null,\n            \"updatedByUser\": null,\n            \"createdAt\": \"2023-12-02T05:30:46.856182+07:00\",\n            \"updatedAt\": \"2023-12-02T05:30:46.856182+07:00\",\n            \"deletedAt\": null\n        },\n        \"createdBy\": \"a020697f-6119-4845-8b52-fa78dbff6312\",\n        \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n        \"createdByUser\": {\n            \"id\": \"a020697f-6119-4845-8b52-fa78dbff6312\",\n            \"name\": \"mada nugraha\",\n            \"createdBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"createdBySuperAdmin\": null,\n            \"updatedBySuperAdmin\": null,\n            \"createdAt\": \"2023-12-02T04:02:43.503978+07:00\",\n            \"updatedAt\": \"2023-12-02T04:02:43.503978+07:00\",\n            \"deletedAt\": null\n        },\n        \"updatedByUser\": null,\n        \"createdAt\": \"2023-12-02T05:42:09.500341+07:00\",\n        \"updatedAt\": \"2023-12-02T05:42:09.500341+07:00\",\n        \"deletedAt\": null\n    }\n}\nSample API Response Error\n{\n    \"data\": false,\n    \"kind\": \"data-not-found\",\n    \"message\": \"Data is not found\"\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "update delivery order",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "number",
+									"value": "DOD-123/23/XXI",
+									"type": "text"
+								},
+								{
+									"key": "contactPerson",
+									"value": "Mada Nugraha",
+									"type": "text"
+								},
+								{
+									"key": "phoneNumber",
+									"value": "8999999999",
+									"type": "text"
+								},
+								{
+									"key": "address",
+									"value": "my village address",
+									"type": "text"
+								},
+								{
+									"key": "date",
+									"value": "{{$isoTimestamp}}",
+									"type": "text"
+								},
+								{
+									"key": "operatingActivityId",
+									"value": "1e075fb8-9dcf-48b7-a84d-6a5d147a56f2",
+									"type": "text"
+								},
+								{
+									"key": "note",
+									"value": "some notes, this is important",
+									"type": "text"
+								},
+								{
+									"key": "status",
+									"value": "shipped",
+									"type": "text"
+								},
+								{
+									"key": "document",
+									"type": "file",
+									"src": "/C:/Users/kalle/Downloads/certificate (22).pdf"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{golang_local_v1}}/delivery-order/e976397b-e093-4a92-bbd7-8361a3972b13",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"delivery-order",
+								"e976397b-e093-4a92-bbd7-8361a3972b13"
+							]
+						},
+						"description": "``` json\nSample  API Response Error\n{\n    \"data\": false,\n    \"kind\": \"data-not-found\",\n    \"message\": \"Data is not found\"\n}\n\nSample API Response \n{\n    \"message\": \"success\"\n}\n\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "create delivery order",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "number",
+									"value": "DO-666/23/XXI",
+									"type": "text"
+								},
+								{
+									"key": "contactPerson",
+									"value": "Mada Nugraha",
+									"type": "text"
+								},
+								{
+									"key": "phoneNumber",
+									"value": "8999999999",
+									"type": "text"
+								},
+								{
+									"key": "address",
+									"value": "my village address",
+									"type": "text"
+								},
+								{
+									"key": "date",
+									"value": "{{$isoTimestamp}}",
+									"type": "text"
+								},
+								{
+									"key": "document",
+									"type": "file",
+									"src": "/C:/Users/kalle/Downloads/SIRI Prioritisation Matrix_Table of Values.pptx"
+								},
+								{
+									"key": "operatingActivityId",
+									"value": "1e075fb4-9dcf-48b7-a84d-6a5d147a56f2",
+									"type": "text"
+								},
+								{
+									"key": "note",
+									"value": "some notes, this is important",
+									"type": "text"
+								},
+								{
+									"key": "status",
+									"value": "shipped",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{golang_local_v1}}/delivery-order",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"delivery-order"
 							]
 						},
 						"description": "``` json\nSample API Response \n{\n  \"message\" : \"success\"\n}\n\n ```\n\n``` json\nSample API Response Error\n{\n    \"data\": false,\n    \"kind\": \"logical\",\n    \"message\": \"data is already existing with operating activity id 8e1b82eb-6c89-420d-928b-9f43676b3d64\",\n    \"error\": \"data cannot be duplicated\"\n}\n{\n    \"data\": false,\n    \"kind\": \"logical\",\n    \"message\": \"Invalid recipient email format\",\n    \"error\": \"mail: missing '@' or angle-addr\"\n}\n\n ```"
@@ -1304,7 +1523,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"ABC Moka\",\r\n    \"unitPrice\": 12000.00,\r\n    \"packaging\": \"sachets\",\r\n    \"stock\" : 40,\r\n    \"note\" : \"still lot of stocks\",\r\n    \"companyId\" : \"deab654a-ceb1-4942-b2d6-6a4a473d131d\"\r\n}",
+							"raw": "{\r\n    \"name\": \"ABC Moka\",\r\n    \"unitPrice\": 12000.00,\r\n    \"packaging\": \"sachets\",\r\n    \"stock\" : 40,\r\n    \"note\" : \"still lot of stocks\",\r\n    \"companyId\" : \"07f45049-0b6e-4b8e-bdcc-47f36e8fcd3b\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"

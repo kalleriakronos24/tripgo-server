@@ -27,6 +27,7 @@ func Migrate() {
 		models.PurchaseOrder{},
 		models.Document{},
 		models.PurchaseOrderProduct{},
+		models.DeliveryOrder{},
 	); err != nil {
 		panic(err)
 	}

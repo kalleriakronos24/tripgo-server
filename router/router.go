@@ -140,6 +140,16 @@ func InitializeRouter() (router *gin.Engine) {
 			purchaseOrderProduct.PUT("/:id", utils.AuthOnly, v1.PUTPurchaseOrderProduct)
 		}
 
+		deliveryOrder := v1route.Group("/delivery-order")
+		{
+			deliveryOrder.GET("/", utils.AuthOnly, v1.GETAllDeliveryOrder)
+			deliveryOrder.GET("/:id", utils.AuthOnly, v1.GETDeliveryOrder)
+
+			deliveryOrder.POST("/", utils.AuthOnly, v1.POSTDeliveryOrder)
+
+			deliveryOrder.PUT("/:id", utils.AuthOnly, v1.PUTDeliveryOrder)
+		}
+
 		user := v1route.Group("/user")
 		{
 			user.GET("/:id", utils.AuthOnly, v1Master.GETUser)

@@ -57,7 +57,12 @@ func POSTPurchaseOrder(c *gin.Context) {
 	var err error
 	userLoggedInId := c.GetString("user_id")
 	userId, err := uuid.Parse(userLoggedInId)
-	fPurchaseOrderDocument, err := c.FormFile("document")
+
+	fPurchaseOrderDocument, _ := c.FormFile("document")
+	if fPurchaseOrderDocument == nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", errors.New("field document is required"), "cannot submit if document is empty"))
+		return
+	}
 
 	p := &dto.InsertFormDataPurchaseOrder{CreatedBy: userId}
 
@@ -91,6 +96,17 @@ func POSTPurchaseOrder(c *gin.Context) {
 
 	fmt.Printf("%v", repopulateFormDataPayload)
 
+	// check existing operating id
+	if err := services.Handler.CheckExistingPurchaseOrder("", struct {
+		*models.PurchaseOrder
+	}{&models.PurchaseOrder{
+		OperatingActivityID: operatingActivityID,
+	}}); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("operating id %s is not found", p.OperatingActivityID)))
+		return
+	}
+
+	// check duplication operating id
 	if err := services.Handler.CheckExistingPurchaseOrder("", struct {
 		*models.PurchaseOrder
 	}{&models.PurchaseOrder{
@@ -112,7 +128,12 @@ func PUTPurchaseOrder(c *gin.Context) {
 	userLoggedInId := c.GetString("user_id")
 	userId, err := uuid.Parse(userLoggedInId)
 
-	fPurchaseOrderDocument, err := c.FormFile("document")
+	fPurchaseOrderDocument, _ := c.FormFile("document")
+	if fPurchaseOrderDocument == nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", errors.New("field document is required"), "cannot submit if document is empty"))
+		return
+	}
+
 	p := &dto.UpdateFormDataPurchaseOrder{UpdatedBy: userId}
 
 	if err = c.Bind(&p); err != nil {
@@ -150,6 +171,19 @@ func PUTPurchaseOrder(c *gin.Context) {
 
 	if PurchaseOrder, err := services.Handler.RetrievePurchaseOrder(PurchaseOrderId); err == nil {
 
+		// check existing operating id
+		if PurchaseOrder.OperatingActivity.ID.String() != "" {
+			if err := services.Handler.CheckExistingPurchaseOrder(id, struct {
+				*models.PurchaseOrder
+			}{&models.PurchaseOrder{
+				OperatingActivityID: repopulateFormDataPayload.OperatingActivityID,
+			}}); err != nil {
+				c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("operating id %s is not found", p.OperatingActivityID)))
+				return
+			}
+		}
+
+		// check duplication operating id
 		if PurchaseOrder.OperatingActivity.ID != repopulateFormDataPayload.OperatingActivityID {
 			if err := services.Handler.CheckExistingPurchaseOrder(id, struct {
 				*models.PurchaseOrder
