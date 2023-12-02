@@ -92,15 +92,9 @@ func POSTDeliveryOrder(c *gin.Context) {
 	}
 
 	// check existing operating id
-	if repopulateFormDataPayload.OperatingActivityID.String() != "" {
-		if err := services.Handler.CheckExistingDeliveryOrder("", struct {
-			*models.DeliveryOrder
-		}{&models.DeliveryOrder{
-			OperatingActivityID: repopulateFormDataPayload.OperatingActivityID,
-		}}); err != nil {
-			c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("operating id %s is not found", p.OperatingActivityID)))
-			return
-		}
+	if err := services.Handler.CheckExistingOperatingActivity(operatingActivityID.String(), struct{ *models.OperatingActivity }{&models.OperatingActivity{}}); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("operating id %s is not found", p.OperatingActivityID)))
+		return
 	}
 
 	// check duplication delivery number
@@ -178,15 +172,9 @@ func PUTDeliveryOrder(c *gin.Context) {
 		}
 
 		// check existing operating id
-		if repopulateFormDataPayload.OperatingActivityID.String() != "" {
-			if err := services.Handler.CheckExistingDeliveryOrder(id, struct {
-				*models.DeliveryOrder
-			}{&models.DeliveryOrder{
-				OperatingActivityID: repopulateFormDataPayload.OperatingActivityID,
-			}}); err != nil {
-				c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("operating id %s is not found", DeliveryOrder.OperatingActivityID)))
-				return
-			}
+		if err := services.Handler.CheckExistingOperatingActivity(operatingActivityID.String(), struct{ *models.OperatingActivity }{&models.OperatingActivity{}}); err != nil {
+			c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("operating id %s is not found", p.OperatingActivityID)))
+			return
 		}
 
 		// check duplication operating id

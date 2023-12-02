@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"gitlab.com/odma1/odma-be/constants"
 	"gitlab.com/odma1/odma-be/models"
+	masterModels "gitlab.com/odma1/odma-be/models/master"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -64,6 +65,11 @@ func POSTProduct(c *gin.Context) {
 		return
 	}
 
+	if err := services.Handler.CheckExistingCompany(p.CompanyID.String(), struct{ *masterModels.Company }{&masterModels.Company{}}); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("company id %s is not found", p.CompanyID)))
+		return
+	}
+
 	if err := services.Handler.CheckExistingProduct("", struct{ *models.Product }{&models.Product{
 		Name: p.Name,
 	}}); err == nil {
@@ -92,6 +98,11 @@ func PUTProduct(c *gin.Context) {
 	productId, err := uuid.Parse(id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("uuid-error", err, ""))
+		return
+	}
+
+	if err := services.Handler.CheckExistingCompany(p.CompanyID.String(), struct{ *masterModels.Company }{&masterModels.Company{}}); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("company id %s is not found", p.CompanyID)))
 		return
 	}
 

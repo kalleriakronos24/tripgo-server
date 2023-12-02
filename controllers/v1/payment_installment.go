@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"fmt"
 	"gitlab.com/odma1/odma-be/constants"
 	"gitlab.com/odma1/odma-be/models"
 	"net/http"
@@ -62,6 +63,11 @@ func POSTPaymentInstallment(c *gin.Context) {
 		return
 	}
 
+	if err := services.Handler.CheckExistingPayment(p.PaymentID.String(), struct{ *models.Payment }{&models.Payment{}}); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("payment id %s is not found", p.PaymentID)))
+		return
+	}
+
 	if err = services.Handler.InsertPaymentInstallment(p); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("insert-failed", err, "payment installment"))
 		return
@@ -83,6 +89,11 @@ func PUTPaymentInstallment(c *gin.Context) {
 	PaymentInstallmentId, err := uuid.Parse(id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("uuid-error", err, ""))
+		return
+	}
+
+	if err := services.Handler.CheckExistingPayment(p.PaymentID.String(), struct{ *models.Payment }{&models.Payment{}}); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("payment id %s is not found", p.PaymentID)))
 		return
 	}
 

@@ -64,6 +64,16 @@ func POSTOperatingActivityProduct(c *gin.Context) {
 		return
 	}
 
+	if err := services.Handler.CheckExistingOperatingActivity(p.OperatingActivityID.String(), struct{ *models.OperatingActivity }{&models.OperatingActivity{}}); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("operating id %s is not found", p.OperatingActivityID)))
+		return
+	}
+
+	if err := services.Handler.CheckExistingProduct(p.ProductID.String(), struct{ *models.Product }{&models.Product{}}); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("operating id %s is not found", p.OperatingActivityID)))
+		return
+	}
+
 	if err := services.Handler.CheckExistingOperatingActivityProduct("", struct {
 		*models.OperatingActivityProduct
 	}{&models.OperatingActivityProduct{
@@ -94,6 +104,16 @@ func PUTOperatingActivityProduct(c *gin.Context) {
 	operatingActivityProductId, err := uuid.Parse(id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("uuid-error", err, ""))
+		return
+	}
+
+	if err := services.Handler.CheckExistingOperatingActivity(p.OperatingActivityID.String(), struct{ *models.OperatingActivity }{&models.OperatingActivity{}}); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("operating id %s is not found", p.OperatingActivityID)))
+		return
+	}
+
+	if err := services.Handler.CheckExistingProduct(p.ProductID.String(), struct{ *models.Product }{&models.Product{}}); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("operating id %s is not found", p.OperatingActivityID)))
 		return
 	}
 

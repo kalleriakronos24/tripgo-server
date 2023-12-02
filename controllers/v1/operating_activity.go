@@ -1,8 +1,10 @@
 package v1
 
 import (
+	"fmt"
 	"gitlab.com/odma1/odma-be/constants"
 	"gitlab.com/odma1/odma-be/models"
+	masterModels "gitlab.com/odma1/odma-be/models/master"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -62,6 +64,11 @@ func POSTOperatingActivity(c *gin.Context) {
 		return
 	}
 
+	if err := services.Handler.CheckExistingClient(p.ClientID.String(), struct{ *masterModels.Client }{&masterModels.Client{}}); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("client id %s is not found", p.ClientID)))
+		return
+	}
+
 	if err := services.Handler.CheckExistingOperatingActivity("", struct{ *models.OperatingActivity }{&models.OperatingActivity{
 		TaxInvoiceNumber: p.TaxInvoiceNumber,
 	}}); err == nil {
@@ -90,6 +97,11 @@ func PUTOperatingActivity(c *gin.Context) {
 	operatingActivityId, err := uuid.Parse(id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("uuid-error", err, ""))
+		return
+	}
+
+	if err := services.Handler.CheckExistingClient(p.ClientID.String(), struct{ *masterModels.Client }{&masterModels.Client{}}); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("client id %s is not found", p.ClientID)))
 		return
 	}
 

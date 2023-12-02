@@ -717,6 +717,143 @@
 			]
 		},
 		{
+			"name": "Invoice",
+			"item": [
+				{
+					"name": "get all invoice",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{golang_local_v1}}/invoice",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"invoice"
+							]
+						},
+						"description": "``` json\nSample  API Response\n{\n    \"data\": [\n        {\n            \"id\": \"15bee813-9d08-4fda-a604-df05133abd1b\",\n            \"number\": \"INV/12/23/1111-X1\",\n            \"type\": \"proforma\",\n            \"date\": \"2023-12-02T22:20:45.719+07:00\",\n            \"operatingActivityId\": \"1e075fb8-9dcf-48b7-a84d-6a5d147a56f2\",\n            \"operatingActivity\": {\n                \"id\": \"1e075fb8-9dcf-48b7-a84d-6a5d147a56f2\",\n                \"taxInvoiceNumber\": \"F/12/23/1111-X1\",\n                \"deliveryReceiptNumber\": \"D123456\",\n                \"status\": \"ongoing\",\n                \"clientId\": \"2f3657e8-65b2-4eaa-bee0-803788b1fa68\",\n                \"client\": null,\n                \"operatingActivityProduct\": {\n                    \"id\": \"7fc637a4-6e75-47c5-bbaa-401a12af474b\",\n                    \"quantity\": 40,\n                    \"vatRate\": 2000,\n                    \"subTotal\": 40000,\n                    \"grandTotal\": 50000,\n                    \"operatingActivityId\": \"1e075fb8-9dcf-48b7-a84d-6a5d147a56f2\",\n                    \"operatingActivity\": null,\n                    \"productId\": \"4bab213a-48a2-4f55-9643-21669c8c0936\",\n                    \"product\": null,\n                    \"createdBy\": \"a020697f-6119-4845-8b52-fa78dbff6312\",\n                    \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n                    \"createdByUser\": null,\n                    \"updatedByUser\": null,\n                    \"createdAt\": \"2023-12-02T05:32:10.914777+07:00\",\n                    \"updatedAt\": \"2023-12-02T05:32:10.914777+07:00\",\n                    \"deletedAt\": null\n                },\n                \"createdBy\": \"a020697f-6119-4845-8b52-fa78dbff6312\",\n                \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n                \"createdByUser\": null,\n                \"updatedByUser\": null,\n                \"createdAt\": \"2023-12-02T05:30:46.856182+07:00\",\n                \"updatedAt\": \"2023-12-02T05:30:46.856182+07:00\",\n                \"deletedAt\": null\n            },\n            \"createdBy\": \"a020697f-6119-4845-8b52-fa78dbff6312\",\n            \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"createdByUser\": {\n                \"id\": \"a020697f-6119-4845-8b52-fa78dbff6312\",\n                \"name\": \"mada nugraha\",\n                \"createdBy\": \"00000000-0000-0000-0000-000000000000\",\n                \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n                \"createdBySuperAdmin\": null,\n                \"updatedBySuperAdmin\": null,\n                \"createdAt\": \"2023-12-02T04:02:43.503978+07:00\",\n                \"updatedAt\": \"2023-12-02T04:02:43.503978+07:00\",\n                \"deletedAt\": null\n            },\n            \"updatedByUser\": null,\n            \"createdAt\": \"2023-12-02T22:20:45.823118+07:00\",\n            \"updatedAt\": \"2023-12-02T22:20:45.823118+07:00\",\n            \"deletedAt\": null\n        }\n    ]\n}\nSample API Response Error\n{\n    \"data\": false,\n    \"kind\": \"data-not-found\",\n    \"message\": \"Data is not found\"\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "get invoice by id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{golang_local_v1}}/invoice/15bee813-9d08-4fda-a604-df05133abd1b",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"invoice",
+								"15bee813-9d08-4fda-a604-df05133abd1b"
+							]
+						},
+						"description": "``` json\nSample  API Response\n{\n    \"data\": {\n        \"id\": \"15bee813-9d08-4fda-a604-df05133abd1b\",\n        \"number\": \"INV/12/23/1111-X1\",\n        \"type\": \"proforma\",\n        \"date\": \"2023-12-02T22:20:45.719+07:00\",\n        \"operatingActivityId\": \"1e075fb8-9dcf-48b7-a84d-6a5d147a56f2\",\n        \"operatingActivity\": {\n            \"id\": \"1e075fb8-9dcf-48b7-a84d-6a5d147a56f2\",\n            \"taxInvoiceNumber\": \"F/12/23/1111-X1\",\n            \"deliveryReceiptNumber\": \"D123456\",\n            \"status\": \"ongoing\",\n            \"clientId\": \"2f3657e8-65b2-4eaa-bee0-803788b1fa68\",\n            \"client\": null,\n            \"operatingActivityProduct\": {\n                \"id\": \"7fc637a4-6e75-47c5-bbaa-401a12af474b\",\n                \"quantity\": 40,\n                \"vatRate\": 2000,\n                \"subTotal\": 40000,\n                \"grandTotal\": 50000,\n                \"operatingActivityId\": \"1e075fb8-9dcf-48b7-a84d-6a5d147a56f2\",\n                \"operatingActivity\": null,\n                \"productId\": \"4bab213a-48a2-4f55-9643-21669c8c0936\",\n                \"product\": null,\n                \"createdBy\": \"a020697f-6119-4845-8b52-fa78dbff6312\",\n                \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n                \"createdByUser\": null,\n                \"updatedByUser\": null,\n                \"createdAt\": \"2023-12-02T05:32:10.914777+07:00\",\n                \"updatedAt\": \"2023-12-02T05:32:10.914777+07:00\",\n                \"deletedAt\": null\n            },\n            \"createdBy\": \"a020697f-6119-4845-8b52-fa78dbff6312\",\n            \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"createdByUser\": null,\n            \"updatedByUser\": null,\n            \"createdAt\": \"2023-12-02T05:30:46.856182+07:00\",\n            \"updatedAt\": \"2023-12-02T05:30:46.856182+07:00\",\n            \"deletedAt\": null\n        },\n        \"createdBy\": \"a020697f-6119-4845-8b52-fa78dbff6312\",\n        \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n        \"createdByUser\": {\n            \"id\": \"a020697f-6119-4845-8b52-fa78dbff6312\",\n            \"name\": \"mada nugraha\",\n            \"createdBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"updatedBy\": \"00000000-0000-0000-0000-000000000000\",\n            \"createdBySuperAdmin\": null,\n            \"updatedBySuperAdmin\": null,\n            \"createdAt\": \"2023-12-02T04:02:43.503978+07:00\",\n            \"updatedAt\": \"2023-12-02T04:02:43.503978+07:00\",\n            \"deletedAt\": null\n        },\n        \"updatedByUser\": null,\n        \"createdAt\": \"2023-12-02T22:20:45.823118+07:00\",\n        \"updatedAt\": \"2023-12-02T22:20:45.823118+07:00\",\n        \"deletedAt\": null\n    }\n}\nSample API Response Error\n{\n    \"data\": false,\n    \"kind\": \"data-not-found\",\n    \"message\": \"Data is not found\"\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "update invoice",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"number\": \"INV/12/23/1111X1\",\r\n    \"type\": \"proforma\",\r\n    \"date\": \"{{$isoTimestamp}}\",\r\n    \"operatingActivityId\": \"2f3657e8-65b2-4eaa-bee0-803788b1fa68\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{golang_local_v1}}/invoice/15bee813-9d08-4fda-a604-df05133abd1b",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"invoice",
+								"15bee813-9d08-4fda-a604-df05133abd1b"
+							]
+						},
+						"description": "``` json\nSample  API Response Error\n{\n    \"data\": false,\n    \"kind\": \"data-not-found\",\n    \"message\": \"Data is not found\"\n}\n\nSample API Response \n{\n    \"message\": \"success\"\n}\n\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "create invoice",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{golang_dev_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"number\": \"INV/12/23/1111-X1\",\r\n    \"type\": \"proforma\",\r\n    \"date\": \"{{$isoTimestamp}}\",\r\n    \"operatingActivityId\": \"1e075fb8-9dcf-48b7-a84d-6a5d147a56f2\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{golang_local_v1}}/invoice",
+							"host": [
+								"{{golang_local_v1}}"
+							],
+							"path": [
+								"invoice"
+							]
+						},
+						"description": "``` json\nSample API Response \n{\n  \"message\" : \"success\"\n}\n\n ```\n\n``` json\nSample API Response Error\n\n{\n    \"data\": false,\n    \"kind\": \"data-existing\",\n    \"message\": \"Data is already exist with email \"\n}\n\n ```"
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Operating Activity Product",
 			"item": [
 				{

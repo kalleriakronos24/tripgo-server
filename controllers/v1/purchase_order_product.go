@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"gitlab.com/odma1/odma-be/constants"
 	"gitlab.com/odma1/odma-be/models"
+	masterModels "gitlab.com/odma1/odma-be/models/master"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -63,6 +64,21 @@ func POSTPurchaseOrderProduct(c *gin.Context) {
 		return
 	}
 
+	if err := services.Handler.CheckExistingProduct(p.ProductID.String(), struct{ *models.Product }{&models.Product{}}); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("product id %s is not found", p.ProductID)))
+		return
+	}
+
+	if err := services.Handler.CheckExistingClient(p.ClientID.String(), struct{ *masterModels.Client }{&masterModels.Client{}}); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("client id %s is not found", p.ClientID)))
+		return
+	}
+
+	if err := services.Handler.CheckExistingPurchaseOrder(p.PurchaseOrderID.String(), struct{ *models.PurchaseOrder }{&models.PurchaseOrder{}}); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("purchase order id %s is not found", p.ClientID)))
+		return
+	}
+
 	if err := services.Handler.CheckExistingPurchaseOrderProduct("", struct {
 		*models.PurchaseOrderProduct
 	}{&models.PurchaseOrderProduct{
@@ -93,6 +109,21 @@ func PUTPurchaseOrderProduct(c *gin.Context) {
 	PurchaseOrderProductId, err := uuid.Parse(id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("uuid-error", err, ""))
+		return
+	}
+
+	if err := services.Handler.CheckExistingProduct(p.ProductID.String(), struct{ *models.Product }{&models.Product{}}); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("product id %s is not found", p.ProductID)))
+		return
+	}
+
+	if err := services.Handler.CheckExistingClient(p.ClientID.String(), struct{ *masterModels.Client }{&masterModels.Client{}}); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("client id %s is not found", p.ClientID)))
+		return
+	}
+
+	if err := services.Handler.CheckExistingPurchaseOrder(p.PurchaseOrderID.String(), struct{ *models.PurchaseOrder }{&models.PurchaseOrder{}}); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("purchase order id %s is not found", p.ClientID)))
 		return
 	}
 

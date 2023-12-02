@@ -150,6 +150,16 @@ func InitializeRouter() (router *gin.Engine) {
 			deliveryOrder.PUT("/:id", utils.AuthOnly, v1.PUTDeliveryOrder)
 		}
 
+		invoice := v1route.Group("/invoice")
+		{
+			invoice.GET("/", utils.AuthOnly, v1.GETAllInvoice)
+			invoice.GET("/:id", utils.AuthOnly, v1.GETInvoice)
+
+			invoice.POST("/", utils.AuthOnly, v1.POSTInvoice)
+
+			invoice.PUT("/:id", utils.AuthOnly, v1.PUTInvoice)
+		}
+
 		user := v1route.Group("/user")
 		{
 			user.GET("/:id", utils.AuthOnly, v1Master.GETUser)

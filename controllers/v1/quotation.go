@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"fmt"
 	"gitlab.com/odma1/odma-be/constants"
 	"gitlab.com/odma1/odma-be/models"
 	"net/http"
@@ -62,6 +63,11 @@ func POSTQuotation(c *gin.Context) {
 		return
 	}
 
+	if err := services.Handler.CheckExistingOperatingActivity(p.OperatingActivityID.String(), struct{ *models.OperatingActivity }{&models.OperatingActivity{}}); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("operating id %s is not found", p.OperatingActivityID)))
+		return
+	}
+
 	if err := services.Handler.CheckExistingQuotation("", struct{ *models.Quotation }{&models.Quotation{
 		Number: p.Number,
 	}}); err == nil {
@@ -90,6 +96,11 @@ func PUTQuotation(c *gin.Context) {
 	quotationId, err := uuid.Parse(id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("uuid-error", err, ""))
+		return
+	}
+
+	if err := services.Handler.CheckExistingOperatingActivity(p.OperatingActivityID.String(), struct{ *models.OperatingActivity }{&models.OperatingActivity{}}); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("operating id %s is not found", p.OperatingActivityID)))
 		return
 	}
 

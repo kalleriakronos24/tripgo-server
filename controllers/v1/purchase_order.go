@@ -78,6 +78,11 @@ func POSTPurchaseOrder(c *gin.Context) {
 		return
 	}
 
+	if err := services.Handler.CheckExistingOperatingActivity(operatingActivityID.String(), struct{ *models.OperatingActivity }{&models.OperatingActivity{}}); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("operating id %s is not found", p.OperatingActivityID)))
+		return
+	}
+
 	if err := utils.EmailFormatValidation(p.RecipientEmail); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, "Invalid email format"))
 		return
@@ -167,6 +172,11 @@ func PUTPurchaseOrder(c *gin.Context) {
 		Date:                p.Date,
 		Document:            fPurchaseOrderDocument,
 		OperatingActivityID: operatingActivityID,
+	}
+
+	if err := services.Handler.CheckExistingOperatingActivity(operatingActivityID.String(), struct{ *models.OperatingActivity }{&models.OperatingActivity{}}); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("operating id %s is not found", p.OperatingActivityID)))
+		return
 	}
 
 	if PurchaseOrder, err := services.Handler.RetrievePurchaseOrder(PurchaseOrderId); err == nil {

@@ -95,6 +95,12 @@ type HandlerFunc interface {
 	RetrieveAllDeliveryOrder(id uuid.UUID) (m []models.DeliveryOrder, err error)
 	InsertDeliveryOrder(c *gin.Context, p *dto.InsertDeliveryOrder) (err error)
 	UpdateDeliveryOrder(c *gin.Context, id uuid.UUID, p *dto.UpdateDeliveryOrder) (err error)
+
+	CheckExistingInvoice(id string, param CheckExistingInvoiceStruct) (err error)
+	RetrieveInvoice(id uuid.UUID) (m models.Invoice, err error)
+	RetrieveAllInvoice(id uuid.UUID) (m []models.Invoice, err error)
+	InsertInvoice(p *dto.InsertInvoice) (err error)
+	UpdateInvoice(id uuid.UUID, p *dto.UpdateInvoice) (err error)
 }
 
 type module struct {
@@ -117,6 +123,7 @@ type dbEntity struct {
 	documentModel                 models.DocumentModelAction
 	purchaseOrderProductModel     models.PurchaseOrderProductModelAction
 	deliveryOrderModel            models.DeliveryOrderModelAction
+	invoiceModel                  models.InvoiceModelAction
 }
 
 func InitializeServices() (err error) {
@@ -146,6 +153,7 @@ func InitializeServices() (err error) {
 			documentModel:                 models.NewDocumentAction(db),
 			purchaseOrderProductModel:     models.NewPurchaseOrderProductAction(db),
 			deliveryOrderModel:            models.NewDeliveryOrderAction(db),
+			invoiceModel:                  models.NewInvoiceAction(db),
 		},
 	}
 	return
