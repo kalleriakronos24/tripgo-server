@@ -1,7 +1,6 @@
 package v1
 
 import (
-	"fmt"
 	"github.com/google/uuid"
 	"gitlab.com/odma1/odma-be/constants"
 	masterModels "gitlab.com/odma1/odma-be/models/master"
@@ -22,7 +21,10 @@ func POSTLogin(c *gin.Context) {
 		return
 	}
 
-	log.Println("is this working")
+	if err := utils.ValidateHTTPPayload(p); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
+		return
+	}
 
 	var token string
 	if token, err = services.Handler.AuthenticateUser(p); err != nil {
@@ -41,7 +43,6 @@ func POSTRegister(c *gin.Context) {
 	userLoggedInId := c.GetString("user_id")
 	userId, err := uuid.Parse(userLoggedInId)
 
-	log.Println(userId)
 	p := &dto.UserSignup{CreatedBy: userId}
 
 	if err = c.ShouldBindJSON(&p); err != nil {
@@ -49,7 +50,10 @@ func POSTRegister(c *gin.Context) {
 		return
 	}
 
-	fmt.Printf("value >>>>> %v", p)
+	if err := utils.ValidateHTTPPayload(p); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
+		return
+	}
 
 	if err := utils.EmailFormatValidation(p.Email); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, "Invalid email format"))

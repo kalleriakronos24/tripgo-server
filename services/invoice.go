@@ -7,7 +7,6 @@ import (
 	database "gitlab.com/odma1/odma-be/db"
 	"gitlab.com/odma1/odma-be/dto"
 	"gitlab.com/odma1/odma-be/models"
-	"log"
 )
 
 type CheckExistingInvoiceStruct struct {
@@ -51,7 +50,6 @@ func (module *module) UpdateInvoice(id uuid.UUID, p *dto.UpdateInvoice) (err err
 
 	tx := database.GetDatabaseConnection().Begin()
 
-	log.Printf("%v", p)
 	Invoice := models.Invoice{
 		ID:                  id,
 		Number:              p.Number,

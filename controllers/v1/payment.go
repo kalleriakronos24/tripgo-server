@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"gitlab.com/odma1/odma-be/constants"
 	"gitlab.com/odma1/odma-be/models"
+	"gitlab.com/odma1/odma-be/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -56,11 +57,29 @@ func POSTPayment(c *gin.Context) {
 	var err error
 	userLoggedInId := c.GetString("user_id")
 	userId, err := uuid.Parse(userLoggedInId)
-	p := &dto.InsertPayment{CreatedBy: userId}
+	pValidator := &dto.InsertPaymentValidator{CreatedBy: userId}
 
-	if err = c.ShouldBindJSON(&p); err != nil {
+	if err = c.ShouldBindJSON(&pValidator); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
 		return
+	}
+
+	if err := utils.ValidateHTTPPayload(pValidator); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
+		return
+	}
+
+	operatingActivityId, _ := uuid.Parse(pValidator.OperatingActivityID)
+	p := &dto.InsertPayment{
+		Currency:            pValidator.Currency,
+		Amount:              pValidator.Amount,
+		Term:                pValidator.Term,
+		ARAging:             pValidator.ARAging,
+		Remarks:             pValidator.Remarks,
+		DueDate:             utils.ConvertStrToDateTime(pValidator.DueDate),
+		SettlementDate:      utils.ConvertStrToDateTime(pValidator.SettlementDate),
+		OperatingActivityID: operatingActivityId,
+		CreatedBy:           pValidator.CreatedBy,
 	}
 
 	if err := services.Handler.CheckExistingOperatingActivity(p.OperatingActivityID.String(), struct{ *models.OperatingActivity }{&models.OperatingActivity{}}); err != nil {
@@ -79,12 +98,31 @@ func PUTPayment(c *gin.Context) {
 	var err error
 	userLoggedInId := c.GetString("user_id")
 	userId, err := uuid.Parse(userLoggedInId)
-	p := &dto.UpdatePayment{UpdatedBy: userId}
+	pValidator := &dto.UpdatePaymentValidator{UpdatedBy: userId}
 
-	if err = c.ShouldBindJSON(&p); err != nil {
+	if err = c.ShouldBindJSON(&pValidator); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
 		return
 	}
+
+	if err := utils.ValidateHTTPPayload(pValidator); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
+		return
+	}
+
+	operatingActivityId, _ := uuid.Parse(pValidator.OperatingActivityID)
+	p := &dto.UpdatePayment{
+		Currency:            pValidator.Currency,
+		Amount:              pValidator.Amount,
+		Term:                pValidator.Term,
+		ARAging:             pValidator.ARAging,
+		Remarks:             pValidator.Remarks,
+		DueDate:             utils.ConvertStrToDateTime(pValidator.DueDate),
+		SettlementDate:      utils.ConvertStrToDateTime(pValidator.SettlementDate),
+		OperatingActivityID: operatingActivityId,
+		UpdatedBy:           pValidator.UpdatedBy,
+	}
+
 	id, _ := c.Params.Get("id")
 	PaymentId, err := uuid.Parse(id)
 	if err != nil {

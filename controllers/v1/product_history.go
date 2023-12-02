@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"gitlab.com/odma1/odma-be/constants"
 	"gitlab.com/odma1/odma-be/models"
+	"gitlab.com/odma1/odma-be/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -56,11 +57,27 @@ func POSTProductHistory(c *gin.Context) {
 	var err error
 	userLoggedInId := c.GetString("user_id")
 	userId, err := uuid.Parse(userLoggedInId)
-	p := &dto.InsertProductHistory{CreatedBy: userId}
+	pValidator := &dto.InsertProductHistoryValidator{CreatedBy: userId}
 
-	if err = c.ShouldBindJSON(&p); err != nil {
+	if err = c.ShouldBindJSON(&pValidator); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
 		return
+	}
+
+	if err := utils.ValidateHTTPPayload(pValidator); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
+		return
+	}
+
+	productId, _ := uuid.Parse(pValidator.ProductID)
+	operatingActivityId, _ := uuid.Parse(pValidator.OperatingActivityID)
+
+	p := &dto.InsertProductHistory{
+		Status:              pValidator.Status,
+		Quantity:            pValidator.Quantity,
+		ProductID:           productId,
+		OperatingActivityID: operatingActivityId,
+		CreatedBy:           pValidator.CreatedBy,
 	}
 
 	if err := services.Handler.CheckExistingOperatingActivity(p.OperatingActivityID.String(), struct{ *models.OperatingActivity }{&models.OperatingActivity{}}); err != nil {
@@ -69,7 +86,7 @@ func POSTProductHistory(c *gin.Context) {
 	}
 
 	if err := services.Handler.CheckExistingProduct(p.ProductID.String(), struct{ *models.Product }{&models.Product{}}); err != nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("operating id %s is not found", p.OperatingActivityID)))
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("product id %s is not found", p.ProductID)))
 		return
 	}
 
@@ -84,12 +101,30 @@ func PUTProductHistory(c *gin.Context) {
 	var err error
 	userLoggedInId := c.GetString("user_id")
 	userId, err := uuid.Parse(userLoggedInId)
-	p := &dto.UpdateProductHistory{UpdatedBy: userId}
+	pValidator := &dto.UpdateProductHistoryValidator{UpdatedBy: userId}
 
-	if err = c.ShouldBindJSON(&p); err != nil {
+	if err = c.ShouldBindJSON(&pValidator); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
 		return
 	}
+
+	if err := utils.ValidateHTTPPayload(pValidator); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
+		return
+	}
+
+	productId, _ := uuid.Parse(pValidator.ProductID)
+	operatingActivityId, _ := uuid.Parse(pValidator.OperatingActivityID)
+
+	p := &dto.UpdateProductHistory{
+		ID:                  pValidator.ID,
+		Status:              pValidator.Status,
+		Quantity:            pValidator.Quantity,
+		ProductID:           productId,
+		OperatingActivityID: operatingActivityId,
+		UpdatedBy:           pValidator.UpdatedBy,
+	}
+
 	id, _ := c.Params.Get("id")
 	ProductHistoryId, err := uuid.Parse(id)
 	if err != nil {
@@ -103,7 +138,7 @@ func PUTProductHistory(c *gin.Context) {
 	}
 
 	if err := services.Handler.CheckExistingProduct(p.ProductID.String(), struct{ *models.Product }{&models.Product{}}); err != nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("operating id %s is not found", p.OperatingActivityID)))
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("product id %s is not found", p.ProductID)))
 		return
 	}
 

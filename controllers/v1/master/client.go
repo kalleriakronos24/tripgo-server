@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"fmt"
 	"gitlab.com/odma1/odma-be/constants"
 	"gitlab.com/odma1/odma-be/utils"
 	"net/http"
@@ -56,15 +57,30 @@ func POSTClient(c *gin.Context) {
 	var err error
 	userLoggedInId := c.GetString("user_id")
 	userId, err := uuid.Parse(userLoggedInId)
-	p := &dto.InsertClient{CreatedBy: userId}
+	pValidator := &dto.InsertClientValidator{CreatedBy: userId}
 
-	if err = c.ShouldBindJSON(&p); err != nil {
+	if err = c.ShouldBindJSON(&pValidator); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
 		return
 	}
 
-	if err := utils.EmailFormatValidation(p.Email); err != nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, ""))
+	if err := utils.ValidateHTTPPayload(pValidator); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
+		return
+	}
+
+	companyId, _ := uuid.Parse(pValidator.CompanyID)
+	p := &dto.InsertClient{
+		Name:        pValidator.Name,
+		PhoneNumber: pValidator.PhoneNumber,
+		Email:       pValidator.Email,
+		Address:     pValidator.Address,
+		CreatedBy:   pValidator.CreatedBy,
+		CompanyID:   companyId,
+	}
+
+	if err := services.Handler.CheckExistingCompany(companyId.String(), struct{ *masterModels.Company }{&masterModels.Company{}}); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("company id %s is not found", p.CompanyID)))
 		return
 	}
 
@@ -86,12 +102,7 @@ func PUTClient(c *gin.Context) {
 	var err error
 	userLoggedInId := c.GetString("user_id")
 	userId, err := uuid.Parse(userLoggedInId)
-	p := &dto.UpdateClient{UpdatedBy: userId}
 
-	if err = c.ShouldBindJSON(&p); err != nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
-		return
-	}
 	id, _ := c.Params.Get("id")
 	clientId, err := uuid.Parse(id)
 	if err != nil {
@@ -99,8 +110,30 @@ func PUTClient(c *gin.Context) {
 		return
 	}
 
-	if err := utils.EmailFormatValidation(p.Email); err != nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, "Invalid email format"))
+	pValidator := &dto.UpdateClientValidator{UpdatedBy: userId}
+
+	if err = c.ShouldBindJSON(&pValidator); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
+		return
+	}
+
+	if err := utils.ValidateHTTPPayload(pValidator); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
+		return
+	}
+
+	companyId, _ := uuid.Parse(pValidator.CompanyID)
+	p := &dto.UpdateClient{
+		Name:        pValidator.Name,
+		PhoneNumber: pValidator.PhoneNumber,
+		Email:       pValidator.Email,
+		Address:     pValidator.Address,
+		UpdatedBy:   pValidator.UpdatedBy,
+		CompanyID:   companyId,
+	}
+
+	if err := services.Handler.CheckExistingCompany(companyId.String(), struct{ *masterModels.Company }{&masterModels.Company{}}); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("company id %s is not found", p.CompanyID)))
 		return
 	}
 

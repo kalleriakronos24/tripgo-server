@@ -9,6 +9,7 @@ import (
 	"gitlab.com/odma1/odma-be/dto"
 	"gitlab.com/odma1/odma-be/models"
 	"gitlab.com/odma1/odma-be/services"
+	"gitlab.com/odma1/odma-be/utils"
 	"log"
 	"net/http"
 )
@@ -64,35 +65,32 @@ func POSTDeliveryOrder(c *gin.Context) {
 		return
 	}
 
-	p := &dto.InsertFormDataDeliveryOrder{CreatedBy: userId}
-
-	//var data *multipart.Form
-	if err = c.Bind(&p); err != nil {
+	pValidator := &dto.InsertFormDataDeliveryOrder{CreatedBy: userId}
+	if err = c.Bind(&pValidator); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
+		return
+	}
+	if err := utils.ValidateHTTPPayload(pValidator); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
 		return
 	}
 
-	operatingActivityID, err := uuid.Parse(p.OperatingActivityID)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, "invalid operating activity id"))
-		return
-	}
-
-	repopulateFormDataPayload := &dto.InsertDeliveryOrder{
-		Number:              p.Number,
-		Date:                p.Date,
-		Status:              p.Status,
-		Note:                p.Note,
-		Address:             p.Address,
-		PhoneNumber:         p.PhoneNumber,
-		ContactPerson:       p.ContactPerson,
+	operatingActivityId, _ := uuid.Parse(pValidator.OperatingActivityID)
+	p := &dto.InsertDeliveryOrder{
+		Number:              pValidator.Number,
+		ContactPerson:       pValidator.ContactPerson,
+		PhoneNumber:         pValidator.PhoneNumber,
+		Address:             pValidator.Address,
+		Note:                pValidator.Note,
+		Date:                utils.ConvertStrToDateTime(pValidator.Date),
+		Status:              pValidator.Status,
+		OperatingActivityID: operatingActivityId,
 		Document:            fDeliveryOrderDocument,
-		OperatingActivityID: operatingActivityID,
-		CreatedBy:           p.CreatedBy,
+		CreatedBy:           pValidator.CreatedBy,
 	}
 
 	// check existing operating id
-	if err := services.Handler.CheckExistingOperatingActivity(operatingActivityID.String(), struct{ *models.OperatingActivity }{&models.OperatingActivity{}}); err != nil {
+	if err := services.Handler.CheckExistingOperatingActivity(p.OperatingActivityID.String(), struct{ *models.OperatingActivity }{&models.OperatingActivity{}}); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("operating id %s is not found", p.OperatingActivityID)))
 		return
 	}
@@ -101,13 +99,13 @@ func POSTDeliveryOrder(c *gin.Context) {
 	if err := services.Handler.CheckExistingDeliveryOrder("", struct {
 		*models.DeliveryOrder
 	}{&models.DeliveryOrder{
-		Number: repopulateFormDataPayload.Number,
+		Number: p.Number,
 	}}); err == nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", errors.New("data cannot be duplicated"), fmt.Sprintf("data is already existing with delivery number %s", p.Number)))
 		return
 	}
 
-	if err = services.Handler.InsertDeliveryOrder(c, repopulateFormDataPayload); err != nil {
+	if err = services.Handler.InsertDeliveryOrder(c, p); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("insert-failed", err, "delivery order"))
 		return
 	}
@@ -125,46 +123,47 @@ func PUTDeliveryOrder(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", errors.New("field document is required"), "cannot submit if document is empty"))
 		return
 	}
-	p := &dto.UpdateFormDataDeliveryOrder{UpdatedBy: userId}
-
-	if err = c.Bind(&p); err != nil {
+	pValidator := &dto.UpdateFormDataDeliveryOrder{UpdatedBy: userId}
+	if err = c.Bind(&pValidator); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
 		return
+	}
+	if err := utils.ValidateHTTPPayload(pValidator); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
+		return
+	}
+
+	operatingActivityId, _ := uuid.Parse(pValidator.OperatingActivityID)
+	p := &dto.UpdateDeliveryOrder{
+		ID:                  pValidator.ID,
+		Number:              pValidator.Number,
+		ContactPerson:       pValidator.ContactPerson,
+		PhoneNumber:         pValidator.PhoneNumber,
+		Address:             pValidator.Address,
+		Note:                pValidator.Note,
+		Date:                utils.ConvertStrToDateTime(pValidator.Date),
+		Status:              pValidator.Status,
+		OperatingActivityID: operatingActivityId,
+		Document:            fDeliveryOrderDocument,
+		UpdatedBy:           pValidator.UpdatedBy,
 	}
 
 	id, _ := c.Params.Get("id")
 	DeliveryOrderId, err := uuid.Parse(id)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("uuid-error", err, ""))
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", errors.New("invalid uuid format"), "invalid uuid delivery order id parameter"))
 		return
 	}
 
-	operatingActivityID, err := uuid.Parse(p.OperatingActivityID)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, "invalid operating activity id"))
-		return
-	}
-
-	repopulateFormDataPayload := &dto.UpdateDeliveryOrder{
-		Number:              p.Number,
-		Date:                p.Date,
-		Status:              p.Status,
-		Note:                p.Note,
-		Address:             p.Address,
-		PhoneNumber:         p.PhoneNumber,
-		ContactPerson:       p.ContactPerson,
-		Document:            fDeliveryOrderDocument,
-		OperatingActivityID: operatingActivityID,
-	}
-
+	// checks
 	if DeliveryOrder, err := services.Handler.RetrieveDeliveryOrder(DeliveryOrderId); err == nil {
 
 		// check duplication delivery number
-		if DeliveryOrder.Number != repopulateFormDataPayload.Number {
+		if DeliveryOrder.Number != p.Number {
 			if err := services.Handler.CheckExistingDeliveryOrder(id, struct {
 				*models.DeliveryOrder
 			}{&models.DeliveryOrder{
-				Number: repopulateFormDataPayload.Number,
+				Number: p.Number,
 			}}); err == nil {
 				c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", errors.New("data cannot be duplicated"), fmt.Sprintf("data is already existing with delivery number %s", DeliveryOrder.Number)))
 				return
@@ -172,17 +171,17 @@ func PUTDeliveryOrder(c *gin.Context) {
 		}
 
 		// check existing operating id
-		if err := services.Handler.CheckExistingOperatingActivity(operatingActivityID.String(), struct{ *models.OperatingActivity }{&models.OperatingActivity{}}); err != nil {
+		if err := services.Handler.CheckExistingOperatingActivity(p.OperatingActivityID.String(), struct{ *models.OperatingActivity }{&models.OperatingActivity{}}); err != nil {
 			c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("operating id %s is not found", p.OperatingActivityID)))
 			return
 		}
 
 		// check duplication operating id
-		if DeliveryOrder.OperatingActivityID != repopulateFormDataPayload.OperatingActivityID {
+		if DeliveryOrder.OperatingActivityID != p.OperatingActivityID {
 			if err := services.Handler.CheckExistingDeliveryOrder(id, struct {
 				*models.DeliveryOrder
 			}{&models.DeliveryOrder{
-				OperatingActivityID: repopulateFormDataPayload.OperatingActivityID,
+				OperatingActivityID: p.OperatingActivityID,
 			}}); err != nil {
 
 				log.Println(err)
@@ -196,7 +195,7 @@ func PUTDeliveryOrder(c *gin.Context) {
 		return
 	}
 
-	if err = services.Handler.UpdateDeliveryOrder(c, DeliveryOrderId, repopulateFormDataPayload); err != nil {
+	if err = services.Handler.UpdateDeliveryOrder(c, DeliveryOrderId, p); err != nil {
 		c.JSON(http.StatusNotModified, constants.GetErrorResponse("update-failed", err, "delivery order"))
 		return
 	}

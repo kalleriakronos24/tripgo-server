@@ -6,6 +6,7 @@ import (
 	"gitlab.com/odma1/odma-be/constants"
 	"gitlab.com/odma1/odma-be/models"
 	masterModels "gitlab.com/odma1/odma-be/models/master"
+	"gitlab.com/odma1/odma-be/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -58,11 +59,27 @@ func POSTProduct(c *gin.Context) {
 	var err error
 	userLoggedInId := c.GetString("user_id")
 	userId, err := uuid.Parse(userLoggedInId)
-	p := &dto.InsertProduct{CreatedBy: userId}
+	pValidator := &dto.InsertProductValidator{CreatedBy: userId}
 
-	if err = c.ShouldBindJSON(&p); err != nil {
+	if err = c.ShouldBindJSON(&pValidator); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
 		return
+	}
+
+	if err := utils.ValidateHTTPPayload(pValidator); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
+		return
+	}
+
+	companyId, _ := uuid.Parse(pValidator.CompanyID)
+	p := &dto.InsertProduct{
+		Name:      pValidator.Name,
+		UnitPrice: pValidator.UnitPrice,
+		Packaging: pValidator.Packaging,
+		Stock:     pValidator.Stock,
+		Note:      pValidator.Note,
+		CompanyID: companyId,
+		CreatedBy: pValidator.CreatedBy,
 	}
 
 	if err := services.Handler.CheckExistingCompany(p.CompanyID.String(), struct{ *masterModels.Company }{&masterModels.Company{}}); err != nil {
@@ -88,12 +105,30 @@ func PUTProduct(c *gin.Context) {
 	var err error
 	userLoggedInId := c.GetString("user_id")
 	userId, err := uuid.Parse(userLoggedInId)
-	p := &dto.UpdateProduct{UpdatedBy: userId}
+	pValidator := &dto.UpdateProductValidator{UpdatedBy: userId}
 
-	if err = c.ShouldBindJSON(&p); err != nil {
+	if err = c.ShouldBindJSON(&pValidator); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
 		return
 	}
+
+	if err := utils.ValidateHTTPPayload(pValidator); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
+		return
+	}
+
+	companyId, _ := uuid.Parse(pValidator.CompanyID)
+	p := &dto.UpdateProduct{
+		ID:        pValidator.ID,
+		Name:      pValidator.Name,
+		UnitPrice: pValidator.UnitPrice,
+		Packaging: pValidator.Packaging,
+		Stock:     pValidator.Stock,
+		Note:      pValidator.Note,
+		CompanyID: companyId,
+		UpdatedBy: pValidator.UpdatedBy,
+	}
+
 	id, _ := c.Params.Get("id")
 	productId, err := uuid.Parse(id)
 	if err != nil {

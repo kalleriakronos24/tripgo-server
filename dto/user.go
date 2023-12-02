@@ -6,41 +6,41 @@ import (
 )
 
 type UserLogin struct {
-	Username string `json:"username" binding:"required"`
-	Password string `json:"password" binding:"required"`
+	Username string `json:"username" validate:"required"`
+	Password string `json:"password" validate:"required"`
 }
 
 type UserSignup struct {
-	Name      string `json:"name" binding:"required"`
+	Name      string `json:"name" validate:"required"`
 	Address   string `json:"address"`
-	Username  string `json:"username" binding:"required"`
-	Email     string `gorm:"unique" json:"email,omitempty" binding:"required"`
-	Password  string `json:"password" binding:"required"`
+	Username  string `json:"username" validate:"required"`
+	Email     string `json:"email,omitempty" validate:"required,email"`
+	Password  string `json:"password" validate:"required"`
 	CreatedBy uuid.UUID
 }
 
 type UserSignupSuperAdmin struct {
-	Name     string `json:"name" binding:"required"`
+	Name     string `json:"name" validate:"required"`
 	Address  string `json:"address"`
-	Username string `json:"username" binding:"required"`
-	Email    string `gorm:"unique" json:"email" binding:"required"`
-	Password string `json:"password" binding:"required"`
+	Username string `json:"username" validate:"required"`
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required"`
 }
 
 type UserUpdate struct {
 	ID       uuid.UUID `json:"id"`
-	Name     string    `json:"name,omitempty" binding:"required"`
+	Name     string    `json:"name,omitempty" validate:"required"`
 	Address  string    `json:"address"`
-	Username string    `json:"username,omitempty" binding:"required"`
-	Email    string    `gorm:"unique" json:"email" binding:"required"`
+	Username string    `json:"username,omitempty" validate:"required"`
+	Email    string    `json:"email" validate:"required,email"`
 }
 
 type RetrieveUserInfo struct {
-	Name      string `json:"name,omitempty" binding:"required"`
+	Name      string `json:"name,omitempty" validate:"required"`
 	Address   string `json:"address"`
-	Username  string `json:"username,omitempty" binding:"required"`
-	Email     string `gorm:"unique" json:"email" binding:"required"`
-	Password  string `json:"password,omitempty" binding:"required"`
+	Username  string `json:"username,omitempty" validate:"required"`
+	Email     string `json:"email" validate:"required"`
+	Password  string `json:"password,omitempty" validate:"required"`
 	CreatedBy models.User
 	UpdatedBy models.User
 }

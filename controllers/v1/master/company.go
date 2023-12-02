@@ -62,6 +62,11 @@ func POSTCompany(c *gin.Context) {
 		return
 	}
 
+	if err := utils.ValidateHTTPPayload(p); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
+		return
+	}
+
 	if err := utils.EmailFormatValidation(p.Email); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, "Invalid email format"))
 		return

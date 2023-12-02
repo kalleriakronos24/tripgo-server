@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"gitlab.com/odma1/odma-be/constants"
 	"gitlab.com/odma1/odma-be/models"
+	"gitlab.com/odma1/odma-be/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -56,11 +57,25 @@ func POSTInvoice(c *gin.Context) {
 	var err error
 	userLoggedInId := c.GetString("user_id")
 	userId, err := uuid.Parse(userLoggedInId)
-	p := &dto.InsertInvoice{CreatedBy: userId}
+	pValidator := &dto.InsertInvoiceValidator{CreatedBy: userId}
 
-	if err = c.ShouldBindJSON(&p); err != nil {
+	if err = c.ShouldBindJSON(&pValidator); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
 		return
+	}
+
+	if err := utils.ValidateHTTPPayload(pValidator); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
+		return
+	}
+
+	operatingActivityId, _ := uuid.Parse(pValidator.OperatingActivityID)
+	p := &dto.InsertInvoice{
+		Number:              pValidator.Number,
+		Type:                pValidator.Type,
+		Date:                utils.ConvertStrToDateTime(pValidator.Date),
+		OperatingActivityID: operatingActivityId,
+		CreatedBy:           pValidator.CreatedBy,
 	}
 
 	if err := services.Handler.CheckExistingOperatingActivity(p.OperatingActivityID.String(), struct{ *models.OperatingActivity }{&models.OperatingActivity{}}); err != nil {
@@ -86,12 +101,27 @@ func PUTInvoice(c *gin.Context) {
 	var err error
 	userLoggedInId := c.GetString("user_id")
 	userId, err := uuid.Parse(userLoggedInId)
-	p := &dto.UpdateInvoice{UpdatedBy: userId}
+	pValidator := &dto.UpdateInvoiceValidator{UpdatedBy: userId}
 
-	if err = c.ShouldBindJSON(&p); err != nil {
+	if err = c.ShouldBindJSON(&pValidator); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
 		return
 	}
+
+	if err := utils.ValidateHTTPPayload(pValidator); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
+		return
+	}
+
+	operatingActivityId, _ := uuid.Parse(pValidator.OperatingActivityID)
+	p := &dto.UpdateInvoice{
+		Number:              pValidator.Number,
+		Type:                pValidator.Type,
+		Date:                utils.ConvertStrToDateTime(pValidator.Date),
+		OperatingActivityID: operatingActivityId,
+		UpdatedBy:           pValidator.UpdatedBy,
+	}
+
 	id, _ := c.Params.Get("id")
 	InvoiceId, err := uuid.Parse(id)
 	if err != nil {

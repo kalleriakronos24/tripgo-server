@@ -6,6 +6,7 @@ import (
 	"gitlab.com/odma1/odma-be/constants"
 	"gitlab.com/odma1/odma-be/models"
 	masterModels "gitlab.com/odma1/odma-be/models/master"
+	"gitlab.com/odma1/odma-be/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -57,11 +58,31 @@ func POSTPurchaseOrderProduct(c *gin.Context) {
 	var err error
 	userLoggedInId := c.GetString("user_id")
 	userId, err := uuid.Parse(userLoggedInId)
-	p := &dto.InsertPurchaseOrderProduct{CreatedBy: userId}
+	pValidator := &dto.InsertPurchaseOrderProductValidator{CreatedBy: userId}
 
-	if err = c.ShouldBindJSON(&p); err != nil {
+	if err = c.ShouldBindJSON(&pValidator); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
 		return
+	}
+
+	if err := utils.ValidateHTTPPayload(pValidator); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
+		return
+	}
+
+	productId, _ := uuid.Parse(pValidator.ProductID)
+	clientId, _ := uuid.Parse(pValidator.ClientID)
+	purchaseOrderId, _ := uuid.Parse(pValidator.PurchaseOrderID)
+
+	p := &dto.InsertPurchaseOrderProduct{
+		Quantity:        pValidator.Quantity,
+		VATRate:         pValidator.VATRate,
+		SubTotal:        pValidator.SubTotal,
+		GrandTotal:      pValidator.GrandTotal,
+		PurchaseOrderID: purchaseOrderId,
+		ClientID:        clientId,
+		ProductID:       productId,
+		CreatedBy:       pValidator.CreatedBy,
 	}
 
 	if err := services.Handler.CheckExistingProduct(p.ProductID.String(), struct{ *models.Product }{&models.Product{}}); err != nil {
@@ -99,12 +120,33 @@ func PUTPurchaseOrderProduct(c *gin.Context) {
 	var err error
 	userLoggedInId := c.GetString("user_id")
 	userId, err := uuid.Parse(userLoggedInId)
-	p := &dto.UpdatePurchaseOrderProduct{UpdatedBy: userId}
+	pValidator := &dto.UpdatePurchaseOrderProductValidator{UpdatedBy: userId}
 
-	if err = c.ShouldBindJSON(&p); err != nil {
+	if err = c.ShouldBindJSON(&pValidator); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
 		return
 	}
+
+	if err := utils.ValidateHTTPPayload(pValidator); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
+		return
+	}
+
+	productId, _ := uuid.Parse(pValidator.ProductID)
+	clientId, _ := uuid.Parse(pValidator.ClientID)
+	purchaseOrderId, _ := uuid.Parse(pValidator.PurchaseOrderID)
+
+	p := &dto.UpdatePurchaseOrderProduct{
+		Quantity:        pValidator.Quantity,
+		VATRate:         pValidator.VATRate,
+		SubTotal:        pValidator.SubTotal,
+		GrandTotal:      pValidator.GrandTotal,
+		PurchaseOrderID: purchaseOrderId,
+		ClientID:        clientId,
+		ProductID:       productId,
+		UpdatedBy:       pValidator.UpdatedBy,
+	}
+
 	id, _ := c.Params.Get("id")
 	PurchaseOrderProductId, err := uuid.Parse(id)
 	if err != nil {

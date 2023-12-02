@@ -2,6 +2,7 @@ package v1
 
 import (
 	"gitlab.com/odma1/odma-be/constants"
+	"gitlab.com/odma1/odma-be/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -42,6 +43,10 @@ func PUTUser(c *gin.Context) {
 	p := dto.UserUpdate{ID: userId}
 	if err = c.ShouldBind(&p); err != nil {
 		c.JSON(http.StatusBadRequest, dto.Response{Error: err.Error()})
+		return
+	}
+	if err := utils.ValidateHTTPPayload(p); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
 		return
 	}
 

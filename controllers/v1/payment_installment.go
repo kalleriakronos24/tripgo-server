@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"gitlab.com/odma1/odma-be/constants"
 	"gitlab.com/odma1/odma-be/models"
+	"gitlab.com/odma1/odma-be/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -56,11 +57,26 @@ func POSTPaymentInstallment(c *gin.Context) {
 	var err error
 	userLoggedInId := c.GetString("user_id")
 	userId, err := uuid.Parse(userLoggedInId)
-	p := &dto.InsertPaymentInstallment{CreatedBy: userId}
+	pValidator := &dto.InsertPaymentInstallmentValidator{CreatedBy: userId}
 
-	if err = c.ShouldBindJSON(&p); err != nil {
+	if err = c.ShouldBindJSON(&pValidator); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
 		return
+	}
+
+	if err := utils.ValidateHTTPPayload(pValidator); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
+		return
+	}
+
+	paymentId, _ := uuid.Parse(pValidator.PaymentID)
+	p := &dto.InsertPaymentInstallment{
+		Currency:  pValidator.Currency,
+		Amount:    pValidator.Amount,
+		Note:      pValidator.Note,
+		Date:      utils.ConvertStrToDateTime(pValidator.Date),
+		PaymentID: paymentId,
+		CreatedBy: pValidator.CreatedBy,
 	}
 
 	if err := services.Handler.CheckExistingPayment(p.PaymentID.String(), struct{ *models.Payment }{&models.Payment{}}); err != nil {
@@ -79,12 +95,28 @@ func PUTPaymentInstallment(c *gin.Context) {
 	var err error
 	userLoggedInId := c.GetString("user_id")
 	userId, err := uuid.Parse(userLoggedInId)
-	p := &dto.UpdatePaymentInstallment{UpdatedBy: userId}
+	pValidator := &dto.UpdatePaymentInstallmentValidator{UpdatedBy: userId}
 
-	if err = c.ShouldBindJSON(&p); err != nil {
+	if err = c.ShouldBindJSON(&pValidator); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
 		return
 	}
+
+	if err := utils.ValidateHTTPPayload(pValidator); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
+		return
+	}
+
+	paymentId, _ := uuid.Parse(pValidator.PaymentID)
+	p := &dto.UpdatePaymentInstallment{
+		Currency:  pValidator.Currency,
+		Amount:    pValidator.Amount,
+		Note:      pValidator.Note,
+		Date:      utils.ConvertStrToDateTime(pValidator.Date),
+		PaymentID: paymentId,
+		UpdatedBy: pValidator.UpdatedBy,
+	}
+
 	id, _ := c.Params.Get("id")
 	PaymentInstallmentId, err := uuid.Parse(id)
 	if err != nil {

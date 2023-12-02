@@ -5,6 +5,7 @@ import (
 	"gitlab.com/odma1/odma-be/constants"
 	"gitlab.com/odma1/odma-be/models"
 	masterModels "gitlab.com/odma1/odma-be/models/master"
+	"gitlab.com/odma1/odma-be/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -57,11 +58,26 @@ func POSTOperatingActivity(c *gin.Context) {
 	var err error
 	userLoggedInId := c.GetString("user_id")
 	userId, err := uuid.Parse(userLoggedInId)
-	p := &dto.InsertOperatingActivity{CreatedBy: userId}
 
-	if err = c.ShouldBindJSON(&p); err != nil {
+	pValidator := &dto.InsertOperatingActivityValidator{CreatedBy: userId}
+
+	if err = c.ShouldBindJSON(&pValidator); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
 		return
+	}
+
+	if err := utils.ValidateHTTPPayload(pValidator); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
+		return
+	}
+
+	clientId, _ := uuid.Parse(pValidator.ClientID)
+	p := &dto.InsertOperatingActivity{
+		TaxInvoiceNumber:      pValidator.TaxInvoiceNumber,
+		DeliveryReceiptNumber: pValidator.DeliveryReceiptNumber,
+		Status:                pValidator.Status,
+		ClientID:              clientId,
+		CreatedBy:             pValidator.CreatedBy,
 	}
 
 	if err := services.Handler.CheckExistingClient(p.ClientID.String(), struct{ *masterModels.Client }{&masterModels.Client{}}); err != nil {
@@ -87,12 +103,28 @@ func PUTOperatingActivity(c *gin.Context) {
 	var err error
 	userLoggedInId := c.GetString("user_id")
 	userId, err := uuid.Parse(userLoggedInId)
-	p := &dto.UpdateOperatingActivity{UpdatedBy: userId}
+	pValidator := &dto.UpdateOperatingActivityValidator{UpdatedBy: userId}
 
-	if err = c.ShouldBindJSON(&p); err != nil {
+	if err = c.ShouldBindJSON(&pValidator); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
 		return
 	}
+
+	if err := utils.ValidateHTTPPayload(pValidator); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
+		return
+	}
+
+	clientId, _ := uuid.Parse(pValidator.ClientID)
+	p := &dto.UpdateOperatingActivity{
+		ID:                    pValidator.ID,
+		TaxInvoiceNumber:      pValidator.TaxInvoiceNumber,
+		DeliveryReceiptNumber: pValidator.DeliveryReceiptNumber,
+		Status:                pValidator.Status,
+		ClientID:              clientId,
+		UpdatedBy:             pValidator.UpdatedBy,
+	}
+
 	id, _ := c.Params.Get("id")
 	operatingActivityId, err := uuid.Parse(id)
 	if err != nil {
