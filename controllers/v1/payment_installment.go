@@ -24,13 +24,13 @@ func GETAllPaymentInstallment(c *gin.Context) {
 		return
 	}
 
-	var PaymentInstallment []models.PaymentInstallment
-	if PaymentInstallment, err = services.Handler.RetrieveAllPaymentInstallment(userId); err != nil {
+	if PaymentInstallment, err := services.Handler.RetrieveAllPaymentInstallmentPaginated(c, userId); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "payment installment"))
 		return
+	} else {
+		c.JSON(http.StatusOK, dto.Response{Data: PaymentInstallment})
 	}
 
-	c.JSON(http.StatusOK, dto.Response{Data: PaymentInstallment})
 }
 
 func GETPaymentInstallment(c *gin.Context) {

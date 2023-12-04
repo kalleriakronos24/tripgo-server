@@ -1,7 +1,9 @@
 package models
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	database "gitlab.com/odma1/odma-be/db"
 	masterModels "gitlab.com/odma1/odma-be/models/master"
 	"gitlab.com/odma1/odma-be/types"
 	"gorm.io/gorm"
@@ -34,6 +36,7 @@ type OperatingActivityProduct struct {
 
 type OperatingActivityProductModelAction interface {
 	GetAllOperatingActivityProduct(userId uuid.UUID) (m []OperatingActivityProduct, err error)
+	GetAllOperatingActivityProductPaginated(c *gin.Context, userId uuid.UUID) (*database.Pagination, error)
 	GetOneOperatingActivityProductByID(id uuid.UUID) (m OperatingActivityProduct, err error)
 	GetOneOperatingActivityProductByOperatingActivityId(operatingActivityId uuid.UUID) (m OperatingActivityProduct, err error)
 	GetManyOperatingActivityProductByOperatingActivityId(operatingActivityId uuid.UUID) (m []OperatingActivityProduct, err error)
@@ -60,6 +63,23 @@ func (o *OperatingActivityProductOrm) GetAllOperatingActivityProduct(userId uuid
 		Preload("Product").
 		Find(&m)
 	return m, result.Error
+}
+
+func (o *OperatingActivityProductOrm) GetAllOperatingActivityProductPaginated(c *gin.Context, userId uuid.UUID) (*database.Pagination, error) {
+
+	var mArr []*OperatingActivityProduct
+	var pagination database.Pagination
+
+	o.db.
+		Scopes(database.Paginator(c, &mArr, []string{
+			"CreatedByUser",
+			"UpdatedByUser",
+			"OperatingActivity",
+			"Product"}, &pagination)).
+		Where("operating_activity_product_created_by", userId).
+		Find(&mArr)
+	pagination.Data = &mArr
+	return &pagination, nil
 }
 
 func (o *OperatingActivityProductOrm) GetOneOperatingActivityProductByID(id uuid.UUID) (m OperatingActivityProduct, err error) {

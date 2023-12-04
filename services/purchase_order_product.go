@@ -3,7 +3,9 @@ package services
 import (
 	"errors"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	database "gitlab.com/odma1/odma-be/db"
 	"gitlab.com/odma1/odma-be/dto"
 	"gitlab.com/odma1/odma-be/models"
 )
@@ -15,6 +17,13 @@ type CheckExistingPurchaseOrderProductStruct struct {
 func (module *module) RetrieveAllPurchaseOrderProduct(id uuid.UUID) (m []models.PurchaseOrderProduct, err error) {
 	if m, err = module.db.purchaseOrderProductModel.GetAllPurchaseOrderProduct(id); err != nil {
 		return m, fmt.Errorf(err.Error())
+	}
+	return
+}
+
+func (module *module) RetrieveAllPurchaseOrderProductPaginated(c *gin.Context, id uuid.UUID) (pagination *database.Pagination, err error) {
+	if pagination, err = module.db.purchaseOrderProductModel.GetAllPurchaseOrderProductPaginated(c, id); err != nil {
+		return pagination, fmt.Errorf(err.Error())
 	}
 	return
 }

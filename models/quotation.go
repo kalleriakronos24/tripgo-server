@@ -1,7 +1,9 @@
 package models
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	database "gitlab.com/odma1/odma-be/db"
 	masterModels "gitlab.com/odma1/odma-be/models/master"
 	"gitlab.com/odma1/odma-be/types"
 	"gorm.io/gorm"
@@ -35,6 +37,7 @@ type Quotation struct {
 
 type QuotationModelAction interface {
 	GetAllQuotation(userId uuid.UUID) (m []Quotation, err error)
+	GetAllQuotationPaginated(c *gin.Context, userId uuid.UUID) (*database.Pagination, error)
 	GetOneQuotationByID(id uuid.UUID) (m Quotation, err error)
 	GetOneQuotationByNumber(name string) (m Quotation, err error)
 
@@ -58,14 +61,21 @@ func (o *quotationOrm) GetAllQuotation(userId uuid.UUID) (m []Quotation, err err
 		}).
 		Preload("OperatingActivity.Client").
 		Find(&m)
-	/**
-	db.Select([]string{
-				"OperatingActivity.ID", "OperatingActivity.TaxInvoiceNumber", "OperatingActivity.DeliveryReceiptNumber", "OperatingActivity.Status", "OperatingActivity.CreatedAt", "OperatingActivity.UpdatedAt",
-				"OperatingActivity.Client.ID", "OperatingActivity.Client.Name", "OperatingActivity.Client.CreatedAt", "OperatingActivity.Client.UpdatedAt",
-			})
-			return db
-	*/
+
 	return m, result.Error
+}
+
+func (o *quotationOrm) GetAllQuotationPaginated(c *gin.Context, userId uuid.UUID) (*database.Pagination, error) {
+
+	var mArr []*Quotation
+	var pagination database.Pagination
+
+	o.db.
+		Scopes(database.Paginator(c, &mArr, []string{"CreatedByUser", "UpdatedByUser", "OperatingActivity.Client"}, &pagination)).
+		Where("quotation_created_by", userId).
+		Find(&mArr)
+	pagination.Data = &mArr
+	return &pagination, nil
 }
 
 func (o *quotationOrm) GetOneQuotationByID(id uuid.UUID) (m Quotation, err error) {

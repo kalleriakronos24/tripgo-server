@@ -1,7 +1,9 @@
 package models
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	database "gitlab.com/odma1/odma-be/db"
 	"gitlab.com/odma1/odma-be/models/master"
 	"gitlab.com/odma1/odma-be/types"
 	"gorm.io/gorm"
@@ -32,6 +34,7 @@ type ProductHistory struct {
 
 type ProductHistoryModelAction interface {
 	GetAllProductHistory(userId uuid.UUID) (m []ProductHistory, err error)
+	GetAllProductHistoryPaginated(c *gin.Context, userId uuid.UUID) (*database.Pagination, error)
 	GetOneProductHistoryByID(id uuid.UUID) (m ProductHistory, err error)
 	GetOneProductHistoryByProductID(productId uuid.UUID) (m ProductHistory, err error)
 
@@ -57,6 +60,19 @@ func (o *ProductHistoryOrm) GetAllProductHistory(userId uuid.UUID) (m []ProductH
 		Preload("OperatingActivity").
 		Find(&m)
 	return m, result.Error
+}
+
+func (o *ProductHistoryOrm) GetAllProductHistoryPaginated(c *gin.Context, userId uuid.UUID) (*database.Pagination, error) {
+
+	var mArr []*ProductHistory
+	var pagination database.Pagination
+
+	o.db.
+		Scopes(database.Paginator(c, &mArr, []string{"CreatedByUser", "UpdatedByUser", "Product", "OperatingActivity"}, &pagination)).
+		Where("product_history_created_by", userId).
+		Find(&mArr)
+	pagination.Data = &mArr
+	return &pagination, nil
 }
 
 func (o *ProductHistoryOrm) GetOneProductHistoryByID(id uuid.UUID) (m ProductHistory, err error) {

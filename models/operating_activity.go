@@ -1,7 +1,9 @@
 package models
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	database "gitlab.com/odma1/odma-be/db"
 	masterModels "gitlab.com/odma1/odma-be/models/master"
 	"gitlab.com/odma1/odma-be/types"
 	"gorm.io/gorm"
@@ -18,17 +20,20 @@ type DynamicQueryOperatingActivityParam struct {
 }
 
 type OperatingActivity struct {
-	ID                    uuid.UUID `gorm:"index:id,unique;type:uuid;default:gen_random_uuid();" json:"id"`
-	TaxInvoiceNumber      string    `json:"taxInvoiceNumber,omitempty" gorm:"not null;unique"`
-	DeliveryReceiptNumber string    `json:"deliveryReceiptNumber,omitempty" gorm:"not null;unique"`
-	Status                string    `json:"status,omitempty" gorm:"not null;default:ongoing"`
+	ID                    uuid.UUID            `gorm:"index:id,unique;type:uuid;default:gen_random_uuid();" json:"id"`
+	TaxInvoiceNumber      string               `json:"taxInvoiceNumber,omitempty" gorm:"not null;unique"`
+	DeliveryReceiptNumber string               `json:"deliveryReceiptNumber,omitempty" gorm:"not null;unique"`
+	Status                string               `json:"status,omitempty" gorm:"not null;default:ongoing"`
+	ClientID              uuid.UUID            `json:"clientId" gorm:"type:uuid;not null;default:NULL;"`
+	Client                *masterModels.Client `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;foreignKey:ClientID;references:ID" json:"client"`
 
-	ClientID                 uuid.UUID                 `json:"clientId" gorm:"type:uuid;not null;default:NULL;"`
-	Client                   *masterModels.Client      `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;foreignKey:ClientID;references:ID" json:"client"`
-	ProductHistory           []*ProductHistory         `json:"productHistory,omitempty"`
-	Quotation                []*Quotation              `json:"quotation,omitempty"`
-	Payment                  []*Payment                `json:"payment,omitempty"`
-	OperatingActivityProduct *OperatingActivityProduct `json:"operatingActivityProduct,omitempty"`
+	ProductHistory           []*ProductHistory           `json:"productHistory,omitempty"`
+	Quotation                []*Quotation                `json:"quotation,omitempty"`
+	Payment                  []*Payment                  `json:"payment,omitempty"`
+	OperatingActivityProduct []*OperatingActivityProduct `json:"operatingActivityProduct,omitempty"`
+	Invoice                  []*Invoice                  `json:"invoice,omitempty"`
+	DeliveryOrder            []*DeliveryOrder            `json:"deliveryOrder,omitempty"`
+	PurchaseOrder            []*PurchaseOrder            `json:"purchaseOrder,omitempty"`
 
 	OperatingActivityCreatedBy uuid.UUID          `json:"createdBy" gorm:"type:uuid;not null;default:NULL;"`
 	OperatingActivityUpdatedBy uuid.UUID          `json:"updatedBy" gorm:"type:uuid;default:NULL;"`
@@ -40,6 +45,7 @@ type OperatingActivity struct {
 
 type OperatingActivityModelAction interface {
 	GetAllOperatingActivity(userId uuid.UUID) (m []OperatingActivity, err error)
+	GetAllOperatingActivityPaginated(c *gin.Context, userId uuid.UUID) (*database.Pagination, error)
 	GetOneOperatingActivityByID(id uuid.UUID) (m OperatingActivity, err error)
 	GetOneOperatingActivityByTaxNumber(taxNumber string) (m OperatingActivity, err error)
 
@@ -66,8 +72,28 @@ func (o *operatingActivityOrm) GetAllOperatingActivity(userId uuid.UUID) (m []Op
 		}).
 		Preload("Quotation").
 		Preload("ProductHistory").
+		Preload("Payment").
+		Preload("OperatingActivityProduct").
 		Find(&m)
 	return m, result.Error
+}
+
+func (o *operatingActivityOrm) GetAllOperatingActivityPaginated(c *gin.Context, userId uuid.UUID) (*database.Pagination, error) {
+
+	var mArr []*OperatingActivity
+	var pagination database.Pagination
+
+	o.db.
+		Scopes(database.Paginator(c, &mArr, []string{
+			"CreatedByUser",
+			"UpdatedByUser",
+			"Client",
+			"Payment",
+			"OperatingActivityProduct"}, &pagination)).
+		Where("operating_activity_created_by", userId).
+		Find(&mArr)
+	pagination.Data = &mArr
+	return &pagination, nil
 }
 
 func (o *operatingActivityOrm) GetOneOperatingActivityByID(id uuid.UUID) (m OperatingActivity, err error) {

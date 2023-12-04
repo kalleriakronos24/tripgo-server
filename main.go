@@ -34,7 +34,9 @@ func runServer() {
 	}
 	time.Local = loc
 
-	go utils.DatabaseBackupCron()
+	if config.AppConfig.Environment == "PRODUCTION" {
+		go utils.DatabaseBackupCron()
+	}
 
 	// initialize db and migrations
 	if err := services.InitializeServices(); err != nil {

@@ -24,13 +24,13 @@ func GETAllPurchaseOrder(c *gin.Context) {
 		return
 	}
 
-	var PurchaseOrder []models.PurchaseOrder
-	if PurchaseOrder, err = services.Handler.RetrieveAllPurchaseOrder(userId); err != nil {
+	if PurchaseOrder, err := services.Handler.RetrieveAllPurchaseOrderPaginated(c, userId); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "purchase order"))
 		return
+	} else {
+		c.JSON(http.StatusOK, dto.Response{Data: PurchaseOrder})
 	}
 
-	c.JSON(http.StatusOK, dto.Response{Data: PurchaseOrder})
 }
 
 func GETPurchaseOrder(c *gin.Context) {

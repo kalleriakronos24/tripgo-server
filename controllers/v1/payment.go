@@ -24,13 +24,14 @@ func GETAllPayment(c *gin.Context) {
 		return
 	}
 
-	var Payment []models.Payment
-	if Payment, err = services.Handler.RetrieveAllPayment(userId); err != nil {
+	if Payment, err := services.Handler.RetrieveAllPaymentPaginated(c, userId); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "payment"))
 		return
+	} else {
+
+		c.JSON(http.StatusOK, dto.Response{Data: Payment})
 	}
 
-	c.JSON(http.StatusOK, dto.Response{Data: Payment})
 }
 
 func GETPayment(c *gin.Context) {

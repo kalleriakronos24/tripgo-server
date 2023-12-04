@@ -23,13 +23,13 @@ func GETAllQuotation(c *gin.Context) {
 		return
 	}
 
-	var quotation []models.Quotation
-	if quotation, err = services.Handler.RetrieveAllQuotation(userId); err != nil {
+	if quotation, err := services.Handler.RetrieveAllQuotationPaginated(c, userId); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "quotation"))
 		return
+	} else {
+		c.JSON(http.StatusOK, dto.Response{Data: quotation})
 	}
 
-	c.JSON(http.StatusOK, dto.Response{Data: quotation})
 }
 
 func GETQuotation(c *gin.Context) {

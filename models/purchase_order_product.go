@@ -1,7 +1,9 @@
 package models
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	database "gitlab.com/odma1/odma-be/db"
 	masterModels "gitlab.com/odma1/odma-be/models/master"
 	"gitlab.com/odma1/odma-be/types"
 	"gorm.io/gorm"
@@ -36,6 +38,7 @@ type PurchaseOrderProduct struct {
 
 type PurchaseOrderProductModelAction interface {
 	GetAllPurchaseOrderProduct(userId uuid.UUID) (m []PurchaseOrderProduct, err error)
+	GetAllPurchaseOrderProductPaginated(c *gin.Context, userId uuid.UUID) (*database.Pagination, error)
 	GetOnePurchaseOrderProductByID(id uuid.UUID) (m PurchaseOrderProduct, err error)
 	GetOnePurchaseOrderProductByPurchaseOrderId(purchaseOrderId uuid.UUID) (m PurchaseOrderProduct, err error)
 	InsertPurchaseOrderProduct(p PurchaseOrderProduct) (err error)
@@ -61,6 +64,19 @@ func (o *PurchaseOrderProductOrm) GetAllPurchaseOrderProduct(userId uuid.UUID) (
 		Preload("Client").
 		Find(&m)
 	return m, result.Error
+}
+
+func (o *PurchaseOrderProductOrm) GetAllPurchaseOrderProductPaginated(c *gin.Context, userId uuid.UUID) (*database.Pagination, error) {
+
+	var mArr []*PurchaseOrderProduct
+	var pagination database.Pagination
+
+	o.db.
+		Scopes(database.Paginator(c, &mArr, []string{"CreatedByUser", "UpdatedByUser", "PurchaseOrder", "Product", "Client"}, &pagination)).
+		Where("purchase_order_product_created_by", userId).
+		Find(&mArr)
+	pagination.Data = &mArr
+	return &pagination, nil
 }
 
 func (o *PurchaseOrderProductOrm) GetOnePurchaseOrderProductByID(id uuid.UUID) (m PurchaseOrderProduct, err error) {

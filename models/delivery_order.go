@@ -1,7 +1,9 @@
 package models
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	database "gitlab.com/odma1/odma-be/db"
 	masterModels "gitlab.com/odma1/odma-be/models/master"
 	"gitlab.com/odma1/odma-be/types"
 	"gorm.io/gorm"
@@ -49,6 +51,7 @@ type DeliveryOrder struct {
 
 type DeliveryOrderModelAction interface {
 	GetAllDeliveryOrder(userId uuid.UUID) (m []DeliveryOrder, err error)
+	GetAllDeliveryOrderPaginated(c *gin.Context, userId uuid.UUID) (*database.Pagination, error)
 	GetOneDeliveryOrderByID(id uuid.UUID) (m DeliveryOrder, err error)
 	GetOneDeliveryOrderByNumber(number string) (m DeliveryOrder, err error)
 	GetOneDeliveryOrderByOperatingActivityID(id uuid.UUID) (m DeliveryOrder, err error)
@@ -75,6 +78,18 @@ func (o *DeliveryOrderOrm) GetAllDeliveryOrder(userId uuid.UUID) (m []DeliveryOr
 		Preload("OperatingActivity.OperatingActivityProduct").
 		Find(&m)
 	return m, result.Error
+}
+func (o *DeliveryOrderOrm) GetAllDeliveryOrderPaginated(c *gin.Context, userId uuid.UUID) (*database.Pagination, error) {
+
+	var mArr []*DeliveryOrder
+	var pagination database.Pagination
+
+	o.db.
+		Scopes(database.Paginator(c, &mArr, []string{"CreatedByUser", "UpdatedByUser", "Document", "OperatingActivity.OperatingActivityProduct"}, &pagination)).
+		Where("delivery_order_created_by", userId).
+		Find(&mArr)
+	pagination.Data = &mArr
+	return &pagination, nil
 }
 
 func (o *DeliveryOrderOrm) GetOneDeliveryOrderByID(id uuid.UUID) (m DeliveryOrder, err error) {

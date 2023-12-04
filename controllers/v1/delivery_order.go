@@ -25,13 +25,12 @@ func GETAllDeliveryOrder(c *gin.Context) {
 		return
 	}
 
-	var DeliveryOrder []models.DeliveryOrder
-	if DeliveryOrder, err = services.Handler.RetrieveAllDeliveryOrder(userId); err != nil {
+	if DeliveryOrder, err := services.Handler.RetrieveAllDeliveryOrderPaginated(c, userId); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "delivery order"))
 		return
+	} else {
+		c.JSON(http.StatusOK, dto.Response{Data: DeliveryOrder})
 	}
-
-	c.JSON(http.StatusOK, dto.Response{Data: DeliveryOrder})
 }
 
 func GETDeliveryOrder(c *gin.Context) {

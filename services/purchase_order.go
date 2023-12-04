@@ -24,6 +24,13 @@ func (module *module) RetrieveAllPurchaseOrder(id uuid.UUID) (m []models.Purchas
 	return
 }
 
+func (module *module) RetrieveAllPurchaseOrderPaginated(c *gin.Context, id uuid.UUID) (pagination *database.Pagination, err error) {
+	if pagination, err = module.db.purchaseOrderModel.GetAllPurchaseOrderPaginated(c, id); err != nil {
+		return pagination, fmt.Errorf(err.Error())
+	}
+	return
+}
+
 func (module *module) RetrievePurchaseOrder(id uuid.UUID) (m models.CustomResponsePurchaseOrder, err error) {
 	if m, err = module.db.purchaseOrderModel.GetOnePurchaseOrderByID(id); err != nil {
 		return m, fmt.Errorf(err.Error())

@@ -26,13 +26,12 @@ func GETAllProduct(c *gin.Context) {
 		return
 	}
 
-	var product []models.Product
-	if product, err = services.Handler.RetrieveAllProduct(userId); err != nil {
+	if product, err := services.Handler.RetrieveAllProductPaginated(c, userId); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "product"))
 		return
+	} else {
+		c.JSON(http.StatusOK, dto.Response{Data: product})
 	}
-
-	c.JSON(http.StatusOK, dto.Response{Data: product})
 }
 
 func GETProduct(c *gin.Context) {

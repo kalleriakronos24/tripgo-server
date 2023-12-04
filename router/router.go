@@ -173,7 +173,10 @@ func InitializeRouter() (router *gin.Engine) {
 
 			misc.POST("/upload", v1.UploadFileSingle)
 			misc.POST("/upload-multiple", v1.UploadFileMultiple)
-			misc.POST("/restore/:fileName", utils.AuthOnly, v1.RestoreDatabase)
+
+			if config.AppConfig.Environment == "PRODUCTION" {
+				misc.POST("/restore/:fileName", utils.AuthOnly, v1.RestoreDatabase)
+			}
 		}
 
 		fileServingGroupRoute := config.AppConfig.APPUrlStaticFileGroupRoute

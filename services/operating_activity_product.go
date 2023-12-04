@@ -3,7 +3,9 @@ package services
 import (
 	"errors"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	database "gitlab.com/odma1/odma-be/db"
 	"gitlab.com/odma1/odma-be/dto"
 	"gitlab.com/odma1/odma-be/models"
 )
@@ -15,6 +17,13 @@ type CheckExistingOperatingActivityProductStruct struct {
 func (module *module) RetrieveAllOperatingActivityProduct(id uuid.UUID) (m []models.OperatingActivityProduct, err error) {
 	if m, err = module.db.operatingActivityProductModel.GetAllOperatingActivityProduct(id); err != nil {
 		return m, fmt.Errorf(err.Error())
+	}
+	return
+}
+
+func (module *module) RetrieveAllOperatingActivityProductPaginated(c *gin.Context, id uuid.UUID) (pagination *database.Pagination, err error) {
+	if pagination, err = module.db.operatingActivityProductModel.GetAllOperatingActivityProductPaginated(c, id); err != nil {
+		return pagination, fmt.Errorf(err.Error())
 	}
 	return
 }

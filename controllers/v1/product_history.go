@@ -24,13 +24,13 @@ func GETAllProductHistory(c *gin.Context) {
 		return
 	}
 
-	var ProductHistory []models.ProductHistory
-	if ProductHistory, err = services.Handler.RetrieveAllProductHistory(userId); err != nil {
+	if ProductHistory, err := services.Handler.RetrieveAllProductHistoryPaginated(c, userId); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "ProductHistory"))
 		return
+	} else {
+		c.JSON(http.StatusOK, dto.Response{Data: ProductHistory})
 	}
 
-	c.JSON(http.StatusOK, dto.Response{Data: ProductHistory})
 }
 
 func GETProductHistory(c *gin.Context) {

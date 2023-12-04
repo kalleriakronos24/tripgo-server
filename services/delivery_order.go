@@ -32,6 +32,13 @@ func (module *module) RetrieveAllDeliveryOrder(id uuid.UUID) (m []models.Deliver
 	return
 }
 
+func (module *module) RetrieveAllDeliveryOrderPaginated(c *gin.Context, id uuid.UUID) (pagination *database.Pagination, err error) {
+	if pagination, err = module.db.deliveryOrderModel.GetAllDeliveryOrderPaginated(c, id); err != nil {
+		return pagination, fmt.Errorf(err.Error())
+	}
+	return
+}
+
 func (module *module) InsertDeliveryOrder(c *gin.Context, p *dto.InsertDeliveryOrder) (err error) {
 
 	tx := database.GetDatabaseConnection().Begin()

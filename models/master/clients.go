@@ -1,7 +1,9 @@
 package master
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	database "gitlab.com/odma1/odma-be/db"
 	"gitlab.com/odma1/odma-be/types"
 	"gorm.io/gorm"
 	"strings"
@@ -30,6 +32,7 @@ type Client struct {
 }
 
 type ClientModelAction interface {
+	GetAllClientPaginated(c *gin.Context, userId uuid.UUID) (pagination *database.Pagination, err error)
 	GetAllClient(userId uuid.UUID) (m []Client, err error)
 	GetOneClientByID(id uuid.UUID) (m Client, err error)
 	GetOneClientByName(name string) (m Client, err error)
@@ -42,6 +45,19 @@ type ClientModelAction interface {
 
 func NewClientAction(db *gorm.DB) ClientModelAction {
 	return &clientOrm{db}
+}
+
+func (o *clientOrm) GetAllClientPaginated(c *gin.Context, userId uuid.UUID) (*database.Pagination, error) {
+
+	var mArr []*Client
+	var pagination database.Pagination
+
+	o.db.
+		Scopes(database.Paginator(c, &mArr, []string{"CreatedByUser", "UpdatedByUser", "Company"}, &pagination)).
+		Where("client_created_by", userId).
+		Find(&mArr)
+	pagination.Data = &mArr
+	return &pagination, nil
 }
 
 func (o *clientOrm) GetAllClient(userId uuid.UUID) (m []Client, err error) {

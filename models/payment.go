@@ -1,7 +1,9 @@
 package models
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	database "gitlab.com/odma1/odma-be/db"
 	"gitlab.com/odma1/odma-be/models/master"
 	"gitlab.com/odma1/odma-be/types"
 	"gorm.io/gorm"
@@ -36,6 +38,7 @@ type Payment struct {
 
 type PaymentModelAction interface {
 	GetAllPayment(userId uuid.UUID) (m []Payment, err error)
+	GetAllIPaymentPaginated(c *gin.Context, userId uuid.UUID) (*database.Pagination, error)
 	GetOnePaymentByID(id uuid.UUID) (m Payment, err error)
 	GetOnePaymentByOperatingActivityID(productId uuid.UUID) (m Payment, err error)
 
@@ -60,6 +63,19 @@ func (o *PaymentOrm) GetAllPayment(userId uuid.UUID) (m []Payment, err error) {
 		Preload("OperatingActivity").
 		Find(&m)
 	return m, result.Error
+}
+
+func (o *PaymentOrm) GetAllIPaymentPaginated(c *gin.Context, userId uuid.UUID) (*database.Pagination, error) {
+
+	var mArr []*Payment
+	var pagination database.Pagination
+
+	o.db.
+		Scopes(database.Paginator(c, &mArr, []string{"CreatedByUser", "UpdatedByUser", "OperatingActivity"}, &pagination)).
+		Where("payment_created_by", userId).
+		Find(&mArr)
+	pagination.Data = &mArr
+	return &pagination, nil
 }
 
 func (o *PaymentOrm) GetOnePaymentByID(id uuid.UUID) (m Payment, err error) {

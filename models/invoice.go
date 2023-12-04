@@ -1,7 +1,9 @@
 package models
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	database "gitlab.com/odma1/odma-be/db"
 	masterModels "gitlab.com/odma1/odma-be/models/master"
 	"gitlab.com/odma1/odma-be/types"
 	"gorm.io/gorm"
@@ -32,6 +34,7 @@ type Invoice struct {
 
 type InvoiceModelAction interface {
 	GetAllInvoice(userId uuid.UUID) (m []Invoice, err error)
+	GetAllInvoicePaginated(c *gin.Context, userId uuid.UUID) (*database.Pagination, error)
 	GetOneInvoiceByID(id uuid.UUID) (m Invoice, err error)
 	GetOneInvoiceByNumber(number string) (m Invoice, err error)
 	GetOneInvoiceByOperatingActivityID(id uuid.UUID) (m Invoice, err error)
@@ -57,6 +60,19 @@ func (o *InvoiceOrm) GetAllInvoice(userId uuid.UUID) (m []Invoice, err error) {
 		Preload("OperatingActivity.OperatingActivityProduct").
 		Find(&m)
 	return m, result.Error
+}
+
+func (o *InvoiceOrm) GetAllInvoicePaginated(c *gin.Context, userId uuid.UUID) (*database.Pagination, error) {
+
+	var mArr []*Invoice
+	var pagination database.Pagination
+
+	o.db.
+		Scopes(database.Paginator(c, &mArr, []string{"CreatedByUser", "UpdatedByUser", "OperatingActivity.OperatingActivityProduct"}, &pagination)).
+		Where("invoice_created_by", userId).
+		Find(&mArr)
+	pagination.Data = &mArr
+	return &pagination, nil
 }
 
 func (o *InvoiceOrm) GetOneInvoiceByID(id uuid.UUID) (m Invoice, err error) {

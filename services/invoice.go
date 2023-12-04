@@ -3,6 +3,7 @@ package services
 import (
 	"errors"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	database "gitlab.com/odma1/odma-be/db"
 	"gitlab.com/odma1/odma-be/dto"
@@ -23,6 +24,13 @@ func (module *module) RetrieveInvoice(id uuid.UUID) (m models.Invoice, err error
 func (module *module) RetrieveAllInvoice(id uuid.UUID) (m []models.Invoice, err error) {
 	if m, err = module.db.invoiceModel.GetAllInvoice(id); err != nil {
 		return m, fmt.Errorf(err.Error())
+	}
+	return
+}
+
+func (module *module) RetrieveAllInvoicePaginated(c *gin.Context, id uuid.UUID) (pagination *database.Pagination, err error) {
+	if pagination, err = module.db.invoiceModel.GetAllInvoicePaginated(c, id); err != nil {
+		return pagination, fmt.Errorf(err.Error())
 	}
 	return
 }

@@ -25,13 +25,12 @@ func GETAllOperatingActivity(c *gin.Context) {
 		return
 	}
 
-	var operatingActivity []models.OperatingActivity
-	if operatingActivity, err = services.Handler.RetrieveAllOperatingActivity(userId); err != nil {
+	if operatingActivity, err := services.Handler.RetrieveAllOperatingActivityPaginated(c, userId); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "operating activity"))
 		return
+	} else {
+		c.JSON(http.StatusOK, dto.Response{Data: operatingActivity})
 	}
-
-	c.JSON(http.StatusOK, dto.Response{Data: operatingActivity})
 }
 
 func GETOperatingActivity(c *gin.Context) {

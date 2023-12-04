@@ -23,13 +23,13 @@ func GETAllCompany(c *gin.Context) {
 		return
 	}
 
-	var company []masterModels.Company
-	if company, err = services.Handler.RetrieveAllCompany(userId); err != nil {
+	if company, err := services.Handler.RetrieveAllCompanyPaginated(c, userId); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "client"))
 		return
+	} else {
+		c.JSON(http.StatusOK, dto.Response{Data: &company})
 	}
 
-	c.JSON(http.StatusOK, dto.Response{Data: company})
 }
 
 func GETCompany(c *gin.Context) {

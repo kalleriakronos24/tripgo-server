@@ -24,13 +24,13 @@ func GETAllInvoice(c *gin.Context) {
 		return
 	}
 
-	var Invoice []models.Invoice
-	if Invoice, err = services.Handler.RetrieveAllInvoice(userId); err != nil {
+	if Invoice, err := services.Handler.RetrieveAllInvoicePaginated(c, userId); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "invoice"))
 		return
+	} else {
+		c.JSON(http.StatusOK, dto.Response{Data: Invoice})
 	}
 
-	c.JSON(http.StatusOK, dto.Response{Data: Invoice})
 }
 
 func GETInvoice(c *gin.Context) {

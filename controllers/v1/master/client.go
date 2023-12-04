@@ -24,13 +24,12 @@ func GETAllClient(c *gin.Context) {
 		return
 	}
 
-	var client []masterModels.Client
-	if client, err = services.Handler.RetrieveAllClient(userId); err != nil {
+	if client, err := services.Handler.RetrieveAllClientPaginated(c, userId); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "client"))
 		return
+	} else {
+		c.JSON(http.StatusOK, dto.Response{Data: &client})
 	}
-
-	c.JSON(http.StatusOK, dto.Response{Data: client})
 }
 
 func GETClient(c *gin.Context) {

@@ -2,7 +2,9 @@ package master
 
 import (
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	database "gitlab.com/odma1/odma-be/db"
 	"gitlab.com/odma1/odma-be/types"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -17,13 +19,13 @@ type companyOrm struct {
 type Company struct {
 	ID                uuid.UUID `gorm:"index:id,unique;type:uuid;default:gen_random_uuid();" json:"id"`
 	Name              string    `json:"name" gorm:"not null"`
-	PhoneNumber       string    `json:",omitempty" gorm:"not null"`
-	Email             string    `gorm:"index:email,unique;not null" json:",omitempty"`
+	PhoneNumber       string    `json:"phoneNumber,omitempty" gorm:"not null"`
+	Email             string    `gorm:"index:email,unique;not null" json:"email,omitempty"`
 	Address           string    `json:"address,omitempty" gorm:"default:NULL"`
 	PICName           string    `json:"picName,omitempty" gorm:"not null"`
 	PICDesignation    string    `json:"picDesignation,omitempty" gorm:"not null"`
-	BankAccountName   string    `json:",omitempty" gorm:"not null"`
-	BankAccountNumber int       `json:",omitempty" gorm:"not null;default:0"`
+	BankAccountName   string    `json:"bankAccountName,omitempty" gorm:"not null"`
+	BankAccountNumber int       `json:"bankAccountNumber,omitempty" gorm:"not null;default:0"`
 
 	Client []*Client `json:"client,omitempty"`
 
@@ -37,6 +39,7 @@ type Company struct {
 
 type CompanyModelAction interface {
 	GetAllCompany(userId uuid.UUID) (m []Company, err error)
+	GetAllCompanyPaginated(c *gin.Context, userId uuid.UUID) (*database.Pagination, error)
 	GetOneCompanyByID(id uuid.UUID) (m Company, err error)
 	GetOneCompanyByName(name string) (m Company, err error)
 	GetOneCompanyByEmail(email string) (m Company, err error)
@@ -48,6 +51,19 @@ type CompanyModelAction interface {
 
 func NewCompanyAction(db *gorm.DB) CompanyModelAction {
 	return &companyOrm{db}
+}
+
+func (o *companyOrm) GetAllCompanyPaginated(c *gin.Context, userId uuid.UUID) (*database.Pagination, error) {
+
+	var mArr []*Company
+	var pagination database.Pagination
+
+	o.db.
+		Scopes(database.Paginator(c, &mArr, []string{"CreatedByUser", "UpdatedByUser", "Client"}, &pagination)).
+		Where("company_created_by", userId).
+		Find(&mArr)
+	pagination.Data = &mArr
+	return &pagination, nil
 }
 
 func (o *companyOrm) GetAllCompany(userId uuid.UUID) (m []Company, err error) {

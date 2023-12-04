@@ -3,7 +3,9 @@ package services
 import (
 	"errors"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	database "gitlab.com/odma1/odma-be/db"
 	"gitlab.com/odma1/odma-be/dto"
 	"gitlab.com/odma1/odma-be/models"
 )
@@ -15,6 +17,13 @@ type CheckExistingPaymentInstallmentStruct struct {
 func (module *module) RetrieveAllPaymentInstallment(id uuid.UUID) (m []models.PaymentInstallment, err error) {
 	if m, err = module.db.paymentInstallmentModel.GetAllPaymentInstallment(id); err != nil {
 		return m, fmt.Errorf(err.Error())
+	}
+	return
+}
+
+func (module *module) RetrieveAllPaymentInstallmentPaginated(c *gin.Context, id uuid.UUID) (pagination *database.Pagination, err error) {
+	if pagination, err = module.db.paymentInstallmentModel.GetAllPaymentInstallmentPaginated(c, id); err != nil {
+		return pagination, fmt.Errorf(err.Error())
 	}
 	return
 }

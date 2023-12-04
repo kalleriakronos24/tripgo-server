@@ -1,7 +1,9 @@
 package models
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	database "gitlab.com/odma1/odma-be/db"
 	masterModels "gitlab.com/odma1/odma-be/models/master"
 	"gitlab.com/odma1/odma-be/types"
 	"gitlab.com/odma1/odma-be/utils"
@@ -22,11 +24,11 @@ type PurchaseOrder struct {
 	RecipientEmail string    `json:"recipientEmail,omitempty" gorm:"not null;"`
 	Date           time.Time `json:"date,omitempty" gorm:"not null"`
 
-	DocumentID           uuid.UUID          `json:"documentId,omitempty" gorm:"not null;"`
-	Document             *Document          `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;foreignKey:DocumentID;references:ID" json:"document"`
-	OperatingActivityID  uuid.UUID          `json:"operatingActivityId" gorm:"type:uuid;not null;default:NULL;"`
-	OperatingActivity    *OperatingActivity `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:OperatingActivityID;references:ID" json:"operatingActivity"`
-	PurchaseOrderProduct []*PurchaseOrderProduct
+	DocumentID           uuid.UUID               `json:"documentId,omitempty" gorm:"not null;"`
+	Document             *Document               `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;foreignKey:DocumentID;references:ID" json:"document"`
+	OperatingActivityID  uuid.UUID               `json:"operatingActivityId" gorm:"type:uuid;not null;default:NULL;"`
+	OperatingActivity    *OperatingActivity      `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:OperatingActivityID;references:ID" json:"operatingActivity"`
+	PurchaseOrderProduct []*PurchaseOrderProduct `json:"purchaseOrderProduct,omitempty"`
 
 	PurchaseOrderCreatedBy uuid.UUID          `json:"createdBy" gorm:"type:uuid;not null;default:NULL;"`
 	PurchaseOrderUpdatedBy uuid.UUID          `json:"updatedBy" gorm:"type:uuid;default:NULL;"`
@@ -58,6 +60,7 @@ type CustomResponsePurchaseOrder struct {
 
 type PurchaseOrderModelAction interface {
 	GetAllPurchaseOrder(userId uuid.UUID) (m []PurchaseOrder, err error)
+	GetAllPurchaseOrderPaginated(c *gin.Context, userId uuid.UUID) (*database.Pagination, error)
 	GetOnePurchaseOrderByID(id uuid.UUID) (m CustomResponsePurchaseOrder, err error)
 	GetOnePurchaseOrderByOperatingActivityId(operatingActivityId uuid.UUID) (m PurchaseOrder, err error)
 
@@ -83,6 +86,19 @@ func (o *PurchaseOrderOrm) GetAllPurchaseOrder(userId uuid.UUID) (m []PurchaseOr
 		Preload("Document").
 		Find(&m)
 	return m, result.Error
+}
+
+func (o *PurchaseOrderOrm) GetAllPurchaseOrderPaginated(c *gin.Context, userId uuid.UUID) (*database.Pagination, error) {
+
+	var mArr []*PurchaseOrder
+	var pagination database.Pagination
+
+	o.db.
+		Scopes(database.Paginator(c, &mArr, []string{"CreatedByUser", "UpdatedByUser", "Document", "OperatingActivity"}, &pagination)).
+		Where("purchase_order_created_by", userId).
+		Find(&mArr)
+	pagination.Data = &mArr
+	return &pagination, nil
 }
 
 func (o *PurchaseOrderOrm) GetOnePurchaseOrderByID(id uuid.UUID) (m CustomResponsePurchaseOrder, err error) {
