@@ -15,7 +15,7 @@ COPY . /opt/app/api
 
 WORKDIR /opt/app/api
 
-CMD ["go mod init gitlab.com/odma1/odma-be", "go mod tidy", "go get ./", "go build"]
+RUN go mod tidy && go get ./ && go build -buildvcs=auto && rm -rf .git
 
 CMD ["air"]
 
@@ -24,4 +24,4 @@ FROM nginx:latest
 
 COPY /nginx/default.conf /etc/nginx/nginx.conf
 
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["nginx", "-g", "daemon off"]
