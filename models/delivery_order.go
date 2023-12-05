@@ -21,9 +21,6 @@ Delivery Order statuses
 - Shipped
 - Delivered
 - Canceled
-- Out for Delivery
-- Delivery expected (end of updates)
-- Failed delivery attempts
 */
 
 type DeliveryOrder struct {
@@ -35,6 +32,7 @@ type DeliveryOrder struct {
 	Note          string    `json:"note,omitempty"`
 	Date          time.Time `json:"date,omitempty" gorm:"not null"`
 	Status        string    `json:"status,omitempty" gorm:"not null;default:shipped"`
+	Sequence      string    `json:"sequence,omitempty" gorm:"not null;default:0001"`
 
 	DocumentID          uuid.UUID          `json:"documentId,omitempty" gorm:"not null;"`
 	Document            *Document          `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;foreignKey:DocumentID;references:ID" json:"document"`

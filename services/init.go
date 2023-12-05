@@ -48,6 +48,7 @@ type HandlerFunc interface {
 	RetrieveProduct(id uuid.UUID) (m models.Product, err error)
 	InsertProduct(p *dto.InsertProduct) (err error)
 	UpdateProduct(id uuid.UUID, p *dto.UpdateProduct) (err error)
+	DeleteProduct(id uuid.UUID) (err error)
 
 	CheckExistingQuotation(id string, param CheckExistingQuotationStruct) (err error)
 	RetrieveAllQuotationPaginated(c *gin.Context, id uuid.UUID) (pagination *database.Pagination, err error)
@@ -67,7 +68,7 @@ type HandlerFunc interface {
 	RetrieveAllPaymentPaginated(c *gin.Context, id uuid.UUID) (pagination *database.Pagination, err error)
 	RetrieveAllPayment(id uuid.UUID) (m []models.Payment, err error)
 	RetrievePayment(id uuid.UUID) (m models.Payment, err error)
-	InsertPayment(p *dto.InsertPayment) (err error)
+	InsertPayment(p *dto.InsertPayment) (m models.Payment, err error)
 	UpdatePayment(id uuid.UUID, p *dto.UpdatePayment) (err error)
 
 	CheckExistingPaymentInstallment(id string, param CheckExistingPaymentInstallmentStruct) (err error)

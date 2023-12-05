@@ -8,6 +8,7 @@ import (
 	database "gitlab.com/odma1/odma-be/db"
 	"gitlab.com/odma1/odma-be/dto"
 	"gitlab.com/odma1/odma-be/models"
+	"strings"
 )
 
 type CheckExistingQuotationStruct struct {
@@ -37,7 +38,7 @@ func (module *module) RetrieveQuotation(id uuid.UUID) (m models.Quotation, err e
 
 func (module *module) InsertQuotation(p *dto.InsertQuotation) (err error) {
 	if err = module.db.quotationModel.InsertQuotation(models.Quotation{
-		Number:              p.Number,
+		Number:              strings.ToUpper(p.Number),
 		FrancoArea:          p.FrancoArea,
 		PaymentTerm:         p.PaymentTerm,
 		SendAfter:           p.SendAfter,
@@ -52,7 +53,7 @@ func (module *module) InsertQuotation(p *dto.InsertQuotation) (err error) {
 
 func (module *module) UpdateQuotation(id uuid.UUID, p *dto.UpdateQuotation) (err error) {
 	if err = module.db.quotationModel.UpdateQuotation(id, models.Quotation{
-		Number:              p.Number,
+		Number:              strings.ToUpper(p.Number),
 		FrancoArea:          p.FrancoArea,
 		PaymentTerm:         p.PaymentTerm,
 		SendAfter:           p.SendAfter,

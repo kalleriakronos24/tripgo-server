@@ -1,7 +1,6 @@
 package v1
 
 import (
-	"errors"
 	"fmt"
 	"gitlab.com/odma1/odma-be/constants"
 	"gitlab.com/odma1/odma-be/models"
@@ -92,14 +91,14 @@ func POSTOperatingActivityProduct(c *gin.Context) {
 		return
 	}
 
-	if err := services.Handler.CheckExistingOperatingActivityProduct("", struct {
-		*models.OperatingActivityProduct
-	}{&models.OperatingActivityProduct{
-		OperatingActivityID: p.OperatingActivityID,
-	}}); err == nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", errors.New("data cannot be duplicated"), fmt.Sprintf("data is already existing with operating activity id %s", p.OperatingActivityID)))
-		return
-	}
+	//if err := services.Handler.CheckExistingOperatingActivityProduct("", struct {
+	//	*models.OperatingActivityProduct
+	//}{&models.OperatingActivityProduct{
+	//	OperatingActivityID: p.OperatingActivityID,
+	//}}); err == nil {
+	//	c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", errors.New("data cannot be duplicated"), fmt.Sprintf("data is already existing with operating activity id %s", p.OperatingActivityID)))
+	//	return
+	//}
 
 	if err = services.Handler.InsertOperatingActivityProduct(p); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("insert-failed", err, "operating activity id"))
@@ -153,23 +152,23 @@ func PUTOperatingActivityProduct(c *gin.Context) {
 		return
 	}
 
-	if operatingActivityProduct, err := services.Handler.RetrieveOperatingActivityProduct(operatingActivityProductId); err == nil {
-
-		if operatingActivityProduct.OperatingActivityID != p.OperatingActivityID {
-			if err := services.Handler.CheckExistingOperatingActivityProduct(id, struct {
-				*models.OperatingActivityProduct
-			}{&models.OperatingActivityProduct{
-				OperatingActivityID: p.OperatingActivityID,
-			}}); err == nil {
-				c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", errors.New("data cannot be duplicated"), fmt.Sprintf("data is already existing with operating activity's tax number %s", operatingActivityProduct.OperatingActivity.TaxInvoiceNumber)))
-				return
-			}
-		}
-
-	} else {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "operating activity product"))
-		return
-	}
+	//if operatingActivityProduct, err := services.Handler.RetrieveOperatingActivityProduct(operatingActivityProductId); err == nil {
+	//
+	//	if operatingActivityProduct.OperatingActivityID != p.OperatingActivityID {
+	//		if err := services.Handler.CheckExistingOperatingActivityProduct(id, struct {
+	//			*models.OperatingActivityProduct
+	//		}{&models.OperatingActivityProduct{
+	//			OperatingActivityID: p.OperatingActivityID,
+	//		}}); err == nil {
+	//			c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", errors.New("data cannot be duplicated"), fmt.Sprintf("data is already existing with operating activity's tax number %s", operatingActivityProduct.OperatingActivity.TaxInvoiceNumber)))
+	//			return
+	//		}
+	//	}
+	//
+	//} else {
+	//	c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "operating activity product"))
+	//	return
+	//}
 
 	if err = services.Handler.UpdateOperatingActivityProduct(operatingActivityProductId, p); err != nil {
 		c.JSON(http.StatusNotModified, constants.GetErrorResponse("update-failed", err, "operating activity product"))

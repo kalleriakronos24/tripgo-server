@@ -5,7 +5,7 @@ import (
 )
 
 type InsertPurchaseOrderProductValidator struct {
-	Quantity        float32 `json:"quantity,omitempty" binding:"required" validate:"required"`
+	Quantity        float64 `json:"quantity,omitempty" binding:"required" validate:"required"`
 	VATRate         int16   `json:"vatRate,omitempty" binding:"required" validate:"required"`
 	SubTotal        float64 `json:"subTotal,omitempty" binding:"required" validate:"required"`
 	GrandTotal      float64 `json:"grandTotal,omitempty" binding:"required" validate:"required"`
@@ -17,7 +17,7 @@ type InsertPurchaseOrderProductValidator struct {
 
 type UpdatePurchaseOrderProductValidator struct {
 	ID              uuid.UUID
-	Quantity        float32 `json:"quantity,omitempty" binding:"required" validate:"required"`
+	Quantity        float64 `json:"quantity,omitempty" binding:"required" validate:"required"`
 	VATRate         int16   `json:"vatRate,omitempty" binding:"required" validate:"required"`
 	SubTotal        float64 `json:"subTotal,omitempty" binding:"required" validate:"required"`
 	GrandTotal      float64 `json:"grandTotal,omitempty" binding:"required" validate:"required"`
@@ -28,7 +28,7 @@ type UpdatePurchaseOrderProductValidator struct {
 }
 
 type InsertPurchaseOrderProduct struct {
-	Quantity        float32
+	Quantity        float64
 	VATRate         int16
 	SubTotal        float64
 	GrandTotal      float64
@@ -40,7 +40,7 @@ type InsertPurchaseOrderProduct struct {
 
 type UpdatePurchaseOrderProduct struct {
 	ID              uuid.UUID
-	Quantity        float32
+	Quantity        float64
 	VATRate         int16
 	SubTotal        float64
 	GrandTotal      float64

@@ -160,3 +160,25 @@ func PUTProduct(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, dto.Response{Message: "success"})
 }
+
+func DELETEProduct(c *gin.Context) {
+	var err error
+
+	id, _ := c.Params.Get("id")
+	productId, err := uuid.Parse(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("uuid-error", err, ""))
+		return
+	}
+
+	if err := services.Handler.CheckExistingProduct(productId.String(), struct{ *models.Product }{&models.Product{}}); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("product id %s is not found", productId)))
+		return
+	}
+
+	if err = services.Handler.DeleteProduct(productId); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("delete-failed", err, "product"))
+		return
+	}
+	c.JSON(http.StatusOK, dto.Response{Message: "success"})
+}

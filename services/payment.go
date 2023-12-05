@@ -35,8 +35,8 @@ func (module *module) RetrievePayment(id uuid.UUID) (m models.Payment, err error
 	return
 }
 
-func (module *module) InsertPayment(p *dto.InsertPayment) (err error) {
-	if err = module.db.paymentModel.InsertPayment(models.Payment{
+func (module *module) InsertPayment(p *dto.InsertPayment) (m models.Payment, err error) {
+	if m, err := module.db.paymentModel.InsertPayment(models.Payment{
 		Currency:            p.Currency,
 		Amount:              p.Amount,
 		Term:                p.Term,
@@ -47,9 +47,10 @@ func (module *module) InsertPayment(p *dto.InsertPayment) (err error) {
 		OperatingActivityID: p.OperatingActivityID,
 		PaymentCreatedBy:    p.CreatedBy,
 	}); err != nil {
-		return errors.New(err.Error())
+		return m, errors.New(err.Error())
 	}
-	return
+
+	return m, nil
 }
 
 func (module *module) UpdatePayment(id uuid.UUID, p *dto.UpdatePayment) (err error) {

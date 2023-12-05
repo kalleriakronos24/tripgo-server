@@ -11,6 +11,7 @@ import (
 	"gitlab.com/odma1/odma-be/models"
 	"gitlab.com/odma1/odma-be/utils"
 	"path"
+	"strings"
 )
 
 type CheckExistingPurchaseOrderStruct struct {
@@ -74,7 +75,7 @@ func (module *module) InsertPurchaseOrder(c *gin.Context, p *dto.InsertPurchaseO
 	}
 
 	purchaseOrder := models.PurchaseOrder{
-		Number:                 p.Number,
+		Number:                 strings.ToUpper(p.Number),
 		Type:                   p.Type,
 		Recipient:              p.Recipient,
 		RecipientEmail:         p.RecipientEmail,
@@ -151,7 +152,7 @@ func (module *module) UpdatePurchaseOrder(c *gin.Context, id uuid.UUID, p *dto.U
 
 	purchaseOrder := models.PurchaseOrder{
 		ID:                     id,
-		Number:                 p.Number,
+		Number:                 strings.ToUpper(p.Number),
 		Type:                   p.Type,
 		Recipient:              p.Recipient,
 		RecipientEmail:         p.RecipientEmail,

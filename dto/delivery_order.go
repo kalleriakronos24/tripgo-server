@@ -7,7 +7,6 @@ import (
 )
 
 type InsertFormDataDeliveryOrder struct {
-	Number              string `json:"number,omitempty" form:"number" binding:"required"`
 	ContactPerson       string `json:"contactPerson,omitempty" form:"contactPerson" binding:"required"`
 	PhoneNumber         string `json:"phoneNumber,omitempty" form:"phoneNumber" binding:"required"`
 	Address             string `json:"address,omitempty" form:"address" binding:"required"`
@@ -21,7 +20,6 @@ type InsertFormDataDeliveryOrder struct {
 
 type UpdateFormDataDeliveryOrder struct {
 	ID                  uuid.UUID
-	Number              string `json:"number,omitempty" form:"number" binding:"required"`
 	ContactPerson       string `json:"contactPerson,omitempty" form:"contactPerson" binding:"required"`
 	PhoneNumber         string `json:"phoneNumber,omitempty" form:"phoneNumber" binding:"required"`
 	Address             string `json:"address,omitempty" form:"address" binding:"required"`
@@ -35,7 +33,6 @@ type UpdateFormDataDeliveryOrder struct {
 
 type UpdateDeliveryOrder struct {
 	ID                  uuid.UUID
-	Number              string
 	ContactPerson       string
 	PhoneNumber         string
 	Address             string
@@ -48,7 +45,6 @@ type UpdateDeliveryOrder struct {
 }
 
 type InsertDeliveryOrder struct {
-	Number              string
 	ContactPerson       string
 	PhoneNumber         string
 	Address             string

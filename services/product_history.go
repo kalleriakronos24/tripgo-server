@@ -8,6 +8,7 @@ import (
 	database "gitlab.com/odma1/odma-be/db"
 	"gitlab.com/odma1/odma-be/dto"
 	"gitlab.com/odma1/odma-be/models"
+	"gorm.io/gorm"
 )
 
 type CheckExistingProductHistoryStruct struct {
@@ -56,6 +57,12 @@ func (module *module) UpdateProductHistory(id uuid.UUID, p *dto.UpdateProductHis
 		OperatingActivityID:     p.OperatingActivityID,
 		ProductHistoryUpdatedBy: p.UpdatedBy,
 	}); err != nil {
+		return errors.New(err.Error())
+	}
+	return
+}
+func (module *module) DeleteProductHistory(id uuid.UUID, tx *gorm.DB) (err error) {
+	if err = module.db.productHistoryModel.DeleteProductHistoryByProductID(id, tx); err != nil {
 		return errors.New(err.Error())
 	}
 	return

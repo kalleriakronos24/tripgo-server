@@ -16,10 +16,11 @@ type InvoiceOrm struct {
 	db *gorm.DB
 }
 type Invoice struct {
-	ID     uuid.UUID `gorm:"index:id,unique;type:uuid;default:gen_random_uuid();" json:"id"`
-	Number string    `json:"number,omitempty" gorm:"not null;unique"`
-	Type   string    `json:"type,omitempty" gorm:"not null;default:proforma"`
-	Date   time.Time `json:"date,omitempty" gorm:"not null"`
+	ID       uuid.UUID `gorm:"index:id,unique;type:uuid;default:gen_random_uuid();" json:"id"`
+	Number   string    `json:"number,omitempty" gorm:"not null;unique"`
+	Type     string    `json:"type,omitempty" gorm:"not null;default:proforma"`
+	Date     time.Time `json:"date,omitempty" gorm:"not null"`
+	Sequence string    `json:"sequence,omitempty" gorm:"not null;default:0001"`
 
 	OperatingActivityID uuid.UUID          `json:"operatingActivityId" gorm:"type:uuid;not null;default:NULL;"`
 	OperatingActivity   *OperatingActivity `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:OperatingActivityID;references:ID" json:"operatingActivity"`

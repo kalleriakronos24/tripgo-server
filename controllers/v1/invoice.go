@@ -71,7 +71,6 @@ func POSTInvoice(c *gin.Context) {
 
 	operatingActivityId, _ := uuid.Parse(pValidator.OperatingActivityID)
 	p := &dto.InsertInvoice{
-		Number:              pValidator.Number,
 		Type:                pValidator.Type,
 		Date:                utils.ConvertStrToDateTime(pValidator.Date),
 		OperatingActivityID: operatingActivityId,
@@ -80,13 +79,6 @@ func POSTInvoice(c *gin.Context) {
 
 	if err := services.Handler.CheckExistingOperatingActivity(p.OperatingActivityID.String(), struct{ *models.OperatingActivity }{&models.OperatingActivity{}}); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("operating id %s is not found", p.OperatingActivityID)))
-		return
-	}
-
-	if err := services.Handler.CheckExistingInvoice("", struct{ *models.Invoice }{&models.Invoice{
-		Number: p.Number,
-	}}); err == nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-existing", err, ""))
 		return
 	}
 
@@ -115,7 +107,6 @@ func PUTInvoice(c *gin.Context) {
 
 	operatingActivityId, _ := uuid.Parse(pValidator.OperatingActivityID)
 	p := &dto.UpdateInvoice{
-		Number:              pValidator.Number,
 		Type:                pValidator.Type,
 		Date:                utils.ConvertStrToDateTime(pValidator.Date),
 		OperatingActivityID: operatingActivityId,
@@ -134,18 +125,7 @@ func PUTInvoice(c *gin.Context) {
 		return
 	}
 
-	if Invoice, err := services.Handler.RetrieveInvoice(InvoiceId); err == nil {
-
-		if Invoice.Number != p.Number {
-			if err := services.Handler.CheckExistingInvoice(id, struct{ *models.Invoice }{&models.Invoice{
-				Number: p.Number,
-			}}); err == nil {
-				c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-existing", err, p.Number))
-				return
-			}
-		}
-
-	} else {
+	if _, err := services.Handler.RetrieveInvoice(InvoiceId); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "invoice"))
 		return
 	}

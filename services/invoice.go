@@ -8,6 +8,10 @@ import (
 	database "gitlab.com/odma1/odma-be/db"
 	"gitlab.com/odma1/odma-be/dto"
 	"gitlab.com/odma1/odma-be/models"
+	"gitlab.com/odma1/odma-be/utils"
+	"strconv"
+	"strings"
+	"time"
 )
 
 type CheckExistingInvoiceStruct struct {
@@ -39,10 +43,33 @@ func (module *module) InsertInvoice(p *dto.InsertInvoice) (err error) {
 
 	tx := database.GetDatabaseConnection().Begin()
 
+	InvoiceModel := models.Invoice{}
+
+	_, invoiceLastDataErr := database.GetLastDocumentNumber(tx, &InvoiceModel)
+
+	if invoiceLastDataErr != nil {
+		InvoiceModel.Sequence = "0001"
+	}
+
+	parsedNumber, _ := strconv.Atoi(InvoiceModel.Sequence)
+	strLastNumber := strconv.Itoa(parsedNumber)
+	getFrontDigitNumber := strings.Replace(InvoiceModel.Sequence, strLastNumber, "", -1)
+	convertActiveNumberToStr, _ := strconv.Atoi(strLastNumber)
+	addActiveNumberByOne := convertActiveNumberToStr + 1
+	convertAddedActiveNumberToStr := strconv.Itoa(addActiveNumberByOne)
+	finalNumber := getFrontDigitNumber + convertAddedActiveNumberToStr
+
+	now := time.Now()
+	year := now.Year()
+	month := now.Month()
+	monthInRoman := utils.IntegerToRoman(int(month))
+	formattedNumber := fmt.Sprintf("%s/INV_%s/%s/%d", finalNumber, "SPH", monthInRoman, year)
+
 	Invoice := models.Invoice{
-		Number:              p.Number,
+		Number:              formattedNumber,
 		Type:                p.Type,
 		Date:                p.Date,
+		Sequence:            finalNumber,
 		OperatingActivityID: p.OperatingActivityID,
 		InvoiceCreatedBy:    p.CreatedBy,
 	}
@@ -60,7 +87,6 @@ func (module *module) UpdateInvoice(id uuid.UUID, p *dto.UpdateInvoice) (err err
 
 	Invoice := models.Invoice{
 		ID:                  id,
-		Number:              p.Number,
 		Type:                p.Type,
 		Date:                p.Date,
 		OperatingActivityID: p.OperatingActivityID,

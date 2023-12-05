@@ -5,7 +5,7 @@ import (
 )
 
 type InsertOperatingActivityProductValidator struct {
-	Quantity            float32 `json:"quantity,omitempty" validate:"required"`
+	Quantity            float64 `json:"quantity,omitempty" validate:"required"`
 	VATRate             int16   `json:"vatRate,omitempty" validate:"required"`
 	SubTotal            float64 `json:"subTotal,omitempty" validate:"required"`
 	GrandTotal          float64 `json:"grandTotal,omitempty" validate:"required"`
@@ -16,7 +16,7 @@ type InsertOperatingActivityProductValidator struct {
 
 type UpdateOperatingActivityProductValidator struct {
 	ID                  uuid.UUID
-	Quantity            float32 `json:"quantity,omitempty" validate:"required"`
+	Quantity            float64 `json:"quantity,omitempty" validate:"required"`
 	VATRate             int16   `json:"vatRate,omitempty" validate:"required"`
 	SubTotal            float64 `json:"subTotal,omitempty" validate:"required"`
 	GrandTotal          float64 `json:"grandTotal,omitempty" validate:"required"`
@@ -26,7 +26,7 @@ type UpdateOperatingActivityProductValidator struct {
 }
 
 type InsertOperatingActivityProduct struct {
-	Quantity            float32
+	Quantity            float64
 	VATRate             int16
 	SubTotal            float64
 	GrandTotal          float64
@@ -37,7 +37,7 @@ type InsertOperatingActivityProduct struct {
 
 type UpdateOperatingActivityProduct struct {
 	ID                  uuid.UUID
-	Quantity            float32
+	Quantity            float64
 	VATRate             int16
 	SubTotal            float64
 	GrandTotal          float64

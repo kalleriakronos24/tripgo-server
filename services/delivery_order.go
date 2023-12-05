@@ -10,8 +10,10 @@ import (
 	"gitlab.com/odma1/odma-be/dto"
 	"gitlab.com/odma1/odma-be/models"
 	"gitlab.com/odma1/odma-be/utils"
-	"log"
 	"path"
+	"strconv"
+	"strings"
+	"time"
 )
 
 type CheckExistingDeliveryOrderStruct struct {
@@ -49,7 +51,6 @@ func (module *module) InsertDeliveryOrder(c *gin.Context, p *dto.InsertDeliveryO
 	if operatingActivity, operatingActivityErr = module.db.operatingActivityModel.GetOneOperatingActivityByID(p.OperatingActivityID); operatingActivityErr != nil {
 		return errors.New(operatingActivityErr.Error())
 	}
-	log.Println("DDDD >>> ", p.Number)
 	clientData := operatingActivity.Client
 	documentPath := fmt.Sprintf("/client/%s/delivery-order/%s", clientData.Name, p.Document.Filename)
 	fileExt := path.Ext(p.Document.Filename)
@@ -63,6 +64,7 @@ func (module *module) InsertDeliveryOrder(c *gin.Context, p *dto.InsertDeliveryO
 		Location:          "local",
 		DocumentCreatedBy: p.CreatedBy,
 	}
+
 	if errDocument := tx.Create(&document); err != nil {
 		tx.Rollback()
 		return errDocument.Error
@@ -74,8 +76,30 @@ func (module *module) InsertDeliveryOrder(c *gin.Context, p *dto.InsertDeliveryO
 		return errors.New(saveFileErr.Error())
 	}
 
+	DeliveryOrderModel := models.DeliveryOrder{}
+
+	_, deliveryLastDataErr := database.GetLastDocumentNumber(tx, &DeliveryOrderModel)
+
+	if deliveryLastDataErr != nil {
+		DeliveryOrderModel.Sequence = "0001"
+	}
+
+	parsedNumber, _ := strconv.Atoi(DeliveryOrderModel.Sequence)
+	strLastNumber := strconv.Itoa(parsedNumber)
+	getFrontDigitNumber := strings.Replace(DeliveryOrderModel.Sequence, strLastNumber, "", -1)
+	convertActiveNumberToStr, _ := strconv.Atoi(strLastNumber)
+	addActiveNumberByOne := convertActiveNumberToStr + 1
+	convertAddedActiveNumberToStr := strconv.Itoa(addActiveNumberByOne)
+	finalNumber := getFrontDigitNumber + convertAddedActiveNumberToStr
+
+	now := time.Now()
+	year := now.Year()
+	month := now.Month()
+	monthInRoman := utils.IntegerToRoman(int(month))
+	formattedNumber := fmt.Sprintf("%s/INV_%s/%s/%d", finalNumber, "DO", monthInRoman, year)
+
 	DeliveryOrder := models.DeliveryOrder{
-		Number:                 p.Number,
+		Number:                 formattedNumber,
 		ContactPerson:          p.ContactPerson,
 		PhoneNumber:            p.PhoneNumber,
 		Address:                p.Address,
@@ -83,9 +107,11 @@ func (module *module) InsertDeliveryOrder(c *gin.Context, p *dto.InsertDeliveryO
 		Date:                   p.Date,
 		Status:                 p.Status,
 		DocumentID:             document.ID,
+		Sequence:               finalNumber,
 		OperatingActivityID:    p.OperatingActivityID,
 		DeliveryOrderCreatedBy: p.CreatedBy,
 	}
+
 	if DeliveryOrderErr := tx.Create(&DeliveryOrder); err != nil {
 		tx.Rollback()
 		return DeliveryOrderErr.Error
@@ -120,9 +146,9 @@ func (module *module) UpdateDeliveryOrder(c *gin.Context, id uuid.UUID, p *dto.U
 	/**
 	in here we just update the document's values regardless the user upload a new file or the same
 
-	because the docker logic, if it's same file, it will replaces the old one.
+	because the docker logic, if it's same file, it will replace the old one.
 
-	if it's different than the old one, it will adds the new file, keeping the old one.
+	if it's different from the old one, it will add the new file, keeping the old one.
 
 	but since we update the values in our table, we will retrieve the latest file that user updated
 	*/
@@ -153,8 +179,8 @@ func (module *module) UpdateDeliveryOrder(c *gin.Context, id uuid.UUID, p *dto.U
 	}
 
 	DeliveryOrder := models.DeliveryOrder{
-		ID:                     id,
-		Number:                 p.Number,
+		ID: id,
+		//Number:                 p.Number,
 		ContactPerson:          p.ContactPerson,
 		PhoneNumber:            p.PhoneNumber,
 		Address:                p.Address,
@@ -176,7 +202,6 @@ func (module *module) UpdateDeliveryOrder(c *gin.Context, id uuid.UUID, p *dto.U
 func (module *module) CheckExistingDeliveryOrder(id string, param CheckExistingDeliveryOrderStruct) (err error) {
 
 	if param.Number != "" {
-		log.Println("DO NUMBER ", param.Number)
 		if _, dbErr := module.db.deliveryOrderModel.GetOneDeliveryOrderByNumber(param.Number); dbErr != nil {
 			return errors.New(dbErr.Error())
 		}

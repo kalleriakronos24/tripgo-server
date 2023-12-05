@@ -8,6 +8,7 @@ import (
 	database "gitlab.com/odma1/odma-be/db"
 	"gitlab.com/odma1/odma-be/dto"
 	"gitlab.com/odma1/odma-be/models"
+	"gorm.io/gorm"
 )
 
 type CheckExistingOperatingActivityProductStruct struct {
@@ -43,6 +44,15 @@ func (module *module) RetrieveManyOperatingActivityProductByOperatingActivityID(
 }
 
 func (module *module) InsertOperatingActivityProduct(p *dto.InsertOperatingActivityProduct) (err error) {
+
+	if product, err := module.db.productModel.GetOneProductByID(p.ProductID); err != nil {
+		return errors.New(err.Error())
+	} else {
+		if p.Quantity > product.Stock {
+			return errors.New("operating product quantity cannot be more than product stock")
+		}
+	}
+
 	if err = module.db.operatingActivityProductModel.InsertOperatingActivityProduct(models.OperatingActivityProduct{
 		Quantity:                          p.Quantity,
 		VATRate:                           p.VATRate,
@@ -58,6 +68,15 @@ func (module *module) InsertOperatingActivityProduct(p *dto.InsertOperatingActiv
 }
 
 func (module *module) UpdateOperatingActivityProduct(id uuid.UUID, p *dto.UpdateOperatingActivityProduct) (err error) {
+
+	if product, err := module.db.productModel.GetOneProductByID(p.ProductID); err != nil {
+		return errors.New(err.Error())
+	} else {
+		if p.Quantity > product.Stock {
+			return errors.New("operating product quantity cannot be more than product stock")
+		}
+	}
+
 	if err = module.db.operatingActivityProductModel.UpdateOperatingActivityProduct(id, models.OperatingActivityProduct{
 		Quantity:                          p.Quantity,
 		VATRate:                           p.VATRate,
@@ -67,6 +86,13 @@ func (module *module) UpdateOperatingActivityProduct(id uuid.UUID, p *dto.Update
 		ProductID:                         p.ProductID,
 		OperatingActivityProductUpdatedBy: p.UpdatedBy,
 	}); err != nil {
+		return errors.New(err.Error())
+	}
+	return
+}
+
+func (module *module) DeleteOperatingActivityProductByProductID(id uuid.UUID, tx *gorm.DB) (err error) {
+	if err = module.db.operatingActivityProductModel.DeleteOperatingActivityProductByProductID(id, tx); err != nil {
 		return errors.New(err.Error())
 	}
 	return

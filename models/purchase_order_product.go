@@ -16,7 +16,7 @@ type PurchaseOrderProductOrm struct {
 
 type PurchaseOrderProduct struct {
 	ID         uuid.UUID `gorm:"index:id,unique;type:uuid;default:gen_random_uuid();" json:"id"`
-	Quantity   float32   `json:"quantity,omitempty" gorm:"not null"`
+	Quantity   float64   `json:"quantity,omitempty" gorm:"not null"`
 	VATRate    int16     `json:"vatRate,omitempty" gorm:"not null"`
 	SubTotal   float64   `json:"subTotal,omitempty" gorm:"not null;"`
 	GrandTotal float64   `json:"grandTotal,omitempty" gorm:"not null;"`
@@ -43,6 +43,7 @@ type PurchaseOrderProductModelAction interface {
 	GetOnePurchaseOrderProductByPurchaseOrderId(purchaseOrderId uuid.UUID) (m PurchaseOrderProduct, err error)
 	InsertPurchaseOrderProduct(p PurchaseOrderProduct) (err error)
 	UpdatePurchaseOrderProduct(id uuid.UUID, p PurchaseOrderProduct) (err error)
+	DeletePurchaseOrderProductByProductID(id uuid.UUID, tx *gorm.DB) (err error)
 }
 
 func NewPurchaseOrderProductAction(db *gorm.DB) PurchaseOrderProductModelAction {
@@ -106,5 +107,10 @@ func (o *PurchaseOrderProductOrm) InsertPurchaseOrderProduct(p PurchaseOrderProd
 
 func (o *PurchaseOrderProductOrm) UpdatePurchaseOrderProduct(id uuid.UUID, p PurchaseOrderProduct) (err error) {
 	result := o.db.Model(&p).Where("id = ?", id).Updates(&p)
+	return result.Error
+}
+
+func (o *PurchaseOrderProductOrm) DeletePurchaseOrderProductByProductID(id uuid.UUID, tx *gorm.DB) (err error) {
+	result := tx.Model(&PurchaseOrderProduct{}).Where("product_id = ?", id).Delete(&PurchaseOrderProduct{})
 	return result.Error
 }

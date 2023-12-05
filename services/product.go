@@ -8,6 +8,7 @@ import (
 	database "gitlab.com/odma1/odma-be/db"
 	"gitlab.com/odma1/odma-be/dto"
 	"gitlab.com/odma1/odma-be/models"
+	"strings"
 )
 
 type CheckExistingProductStruct struct {
@@ -37,7 +38,7 @@ func (module *module) RetrieveProduct(id uuid.UUID) (m models.Product, err error
 
 func (module *module) InsertProduct(p *dto.InsertProduct) (err error) {
 	if err = module.db.productModel.InsertProduct(models.Product{
-		Name:             p.Name,
+		Name:             strings.ToUpper(p.Name),
 		UnitPrice:        p.UnitPrice,
 		Packaging:        p.Packaging,
 		Stock:            p.Stock,
@@ -52,7 +53,7 @@ func (module *module) InsertProduct(p *dto.InsertProduct) (err error) {
 
 func (module *module) UpdateProduct(id uuid.UUID, p *dto.UpdateProduct) (err error) {
 	if err = module.db.productModel.UpdateProduct(id, models.Product{
-		Name:             p.Name,
+		Name:             strings.ToUpper(p.Name),
 		UnitPrice:        p.UnitPrice,
 		Packaging:        p.Packaging,
 		Stock:            p.Stock,
@@ -62,6 +63,35 @@ func (module *module) UpdateProduct(id uuid.UUID, p *dto.UpdateProduct) (err err
 	}); err != nil {
 		return errors.New(err.Error())
 	}
+	return
+}
+
+func (module *module) DeleteProduct(id uuid.UUID) (err error) {
+
+	tx := database.GetDatabaseConnection().Begin()
+
+	if err = module.db.productModel.DeleteProduct(id, tx); err != nil {
+		tx.Rollback()
+		return errors.New(err.Error())
+	}
+
+	if err = module.db.operatingActivityProductModel.DeleteOperatingActivityProductByProductID(id, tx); err != nil {
+		tx.Rollback()
+		return errors.New(err.Error())
+	}
+
+	if err = module.db.productHistoryModel.DeleteProductHistoryByProductID(id, tx); err != nil {
+		tx.Rollback()
+		return errors.New(err.Error())
+	}
+
+	if err = module.db.purchaseOrderProductModel.DeletePurchaseOrderProductByProductID(id, tx); err != nil {
+		tx.Rollback()
+		return errors.New(err.Error())
+	}
+
+	tx.Commit()
+
 	return
 }
 

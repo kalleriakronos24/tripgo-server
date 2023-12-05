@@ -88,11 +88,12 @@ func POSTPayment(c *gin.Context) {
 		return
 	}
 
-	if err = services.Handler.InsertPayment(p); err != nil {
+	if m, err := services.Handler.InsertPayment(p); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("insert-failed", err, "payment"))
 		return
+	} else {
+		c.JSON(http.StatusOK, dto.Response{Message: "success", Data: m})
 	}
-	c.JSON(http.StatusOK, dto.Response{Message: "success"})
 }
 
 func PUTPayment(c *gin.Context) {

@@ -78,6 +78,8 @@ func InitializeRouter() (router *gin.Engine) {
 			product.POST("/", utils.AuthOnly, v1.POSTProduct)
 
 			product.PUT("/:id", utils.AuthOnly, v1.PUTProduct)
+
+			product.DELETE("/:id", utils.AuthOnly, v1.DELETEProduct)
 		}
 
 		productHistory := v1route.Group("/product-history")

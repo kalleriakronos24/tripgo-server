@@ -1,11 +1,13 @@
 package database
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm/logger"
 	"log"
 	"math"
 	"strconv"
+	"time"
 
 	"gitlab.com/odma1/odma-be/config"
 	"gorm.io/driver/postgres"
@@ -33,6 +35,37 @@ func GetDatabaseConnection() *gorm.DB {
 		return nil
 	}
 	return db
+}
+
+func DropUnusedColumns(dst interface{}) {
+
+	db := GetDatabaseConnection()
+	stmt := db.Statement
+	err := stmt.Parse(dst)
+
+	if err != nil {
+		log.Println("[INIT] failed parse column on the database ", err.Error())
+		return
+	}
+	fields := stmt.Schema.Fields
+	columns, _ := db.Debug().Migrator().ColumnTypes(dst)
+
+	for i := range columns {
+		found := false
+		for j := range fields {
+			if columns[i].Name() == fields[j].DBName {
+				found = true
+				break
+			}
+		}
+		if !found {
+			err := db.Migrator().DropColumn(dst, columns[i].Name())
+			if err != nil {
+				log.Println("[INIT] failed drop column on the database ", err.Error())
+				return
+			}
+		}
+	}
 }
 
 func Paginator(c *gin.Context, value interface{}, relations []string, pagination *Pagination) func(db *gorm.DB) *gorm.DB {
@@ -99,4 +132,23 @@ func Paginator(c *gin.Context, value interface{}, relations []string, pagination
 		*db = *db.Offset(offset).Limit(limit).Order(sortWithDirection)
 		return db
 	}
+}
+
+func GetLastDocumentNumber(tx *gorm.DB, model interface{}) (m *interface{}, err error) {
+
+	now := time.Now()
+	currentYear, currentMonth, _ := now.Date()
+	currentLocation := now.Location()
+
+	startingOfMonth := time.Date(currentYear, currentMonth, 1, 0, 0, 0, 0, currentLocation)
+	endingOfMonth := startingOfMonth.AddDate(0, 1, -1)
+
+	tx = tx.Model(&model).Where("created_at >= ? AND created_at <= ?", startingOfMonth, endingOfMonth).Last(&model)
+
+	if tx != nil {
+		return &model, errors.New("failed to get last document number")
+	}
+
+	return &model, nil
+
 }

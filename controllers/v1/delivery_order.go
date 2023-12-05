@@ -76,7 +76,6 @@ func POSTDeliveryOrder(c *gin.Context) {
 
 	operatingActivityId, _ := uuid.Parse(pValidator.OperatingActivityID)
 	p := &dto.InsertDeliveryOrder{
-		Number:              pValidator.Number,
 		ContactPerson:       pValidator.ContactPerson,
 		PhoneNumber:         pValidator.PhoneNumber,
 		Address:             pValidator.Address,
@@ -91,16 +90,6 @@ func POSTDeliveryOrder(c *gin.Context) {
 	// check existing operating id
 	if err := services.Handler.CheckExistingOperatingActivity(p.OperatingActivityID.String(), struct{ *models.OperatingActivity }{&models.OperatingActivity{}}); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("operating id %s is not found", p.OperatingActivityID)))
-		return
-	}
-
-	// check duplication delivery number
-	if err := services.Handler.CheckExistingDeliveryOrder("", struct {
-		*models.DeliveryOrder
-	}{&models.DeliveryOrder{
-		Number: p.Number,
-	}}); err == nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", errors.New("data cannot be duplicated"), fmt.Sprintf("data is already existing with delivery number %s", p.Number)))
 		return
 	}
 
@@ -135,7 +124,6 @@ func PUTDeliveryOrder(c *gin.Context) {
 	operatingActivityId, _ := uuid.Parse(pValidator.OperatingActivityID)
 	p := &dto.UpdateDeliveryOrder{
 		ID:                  pValidator.ID,
-		Number:              pValidator.Number,
 		ContactPerson:       pValidator.ContactPerson,
 		PhoneNumber:         pValidator.PhoneNumber,
 		Address:             pValidator.Address,
@@ -156,18 +144,6 @@ func PUTDeliveryOrder(c *gin.Context) {
 
 	// checks
 	if DeliveryOrder, err := services.Handler.RetrieveDeliveryOrder(DeliveryOrderId); err == nil {
-
-		// check duplication delivery number
-		if DeliveryOrder.Number != p.Number {
-			if err := services.Handler.CheckExistingDeliveryOrder(id, struct {
-				*models.DeliveryOrder
-			}{&models.DeliveryOrder{
-				Number: p.Number,
-			}}); err == nil {
-				c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", errors.New("data cannot be duplicated"), fmt.Sprintf("data is already existing with delivery number %s", DeliveryOrder.Number)))
-				return
-			}
-		}
 
 		// check existing operating id
 		if err := services.Handler.CheckExistingOperatingActivity(p.OperatingActivityID.String(), struct{ *models.OperatingActivity }{&models.OperatingActivity{}}); err != nil {

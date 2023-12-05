@@ -22,7 +22,7 @@ type ProductHistory struct {
 	ProductID           uuid.UUID          `json:"productId" gorm:"type:uuid;not null;default:NULL;"`
 	Product             *Product           `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:ProductID;references:ID" json:"product"`
 	OperatingActivityID uuid.UUID          `json:"operatingActivityId" gorm:"type:uuid;not null;default:NULL;"`
-	OperatingActivity   *OperatingActivity `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;foreignKey:OperatingActivityID;references:ID" json:"operatingActivity"`
+	OperatingActivity   *OperatingActivity `gorm:"constraint:OnUpdate:CASCADE,OnDelete:NULL;foreignKey:OperatingActivityID;references:ID" json:"operatingActivity"`
 
 	ProductHistoryCreatedBy uuid.UUID    `json:"createdBy" gorm:"type:uuid;not null;default:NULL;"`
 	ProductHistoryUpdatedBy uuid.UUID    `json:"updatedBy" gorm:"type:uuid;default:NULL;"`
@@ -40,6 +40,7 @@ type ProductHistoryModelAction interface {
 
 	InsertProductHistory(p ProductHistory) (err error)
 	UpdateProductHistory(id uuid.UUID, p ProductHistory) (err error)
+	DeleteProductHistoryByProductID(id uuid.UUID, tx *gorm.DB) (err error)
 }
 
 func NewProductHistoryAction(db *gorm.DB) ProductHistoryModelAction {
@@ -101,5 +102,10 @@ func (o *ProductHistoryOrm) InsertProductHistory(p ProductHistory) (err error) {
 
 func (o *ProductHistoryOrm) UpdateProductHistory(id uuid.UUID, p ProductHistory) (err error) {
 	result := o.db.Model(&p).Where("id = ?", id).Updates(&p)
+	return result.Error
+}
+
+func (o *ProductHistoryOrm) DeleteProductHistoryByProductID(id uuid.UUID, tx *gorm.DB) (err error) {
+	result := tx.Model(&ProductHistory{}).Where("product_id = ?", id).Delete(&ProductHistory{})
 	return result.Error
 }

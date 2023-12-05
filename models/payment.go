@@ -42,7 +42,7 @@ type PaymentModelAction interface {
 	GetOnePaymentByID(id uuid.UUID) (m Payment, err error)
 	GetOnePaymentByOperatingActivityID(productId uuid.UUID) (m Payment, err error)
 
-	InsertPayment(p Payment) (err error)
+	InsertPayment(p Payment) (m Payment, err error)
 	UpdatePayment(id uuid.UUID, p Payment) (err error)
 }
 
@@ -96,9 +96,9 @@ func (o *PaymentOrm) GetOnePaymentByOperatingActivityID(operatingActivityId uuid
 	return m, result.Error
 }
 
-func (o *PaymentOrm) InsertPayment(p Payment) (err error) {
-	result := o.db.Model(&p).Omit(clause.Associations).Create(&p)
-	return result.Error
+func (o *PaymentOrm) InsertPayment(p Payment) (m Payment, err error) {
+	result := o.db.Model(&m).Omit(clause.Associations).Create(&p)
+	return p, result.Error
 }
 
 func (o *PaymentOrm) UpdatePayment(id uuid.UUID, p Payment) (err error) {

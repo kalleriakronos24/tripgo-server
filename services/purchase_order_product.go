@@ -8,6 +8,7 @@ import (
 	database "gitlab.com/odma1/odma-be/db"
 	"gitlab.com/odma1/odma-be/dto"
 	"gitlab.com/odma1/odma-be/models"
+	"gorm.io/gorm"
 )
 
 type CheckExistingPurchaseOrderProductStruct struct {
@@ -36,7 +37,37 @@ func (module *module) RetrievePurchaseOrderProduct(id uuid.UUID) (m models.Purch
 }
 
 func (module *module) InsertPurchaseOrderProduct(p *dto.InsertPurchaseOrderProduct) (err error) {
-	if err = module.db.purchaseOrderProductModel.InsertPurchaseOrderProduct(models.PurchaseOrderProduct{
+
+	tx := database.GetDatabaseConnection().Begin()
+
+	purchaseOrder := models.PurchaseOrder{}
+	productModel := models.Product{}
+
+	if err := tx.Model(&purchaseOrder).First(&purchaseOrder, p.PurchaseOrderID); err != nil {
+		tx.Rollback()
+		return err.Error
+	}
+
+	if purchaseOrder.Type == "out" {
+
+		if err := tx.Model(&productModel).First(p.ProductID); err != nil {
+			tx.Rollback()
+			return err.Error
+		}
+
+		addedProductStock := productModel.Stock + p.Quantity
+		updatePayload := models.Product{
+			ID:    p.ProductID,
+			Stock: addedProductStock,
+		}
+
+		if err := tx.Model(&productModel).Updates(&updatePayload); err != nil {
+			tx.Rollback()
+			return err.Error
+		}
+	}
+
+	purchaseOrderProductModel := models.PurchaseOrderProduct{
 		Quantity:                      p.Quantity,
 		VATRate:                       p.VATRate,
 		SubTotal:                      p.SubTotal,
@@ -45,14 +76,54 @@ func (module *module) InsertPurchaseOrderProduct(p *dto.InsertPurchaseOrderProdu
 		ClientID:                      p.ClientID,
 		ProductID:                     p.ProductID,
 		PurchaseOrderProductCreatedBy: p.CreatedBy,
-	}); err != nil {
-		return errors.New(err.Error())
 	}
+
+	if err := tx.Model(&purchaseOrderProductModel).Create(&purchaseOrderProductModel); err != nil {
+		tx.Rollback()
+		return err.Error
+	}
+	tx.Commit()
 	return
 }
 
 func (module *module) UpdatePurchaseOrderProduct(id uuid.UUID, p *dto.UpdatePurchaseOrderProduct) (err error) {
-	if err = module.db.purchaseOrderProductModel.UpdatePurchaseOrderProduct(id, models.PurchaseOrderProduct{
+	tx := database.GetDatabaseConnection().Begin()
+
+	purchaseOrder := models.PurchaseOrder{}
+	productModel := models.Product{}
+	purchaseOrderProduct := models.PurchaseOrderProduct{}
+
+	if err := tx.Model(&purchaseOrder).First(&purchaseOrder, p.PurchaseOrderID); err != nil {
+		tx.Rollback()
+		return err.Error
+	}
+
+	if err := tx.Model(&purchaseOrderProduct).First(&purchaseOrderProduct, id); err != nil {
+		tx.Rollback()
+		return err.Error
+	}
+
+	if purchaseOrder.Type == "out" {
+
+		if err := tx.Model(&productModel).First(p.ProductID); err != nil {
+			tx.Rollback()
+			return err.Error
+		}
+
+		updatedProductStock := (productModel.Stock - purchaseOrderProduct.Quantity) + p.Quantity
+		updatePayload := models.Product{
+			ID:    p.ProductID,
+			Stock: updatedProductStock,
+		}
+
+		if err := tx.Model(&productModel).Updates(&updatePayload); err != nil {
+			tx.Rollback()
+			return err.Error
+		}
+	}
+
+	purchaseOrderProductModel := models.PurchaseOrderProduct{
+		ID:                            id,
 		Quantity:                      p.Quantity,
 		VATRate:                       p.VATRate,
 		SubTotal:                      p.SubTotal,
@@ -61,7 +132,18 @@ func (module *module) UpdatePurchaseOrderProduct(id uuid.UUID, p *dto.UpdatePurc
 		ClientID:                      p.ClientID,
 		ProductID:                     p.ProductID,
 		PurchaseOrderProductUpdatedBy: p.UpdatedBy,
-	}); err != nil {
+	}
+
+	if err := tx.Model(&purchaseOrderProductModel).Updates(&purchaseOrderProductModel); err != nil {
+		tx.Rollback()
+		return err.Error
+	}
+	tx.Commit()
+	return
+}
+
+func (module *module) DeletePurchaseOrderProduct(id uuid.UUID, tx *gorm.DB) (err error) {
+	if err = module.db.purchaseOrderProductModel.DeletePurchaseOrderProductByProductID(id, tx); err != nil {
 		return errors.New(err.Error())
 	}
 	return

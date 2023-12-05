@@ -34,6 +34,24 @@ func Migrate() {
 	}
 	fmt.Println("Database Migrated")
 
+	database.DropUnusedColumns(masterModels.User{})
+	database.DropUnusedColumns(masterModels.Company{})
+	database.DropUnusedColumns(masterModels.Client{})
+
+	database.DropUnusedColumns(models.UserLog{})
+	database.DropUnusedColumns(models.OperatingActivity{})
+	database.DropUnusedColumns(models.Product{})
+	database.DropUnusedColumns(models.Quotation{})
+	database.DropUnusedColumns(models.ProductHistory{})
+	database.DropUnusedColumns(models.Payment{})
+	database.DropUnusedColumns(models.PaymentInstallment{})
+	database.DropUnusedColumns(models.OperatingActivityProduct{})
+	database.DropUnusedColumns(models.PurchaseOrder{})
+	database.DropUnusedColumns(models.Document{})
+	database.DropUnusedColumns(models.PurchaseOrderProduct{})
+	database.DropUnusedColumns(models.DeliveryOrder{})
+	database.DropUnusedColumns(models.Invoice{})
+
 	// foreign key queries
 	//database.GetDatabaseConnection().Exec("ALTER TABLE companies ADD CONSTRAINT fk_created_by_user FOREIGN KEY (created_by) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE")
 	//database.GetDatabaseConnection().Exec("ALTER TABLE companies ADD CONSTRAINT fk_updated_by_user FOREIGN KEY (updated_by) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE")

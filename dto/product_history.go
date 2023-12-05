@@ -8,7 +8,7 @@ type InsertProductHistoryValidator struct {
 	Status              string `json:"status,omitempty" binding:"required" validate:"required"`
 	Quantity            int8   `json:"quantity,omitempty" binding:"required" validate:"required"`
 	ProductID           string `json:"productId" binding:"required" validate:"required,uuid4"`
-	OperatingActivityID string `json:"operatingActivityId" binding:"required" validate:"required,uuid4"`
+	OperatingActivityID string `json:"operatingActivityId"`
 	CreatedBy           uuid.UUID
 }
 
@@ -17,7 +17,7 @@ type UpdateProductHistoryValidator struct {
 	Status              string `json:"status,omitempty" binding:"required" validate:"required"`
 	Quantity            int8   `json:"quantity,omitempty" binding:"required" validate:"required"`
 	ProductID           string `json:"productId" binding:"required" validate:"required,uuid4"`
-	OperatingActivityID string `json:"operatingActivityId" binding:"required" validate:"required,uuid4"`
+	OperatingActivityID string `json:"operatingActivityId"`
 	UpdatedBy           uuid.UUID
 }
 

@@ -20,7 +20,7 @@ type Product struct {
 	Name      string    `json:"name,omitempty" gorm:"not null"`
 	UnitPrice float64   `json:"unitPrice,omitempty" gorm:"not null"`
 	Packaging string    `json:"packaging,omitempty" gorm:"not null;"`
-	Stock     int8      `json:"stock,omitempty" gorm:"not null;default:0"`
+	Stock     float64   `json:"stock,omitempty" gorm:"not null;default:0"`
 	Note      string    `json:"note,omitempty"`
 
 	CompanyID            uuid.UUID             `json:"companyId" gorm:"type:uuid;not null;default:NULL;"`
@@ -44,6 +44,7 @@ type ProductModelAction interface {
 
 	InsertProduct(p Product) (err error)
 	UpdateProduct(id uuid.UUID, p Product) (err error)
+	DeleteProduct(id uuid.UUID, tx *gorm.DB) (err error)
 }
 
 func NewProductAction(db *gorm.DB) ProductModelAction {
@@ -108,5 +109,10 @@ func (o *productOrm) InsertProduct(p Product) (err error) {
 
 func (o *productOrm) UpdateProduct(id uuid.UUID, p Product) (err error) {
 	result := o.db.Model(&p).Where("id = ?", id).Updates(&p)
+	return result.Error
+}
+
+func (o *productOrm) DeleteProduct(id uuid.UUID, tx *gorm.DB) (err error) {
+	result := tx.Model(&Product{}).Delete(&Product{}, id)
 	return result.Error
 }

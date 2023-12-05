@@ -16,7 +16,7 @@ type OperatingActivityProductOrm struct {
 
 type OperatingActivityProduct struct {
 	ID         uuid.UUID `gorm:"index:id,unique;type:uuid;default:gen_random_uuid();" json:"id"`
-	Quantity   float32   `json:"quantity,omitempty" gorm:"not null"`
+	Quantity   float64   `json:"quantity,omitempty" gorm:"not null"`
 	VATRate    int16     `json:"vatRate,omitempty" gorm:"not null"`
 	SubTotal   float64   `json:"subTotal,omitempty" gorm:"not null;"`
 	GrandTotal float64   `json:"grandTotal,omitempty" gorm:"not null;"`
@@ -43,6 +43,8 @@ type OperatingActivityProductModelAction interface {
 
 	InsertOperatingActivityProduct(p OperatingActivityProduct) (err error)
 	UpdateOperatingActivityProduct(id uuid.UUID, p OperatingActivityProduct) (err error)
+	DeleteOperatingActivityProduct(id uuid.UUID, p OperatingActivityProduct) (err error)
+	DeleteOperatingActivityProductByProductID(id uuid.UUID, tx *gorm.DB) (err error)
 }
 
 func NewOperatingActivityProductAction(db *gorm.DB) OperatingActivityProductModelAction {
@@ -113,5 +115,15 @@ func (o *OperatingActivityProductOrm) InsertOperatingActivityProduct(p Operating
 
 func (o *OperatingActivityProductOrm) UpdateOperatingActivityProduct(id uuid.UUID, p OperatingActivityProduct) (err error) {
 	result := o.db.Model(&p).Where("id = ?", id).Updates(&p)
+	return result.Error
+}
+
+func (o *OperatingActivityProductOrm) DeleteOperatingActivityProduct(id uuid.UUID, p OperatingActivityProduct) (err error) {
+	result := o.db.Model(&p).Delete(&p, id)
+	return result.Error
+}
+
+func (o *OperatingActivityProductOrm) DeleteOperatingActivityProductByProductID(id uuid.UUID, tx *gorm.DB) (err error) {
+	result := tx.Model(&OperatingActivityProduct{}).Where("product_id", id).Delete(&OperatingActivityProduct{})
 	return result.Error
 }
