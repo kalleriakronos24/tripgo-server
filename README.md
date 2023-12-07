@@ -35,4 +35,7 @@ Standard validation for data values in this project are:
 - ISO 8601 for Date formatting
 - UUID v4 formatting for any tables ID
 
+Make sure you have go version 1.21 installed on your machine before running this application
+*this is bug, but we'll go this way for now.
+
 
