@@ -152,24 +152,6 @@ func PUTOperatingActivityProduct(c *gin.Context) {
 		return
 	}
 
-	//if operatingActivityProduct, err := services.Handler.RetrieveOperatingActivityProduct(operatingActivityProductId); err == nil {
-	//
-	//	if operatingActivityProduct.OperatingActivityID != p.OperatingActivityID {
-	//		if err := services.Handler.CheckExistingOperatingActivityProduct(id, struct {
-	//			*models.OperatingActivityProduct
-	//		}{&models.OperatingActivityProduct{
-	//			OperatingActivityID: p.OperatingActivityID,
-	//		}}); err == nil {
-	//			c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", errors.New("data cannot be duplicated"), fmt.Sprintf("data is already existing with operating activity's tax number %s", operatingActivityProduct.OperatingActivity.TaxInvoiceNumber)))
-	//			return
-	//		}
-	//	}
-	//
-	//} else {
-	//	c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "operating activity product"))
-	//	return
-	//}
-
 	if err = services.Handler.UpdateOperatingActivityProduct(operatingActivityProductId, p); err != nil {
 		c.JSON(http.StatusNotModified, constants.GetErrorResponse("update-failed", err, "operating activity product"))
 		return

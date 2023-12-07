@@ -23,10 +23,10 @@ type Product struct {
 	Stock     float64   `json:"stock,omitempty" gorm:"not null;default:0"`
 	Note      string    `json:"note,omitempty"`
 
-	CompanyID            uuid.UUID             `json:"companyId" gorm:"type:uuid;not null;default:NULL;"`
-	Company              *masterModels.Company `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;foreignKey:CompanyID;references:ID" json:"company"`
-	ProductHistory       []*ProductHistory     `json:"productHistory,omitempty"`
-	PurchaseOrderProduct []*PurchaseOrderProduct
+	CompanyID            uuid.UUID               `json:"companyId" gorm:"type:uuid;not null;default:NULL;"`
+	Company              *masterModels.Company   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;foreignKey:CompanyID;references:ID" json:"company"`
+	ProductHistory       []*ProductHistory       `json:"productHistory,omitempty"`
+	PurchaseOrderProduct []*PurchaseOrderProduct `json:"purchaseOrderProduct,omitempty"`
 
 	ProductCreatedBy uuid.UUID          `json:"createdBy" gorm:"type:uuid;not null;default:NULL;"`
 	ProductUpdatedBy uuid.UUID          `json:"updatedBy" gorm:"type:uuid;default:NULL;"`

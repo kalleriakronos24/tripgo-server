@@ -39,33 +39,32 @@ func (module *module) RetrievePurchaseOrderProduct(id uuid.UUID) (m models.Purch
 func (module *module) InsertPurchaseOrderProduct(p *dto.InsertPurchaseOrderProduct) (err error) {
 
 	tx := database.GetDatabaseConnection().Begin()
-
-	purchaseOrder := models.PurchaseOrder{}
-	productModel := models.Product{}
-
-	if err := tx.Model(&purchaseOrder).First(&purchaseOrder, p.PurchaseOrderID); err != nil {
-		tx.Rollback()
-		return err.Error
-	}
-
-	if purchaseOrder.Type == "out" {
-
-		if err := tx.Model(&productModel).First(p.ProductID); err != nil {
-			tx.Rollback()
-			return err.Error
-		}
-
-		addedProductStock := productModel.Stock + p.Quantity
-		updatePayload := models.Product{
-			ID:    p.ProductID,
-			Stock: addedProductStock,
-		}
-
-		if err := tx.Model(&productModel).Updates(&updatePayload); err != nil {
-			tx.Rollback()
-			return err.Error
-		}
-	}
+	//
+	//purchaseOrder := models.PurchaseOrder{}
+	//productModel := models.Product{}
+	//
+	//if err := tx.Model(&purchaseOrder).First(&purchaseOrder, p.PurchaseOrderID); err != nil {
+	//	tx.Rollback()
+	//	return err.Error
+	//}
+	//
+	//if purchaseOrder.Type == "out" {
+	//	if err := tx.Model(&productModel).First(p.ProductID); err != nil {
+	//		tx.Rollback()
+	//		return err.Error
+	//	}
+	//
+	//	addedProductStock := productModel.Stock + p.Quantity
+	//	updatePayload := models.Product{
+	//		ID:    p.ProductID,
+	//		Stock: addedProductStock,
+	//	}
+	//
+	//	if err := tx.Model(&productModel).Updates(&updatePayload); err != nil {
+	//		tx.Rollback()
+	//		return err.Error
+	//	}
+	//}
 
 	purchaseOrderProductModel := models.PurchaseOrderProduct{
 		Quantity:                      p.Quantity,
@@ -89,38 +88,38 @@ func (module *module) InsertPurchaseOrderProduct(p *dto.InsertPurchaseOrderProdu
 func (module *module) UpdatePurchaseOrderProduct(id uuid.UUID, p *dto.UpdatePurchaseOrderProduct) (err error) {
 	tx := database.GetDatabaseConnection().Begin()
 
-	purchaseOrder := models.PurchaseOrder{}
-	productModel := models.Product{}
-	purchaseOrderProduct := models.PurchaseOrderProduct{}
-
-	if err := tx.Model(&purchaseOrder).First(&purchaseOrder, p.PurchaseOrderID); err != nil {
-		tx.Rollback()
-		return err.Error
-	}
-
-	if err := tx.Model(&purchaseOrderProduct).First(&purchaseOrderProduct, id); err != nil {
-		tx.Rollback()
-		return err.Error
-	}
-
-	if purchaseOrder.Type == "out" {
-
-		if err := tx.Model(&productModel).First(p.ProductID); err != nil {
-			tx.Rollback()
-			return err.Error
-		}
-
-		updatedProductStock := (productModel.Stock - purchaseOrderProduct.Quantity) + p.Quantity
-		updatePayload := models.Product{
-			ID:    p.ProductID,
-			Stock: updatedProductStock,
-		}
-
-		if err := tx.Model(&productModel).Updates(&updatePayload); err != nil {
-			tx.Rollback()
-			return err.Error
-		}
-	}
+	//purchaseOrder := models.PurchaseOrder{}
+	//productModel := models.Product{}
+	//purchaseOrderProduct := models.PurchaseOrderProduct{}
+	//
+	//if err := tx.Model(&purchaseOrder).First(&purchaseOrder, p.PurchaseOrderID); err != nil {
+	//	tx.Rollback()
+	//	return err.Error
+	//}
+	//
+	//if err := tx.Model(&purchaseOrderProduct).First(&purchaseOrderProduct, id); err != nil {
+	//	tx.Rollback()
+	//	return err.Error
+	//}
+	//
+	//if purchaseOrder.Type == "out" {
+	//
+	//	if err := tx.Model(&productModel).First(p.ProductID); err != nil {
+	//		tx.Rollback()
+	//		return err.Error
+	//	}
+	//
+	//	updatedProductStock := (productModel.Stock - purchaseOrderProduct.Quantity) + p.Quantity
+	//	updatePayload := models.Product{
+	//		ID:    p.ProductID,
+	//		Stock: updatedProductStock,
+	//	}
+	//
+	//	if err := tx.Model(&productModel).Updates(&updatePayload); err != nil {
+	//		tx.Rollback()
+	//		return err.Error
+	//	}
+	//}
 
 	purchaseOrderProductModel := models.PurchaseOrderProduct{
 		ID:                            id,
@@ -134,7 +133,7 @@ func (module *module) UpdatePurchaseOrderProduct(id uuid.UUID, p *dto.UpdatePurc
 		PurchaseOrderProductUpdatedBy: p.UpdatedBy,
 	}
 
-	if err := tx.Model(&purchaseOrderProductModel).Updates(&purchaseOrderProductModel); err != nil {
+	if err := tx.Model(&purchaseOrderProductModel).Where(id).Updates(&purchaseOrderProductModel); err != nil {
 		tx.Rollback()
 		return err.Error
 	}

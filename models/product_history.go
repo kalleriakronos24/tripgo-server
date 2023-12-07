@@ -17,7 +17,7 @@ type ProductHistoryOrm struct {
 type ProductHistory struct {
 	ID       uuid.UUID `gorm:"index:id,unique;type:uuid;default:gen_random_uuid();" json:"id"`
 	Status   string    `json:"status,omitempty" gorm:"not null"`
-	Quantity int8      `json:"quantity,omitempty" gorm:"not null;default:0"`
+	Quantity float64   `json:"quantity,omitempty" gorm:"not null;default:0"`
 
 	ProductID           uuid.UUID          `json:"productId" gorm:"type:uuid;not null;default:NULL;"`
 	Product             *Product           `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:ProductID;references:ID" json:"product"`

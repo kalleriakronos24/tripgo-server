@@ -144,9 +144,16 @@ func PUTOperatingActivity(c *gin.Context) {
 			}}); err == nil {
 				c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-existing", err, p.TaxInvoiceNumber))
 				return
+			} else {
+				// runs the update query
+				if err = services.Handler.UpdateOperatingActivity(operatingActivityId, p); err != nil {
+					c.JSON(http.StatusNotModified, constants.GetErrorResponse("update-failed", err, "operating activity"))
+					return
+				} else {
+					c.JSON(http.StatusOK, dto.Response{Message: "success"})
+				}
 			}
 		}
-
 	} else {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "operating activity"))
 		return
@@ -155,6 +162,7 @@ func PUTOperatingActivity(c *gin.Context) {
 	if err = services.Handler.UpdateOperatingActivity(operatingActivityId, p); err != nil {
 		c.JSON(http.StatusNotModified, constants.GetErrorResponse("update-failed", err, "operating activity"))
 		return
+	} else {
+		c.JSON(http.StatusOK, dto.Response{Message: "success"})
 	}
-	c.JSON(http.StatusOK, dto.Response{Message: "success"})
 }

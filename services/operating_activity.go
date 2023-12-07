@@ -49,15 +49,77 @@ func (module *module) InsertOperatingActivity(p *dto.InsertOperatingActivity) (e
 }
 
 func (module *module) UpdateOperatingActivity(id uuid.UUID, p *dto.UpdateOperatingActivity) (err error) {
-	if err = module.db.operatingActivityModel.UpdateOperatingActivity(id, models.OperatingActivity{
+
+	tx := database.GetDatabaseConnection().Begin()
+
+	if p.Status == "done" {
+		searchProductHistoryByOprActID := models.ProductHistory{
+			OperatingActivityID: id,
+		}
+
+		var productHistory []models.ProductHistory
+		err := tx.Model(&productHistory).Where(searchProductHistoryByOprActID).Find(&productHistory)
+
+		if err.Error != nil {
+			return err.Error
+		}
+
+		if len(productHistory) > 0 {
+			for productHistoryIdx := 0; productHistoryIdx < len(productHistory); productHistoryIdx++ {
+				productHistorySingle := productHistory[productHistoryIdx]
+
+				// initial stock of the product
+				initialProduct := models.Product{}
+
+				if err := tx.Model(&initialProduct).First(&initialProduct, productHistorySingle.ProductID); err.Error != nil {
+					return err.Error
+				}
+
+				productHistoryOutCount := 0.0
+				productHistoryInCount := initialProduct.Stock
+				productHistoryCountAccumulated := 0.0
+
+				if productHistorySingle.Status == "increase" {
+					productHistoryInCount += productHistorySingle.Quantity
+				}
+
+				if productHistorySingle.Status == "decrease" {
+					productHistoryOutCount += productHistorySingle.Quantity
+				}
+
+				if (productHistoryInCount - productHistoryOutCount) <= 0 {
+					productHistoryCountAccumulated += 0.0
+				} else {
+					productHistoryCountAccumulated = productHistoryInCount - productHistoryOutCount
+					productUpdateQuery := models.Product{
+						ID:    productHistorySingle.ProductID,
+						Stock: productHistoryCountAccumulated,
+					}
+
+					if err := tx.Updates(&productUpdateQuery); err.Error != nil {
+						tx.Rollback()
+						return err.Error
+					}
+				}
+			}
+		}
+	}
+
+	operatingActivityUpdateQuery := models.OperatingActivity{
+		ID:                         id,
 		TaxInvoiceNumber:           p.TaxInvoiceNumber,
 		DeliveryReceiptNumber:      p.DeliveryReceiptNumber,
 		ClientID:                   p.ClientID,
 		OperatingActivityUpdatedBy: p.UpdatedBy,
 		Status:                     p.Status,
-	}); err != nil {
-		return errors.New(err.Error())
 	}
+
+	if err := tx.Updates(&operatingActivityUpdateQuery); err.Error != nil {
+		tx.Rollback()
+		return err.Error
+	}
+
+	tx.Commit()
 	return
 }
 
