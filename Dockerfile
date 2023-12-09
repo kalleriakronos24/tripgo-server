@@ -2,6 +2,8 @@ FROM golang:latest AS base
 COPY . /opt/app/api
 WORKDIR /opt/app/api
 RUN curl -sSfL https://raw.githubusercontent.com/cosmtrek/air/master/install.sh | sh -s -- -b $(go env GOPATH)/bin
+RUN git config --global --add safe.directory /opt/app/api
+RUN go env -w GOFLAGS="-buildvcs=false"
 
 FROM base AS init
 RUN apt-get update && apt-get install -y \
