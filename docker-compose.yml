@@ -4,7 +4,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      target: base
+      target: ${DOCKER_ENVIRONMENT}
     tty: true
     environment:
       DATABASE_URL: ${DATABASE_URL}
