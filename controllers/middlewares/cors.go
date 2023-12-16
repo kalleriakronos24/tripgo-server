@@ -23,7 +23,8 @@ func CORSMiddleware(c *gin.Context) {
 	c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT")
 
 	if c.Request.Method == "OPTIONS" {
-		c.Writer.WriteHeader(http.StatusOK)
+		c.Status(http.StatusOK)
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		return
 	}
 	c.Next()
