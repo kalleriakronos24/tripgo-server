@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 func CORSMiddleware(c *gin.Context) {
@@ -22,7 +23,7 @@ func CORSMiddleware(c *gin.Context) {
 	c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT")
 
 	if c.Request.Method == "OPTIONS" {
-		c.AbortWithStatus(204)
+		c.Writer.WriteHeader(http.StatusOK)
 		return
 	}
 	c.Next()
