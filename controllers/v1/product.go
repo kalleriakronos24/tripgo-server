@@ -89,7 +89,7 @@ func POSTProduct(c *gin.Context) {
 	}
 
 	var p *dto.InsertProduct
-	if pValidator.CompanyID != "" {
+	if pValidator.CompanyID == "" {
 		var companyId uuid.UUID
 		if company, err := services.Handler.RetrieveCompanyByUserID(userId); err != nil {
 			c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "company"))
@@ -151,7 +151,7 @@ func PUTProduct(c *gin.Context) {
 	}
 
 	var p *dto.UpdateProduct
-	if pValidator.CompanyID != "" {
+	if pValidator.CompanyID == "" {
 		var companyId uuid.UUID
 		if company, err := services.Handler.RetrieveCompanyByUserID(userId); err != nil {
 			c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "company"))

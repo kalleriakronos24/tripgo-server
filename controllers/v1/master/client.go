@@ -87,7 +87,7 @@ func POSTClient(c *gin.Context) {
 	}
 
 	var p *dto.InsertClient
-	if pValidator.CompanyID != "" {
+	if pValidator.CompanyID == "" {
 		var companyId uuid.UUID
 		if company, err := services.Handler.RetrieveCompanyByUserID(userId); err != nil {
 			c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "company"))
@@ -154,7 +154,7 @@ func PUTClient(c *gin.Context) {
 	}
 
 	var p *dto.UpdateClient
-	if pValidator.CompanyID != "" {
+	if pValidator.CompanyID == "" {
 		var companyId uuid.UUID
 		if company, err := services.Handler.RetrieveCompanyByUserID(userId); err != nil {
 			c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "company"))
