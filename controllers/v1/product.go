@@ -150,23 +150,38 @@ func PUTProduct(c *gin.Context) {
 		return
 	}
 
-	var companyId uuid.UUID
-	if company, err := services.Handler.RetrieveCompanyByUserID(userId); err != nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "company"))
-		return
-	} else {
-		companyId = company.ID
-	}
+	var p *dto.UpdateProduct
+	if pValidator.CompanyID != "" {
+		var companyId uuid.UUID
+		if company, err := services.Handler.RetrieveCompanyByUserID(userId); err != nil {
+			c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "company"))
+			return
+		} else {
+			companyId = company.ID
+		}
 
-	p := &dto.UpdateProduct{
-		ID:        pValidator.ID,
-		Name:      pValidator.Name,
-		UnitPrice: pValidator.UnitPrice,
-		Packaging: pValidator.Packaging,
-		Stock:     pValidator.Stock,
-		Note:      pValidator.Note,
-		CompanyID: companyId,
-		UpdatedBy: pValidator.UpdatedBy,
+		p = &dto.UpdateProduct{
+			ID:        pValidator.ID,
+			Name:      pValidator.Name,
+			UnitPrice: pValidator.UnitPrice,
+			Packaging: pValidator.Packaging,
+			Stock:     pValidator.Stock,
+			Note:      pValidator.Note,
+			CompanyID: companyId,
+			UpdatedBy: pValidator.UpdatedBy,
+		}
+	} else {
+		companyId, _ := uuid.Parse(pValidator.CompanyID)
+		p = &dto.UpdateProduct{
+			ID:        pValidator.ID,
+			Name:      pValidator.Name,
+			UnitPrice: pValidator.UnitPrice,
+			Packaging: pValidator.Packaging,
+			Stock:     pValidator.Stock,
+			Note:      pValidator.Note,
+			CompanyID: companyId,
+			UpdatedBy: pValidator.UpdatedBy,
+		}
 	}
 
 	id, _ := c.Params.Get("id")
