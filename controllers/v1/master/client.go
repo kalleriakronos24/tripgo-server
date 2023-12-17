@@ -86,20 +86,33 @@ func POSTClient(c *gin.Context) {
 		return
 	}
 
-	var companyId uuid.UUID
-	if company, err := services.Handler.RetrieveCompanyByUserID(userId); err != nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "company"))
-		return
+	var p *dto.InsertClient
+	if pValidator.CompanyID != "" {
+		var companyId uuid.UUID
+		if company, err := services.Handler.RetrieveCompanyByUserID(userId); err != nil {
+			c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "company"))
+			return
+		} else {
+			companyId = company.ID
+		}
+		p = &dto.InsertClient{
+			Name:        pValidator.Name,
+			PhoneNumber: pValidator.PhoneNumber,
+			Email:       pValidator.Email,
+			Address:     pValidator.Address,
+			CreatedBy:   pValidator.CreatedBy,
+			CompanyID:   companyId,
+		}
 	} else {
-		companyId = company.ID
-	}
-	p := &dto.InsertClient{
-		Name:        pValidator.Name,
-		PhoneNumber: pValidator.PhoneNumber,
-		Email:       pValidator.Email,
-		Address:     pValidator.Address,
-		CreatedBy:   pValidator.CreatedBy,
-		CompanyID:   companyId,
+		companyId, _ := uuid.Parse(pValidator.CompanyID)
+		p = &dto.InsertClient{
+			Name:        pValidator.Name,
+			PhoneNumber: pValidator.PhoneNumber,
+			Email:       pValidator.Email,
+			Address:     pValidator.Address,
+			CreatedBy:   pValidator.CreatedBy,
+			CompanyID:   companyId,
+		}
 	}
 
 	if err := services.Handler.CheckExistingClient("", struct{ *masterModels.Client }{&masterModels.Client{
@@ -140,21 +153,34 @@ func PUTClient(c *gin.Context) {
 		return
 	}
 
-	var companyId uuid.UUID
-	if company, err := services.Handler.RetrieveCompanyByUserID(userId); err != nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "company"))
-		return
-	} else {
-		companyId = company.ID
-	}
+	var p *dto.UpdateClient
+	if pValidator.CompanyID != "" {
+		var companyId uuid.UUID
+		if company, err := services.Handler.RetrieveCompanyByUserID(userId); err != nil {
+			c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "company"))
+			return
+		} else {
+			companyId = company.ID
+		}
 
-	p := &dto.UpdateClient{
-		Name:        pValidator.Name,
-		PhoneNumber: pValidator.PhoneNumber,
-		Email:       pValidator.Email,
-		Address:     pValidator.Address,
-		UpdatedBy:   pValidator.UpdatedBy,
-		CompanyID:   companyId,
+		p = &dto.UpdateClient{
+			Name:        pValidator.Name,
+			PhoneNumber: pValidator.PhoneNumber,
+			Email:       pValidator.Email,
+			Address:     pValidator.Address,
+			UpdatedBy:   pValidator.UpdatedBy,
+			CompanyID:   companyId,
+		}
+	} else {
+		companyId, _ := uuid.Parse(pValidator.CompanyID)
+		p = &dto.UpdateClient{
+			Name:        pValidator.Name,
+			PhoneNumber: pValidator.PhoneNumber,
+			Email:       pValidator.Email,
+			Address:     pValidator.Address,
+			UpdatedBy:   pValidator.UpdatedBy,
+			CompanyID:   companyId,
+		}
 	}
 
 	if client, err := services.Handler.RetrieveClient(clientId); err == nil {

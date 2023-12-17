@@ -32,15 +32,18 @@ func (module *module) RegisterUser(credentials *dto.UserSignup) (err error) {
 	if hashedPassword, err = bcrypt.GenerateFromPassword([]byte(credentials.Password), bcrypt.DefaultCost); err != nil {
 		return errors.New("failed hashing password")
 	}
+
+	companyId, _ := uuid.Parse(credentials.CompanyID)
 	if err = module.db.userModel.InsertUser(masterModels.User{
 		Name:      credentials.Name,
 		Address:   credentials.Address,
 		Username:  credentials.Username,
 		Email:     credentials.Email,
 		Password:  string(hashedPassword),
+		CompanyID: companyId,
 		CreatedBy: credentials.CreatedBy,
 		UpdatedBy: credentials.CreatedBy,
-		Role:      "staff",
+		Role:      credentials.Role,
 	}); err != nil {
 		log.Print(err)
 		return fmt.Errorf("error inserting user. %v", err)

@@ -26,6 +26,8 @@ type User struct {
 	CreatedBySuperAdmin *User     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:CreatedBy;references:ID" json:"createdBySuperAdmin"`
 	UpdatedBySuperAdmin *User     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:UpdatedBy;references:ID" json:"updatedBySuperAdmin"`
 
+	CompanyID uuid.UUID `json:"companyId,omitempty" gorm:"type:uuid;default:NULL"`
+	Company   *Company  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;foreignKey:CompanyID;references:ID" json:"company"`
 	types.DefaultModelProperty
 }
 

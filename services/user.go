@@ -20,12 +20,16 @@ func (module *module) RetrieveUser(id uuid.UUID) (m masterModels.User, err error
 }
 
 func (module *module) UpdateUser(id uuid.UUID, p dto.UserUpdate) (err error) {
+
+	companyId, _ := uuid.Parse(p.CompanyID)
 	if err = module.db.userModel.UpdateUser(id, masterModels.User{
-		ID:       id,
-		Name:     p.Name,
-		Address:  p.Address,
-		Username: p.Username,
-		Email:    p.Email,
+		ID:        id,
+		Name:      p.Name,
+		Address:   p.Address,
+		Username:  p.Username,
+		Email:     p.Email,
+		Role:      p.Role,
+		CompanyID: companyId,
 	}); err != nil {
 		return errors.New(err.Error())
 	}

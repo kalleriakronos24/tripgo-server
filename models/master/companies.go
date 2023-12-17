@@ -27,8 +27,8 @@ type Company struct {
 	BankAccountName   string    `json:"bankAccountName,omitempty" gorm:"not null"`
 	BankAccountNumber int       `json:"bankAccountNumber,omitempty" gorm:"not null;default:0"`
 
-	Client []*Client `json:"client,omitempty"`
-
+	Client           []*Client `json:"client,omitempty"`
+	User             []*User   `json:"user,omitempty"`
 	CompanyCreatedBy uuid.UUID `json:"createdBy" gorm:"type:uuid;not null;default:NULL;"`
 	CompanyUpdatedBy uuid.UUID `json:"updatedBy" gorm:"type:uuid;default:NULL;"`
 	CreatedByUser    *User     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:CompanyCreatedBy;references:ID" json:"createdByUser"`

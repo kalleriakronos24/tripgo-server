@@ -16,6 +16,8 @@ type UserSignup struct {
 	Username  string `json:"username" validate:"required"`
 	Email     string `json:"email,omitempty" validate:"required,email"`
 	Password  string `json:"password" validate:"required"`
+	Role      string `json:"role" validate:"required"`
+	CompanyID string `json:"companyId" binding:"required" validate:"required,uuid4"`
 	CreatedBy uuid.UUID
 }
 
@@ -28,11 +30,13 @@ type UserSignupSuperAdmin struct {
 }
 
 type UserUpdate struct {
-	ID       uuid.UUID `json:"id"`
-	Name     string    `json:"name,omitempty" validate:"required"`
-	Address  string    `json:"address"`
-	Username string    `json:"username,omitempty" validate:"required"`
-	Email    string    `json:"email" validate:"required,email"`
+	ID        uuid.UUID `json:"id"`
+	Name      string    `json:"name,omitempty" validate:"required"`
+	Address   string    `json:"address"`
+	Username  string    `json:"username,omitempty" validate:"required"`
+	Email     string    `json:"email" validate:"required,email"`
+	Role      string    `json:"role" validate:"required"`
+	CompanyID string    `json:"companyId" binding:"required" validate:"required,uuid4"`
 }
 
 type RetrieveUserInfo struct {

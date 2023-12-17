@@ -88,22 +88,36 @@ func POSTProduct(c *gin.Context) {
 		return
 	}
 
-	var companyId uuid.UUID
-	if company, err := services.Handler.RetrieveCompanyByUserID(userId); err != nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "company"))
-		return
-	} else {
-		companyId = company.ID
-	}
+	var p *dto.InsertProduct
+	if pValidator.CompanyID != "" {
+		var companyId uuid.UUID
+		if company, err := services.Handler.RetrieveCompanyByUserID(userId); err != nil {
+			c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "company"))
+			return
+		} else {
+			companyId = company.ID
+		}
 
-	p := &dto.InsertProduct{
-		Name:      pValidator.Name,
-		UnitPrice: pValidator.UnitPrice,
-		Packaging: pValidator.Packaging,
-		Stock:     pValidator.Stock,
-		Note:      pValidator.Note,
-		CompanyID: companyId,
-		CreatedBy: pValidator.CreatedBy,
+		p = &dto.InsertProduct{
+			Name:      pValidator.Name,
+			UnitPrice: pValidator.UnitPrice,
+			Packaging: pValidator.Packaging,
+			Stock:     pValidator.Stock,
+			Note:      pValidator.Note,
+			CompanyID: companyId,
+			CreatedBy: pValidator.CreatedBy,
+		}
+	} else {
+		companyId, _ := uuid.Parse(userLoggedInId)
+		p = &dto.InsertProduct{
+			Name:      pValidator.Name,
+			UnitPrice: pValidator.UnitPrice,
+			Packaging: pValidator.Packaging,
+			Stock:     pValidator.Stock,
+			Note:      pValidator.Note,
+			CompanyID: companyId,
+			CreatedBy: pValidator.CreatedBy,
+		}
 	}
 
 	if err := services.Handler.CheckExistingProduct("", struct{ *models.Product }{&models.Product{
