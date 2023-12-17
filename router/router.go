@@ -42,6 +42,7 @@ func InitializeRouter() (router *gin.Engine) {
 
 		client := v1route.Group("/client")
 		{
+			client.GET("/list", utils.AuthOnly, v1Master.GETAllClients)
 			client.GET("/", utils.AuthOnly, v1Master.GETAllClient)
 			client.GET("/:id", utils.AuthOnly, v1Master.GETClient)
 
@@ -72,6 +73,7 @@ func InitializeRouter() (router *gin.Engine) {
 
 		product := v1route.Group("/product")
 		{
+			product.GET("/list", utils.AuthOnly, v1.GETAllProducts)
 			product.GET("/", utils.AuthOnly, v1.GETAllProduct)
 			product.GET("/:id", utils.AuthOnly, v1.GETProduct)
 
@@ -164,7 +166,7 @@ func InitializeRouter() (router *gin.Engine) {
 
 		user := v1route.Group("/user")
 		{
-			user.GET("/:id", utils.AuthOnly, v1Master.GETUser)
+			user.GET("/", utils.AuthOnly, v1Master.GETUser)
 
 			user.PUT("/:id", utils.AuthOnly, v1Master.PUTUser)
 		}

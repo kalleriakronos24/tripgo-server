@@ -96,7 +96,7 @@ func (module *module) InsertDeliveryOrder(c *gin.Context, p *dto.InsertDeliveryO
 	year := now.Year()
 	month := now.Month()
 	monthInRoman := utils.IntegerToRoman(int(month))
-	formattedNumber := fmt.Sprintf("%s/INV_%s/%s/%d", finalNumber, "DO", monthInRoman, year)
+	formattedNumber := fmt.Sprintf("%s/%s/%s/%d", finalNumber, "DO", monthInRoman, year)
 
 	DeliveryOrder := models.DeliveryOrder{
 		Number:                 formattedNumber,

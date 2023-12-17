@@ -45,7 +45,9 @@ func (module *module) InsertInvoice(p *dto.InsertInvoice) (err error) {
 
 	InvoiceModel := models.Invoice{}
 
-	_, invoiceLastDataErr := database.GetLastDocumentNumber(tx, &InvoiceModel)
+	invoiceType := strings.ToLower(p.Type)
+
+	_, invoiceLastDataErr := database.GetLastDocumentInvoiceNumber(invoiceType, tx, &InvoiceModel)
 
 	if invoiceLastDataErr != nil {
 		InvoiceModel.Sequence = "0001"
@@ -63,11 +65,20 @@ func (module *module) InsertInvoice(p *dto.InsertInvoice) (err error) {
 	year := now.Year()
 	month := now.Month()
 	monthInRoman := utils.IntegerToRoman(int(month))
-	formattedNumber := fmt.Sprintf("%s/INV_%s/%s/%d", finalNumber, "SPH", monthInRoman, year)
+
+	var formattedNumber string
+
+	if p.Type == "proforma" {
+		formattedNumber = fmt.Sprintf("%s/%s/%s/%d", finalNumber, "PRF", monthInRoman, year)
+	}
+
+	if p.Type == "invoice" {
+		formattedNumber = fmt.Sprintf("%s/%s/%s/%d", finalNumber, "INV", monthInRoman, year)
+	}
 
 	Invoice := models.Invoice{
 		Number:              formattedNumber,
-		Type:                p.Type,
+		Type:                invoiceType,
 		Date:                p.Date,
 		Sequence:            finalNumber,
 		OperatingActivityID: p.OperatingActivityID,

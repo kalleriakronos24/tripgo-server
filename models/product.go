@@ -16,12 +16,13 @@ type productOrm struct {
 }
 
 type Product struct {
-	ID        uuid.UUID `gorm:"index:id,unique;type:uuid;default:gen_random_uuid();" json:"id"`
-	Name      string    `json:"name,omitempty" gorm:"not null"`
-	UnitPrice float64   `json:"unitPrice,omitempty" gorm:"not null"`
-	Packaging string    `json:"packaging,omitempty" gorm:"not null;"`
-	Stock     float64   `json:"stock,omitempty" gorm:"not null;default:0"`
-	Note      string    `json:"note,omitempty"`
+	ID          uuid.UUID `gorm:"index:id,unique;type:uuid;default:gen_random_uuid();" json:"id"`
+	Name        string    `json:"name,omitempty" gorm:"not null"`
+	UnitPrice   float64   `json:"unitPrice,omitempty" gorm:"not null"`
+	Packaging   string    `json:"packaging,omitempty" gorm:"not null;"`
+	Stock       float64   `json:"stock,omitempty" gorm:"not null;default:0"`
+	Note        string    `json:"note,omitempty"`
+	VATIncluded bool      `json:"VATIncluded,omitempty" gorm:"default:true;"`
 
 	CompanyID            uuid.UUID               `json:"companyId" gorm:"type:uuid;not null;default:NULL;"`
 	Company              *masterModels.Company   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;foreignKey:CompanyID;references:ID" json:"company"`

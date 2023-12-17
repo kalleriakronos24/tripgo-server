@@ -2,15 +2,31 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
+	"gitlab.com/odma1/odma-be/config"
 )
 
 func CORSMiddleware(c *gin.Context) {
-	c.Header("Access-Control-Allow-Origin", "http://localhost:8000/, http://195.35.20.241/")
+
+	var referer string
+
+	if config.AppConfig.Environment == "DEVELOPMENT" {
+		referer = "http://localhost:5173"
+	}
+
+	if config.AppConfig.Environment == "PRODUCTION" {
+		referer = "http://195.35.20.241"
+	}
+
+	c.Header("Access-Control-Allow-Origin", referer)
 	c.Header("Access-Control-Allow-Credentials", "true")
 	c.Header("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
 	c.Header("Access-Control-Allow-Methods", "POST,HEAD,PATCH, OPTIONS, GET, PUT")
 
 	if c.Request.Method == "OPTIONS" {
+		c.Header("Access-Control-Allow-Origin", referer)
+		c.Header("Access-Control-Allow-Credentials", "true")
+		c.Header("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+		c.Header("Access-Control-Allow-Methods", "POST,HEAD,PATCH,OPTIONS,GET,PUT")
 		c.AbortWithStatus(204)
 		return
 	}

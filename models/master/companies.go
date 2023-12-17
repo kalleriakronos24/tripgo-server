@@ -43,6 +43,7 @@ type CompanyModelAction interface {
 	GetOneCompanyByID(id uuid.UUID) (m Company, err error)
 	GetOneCompanyByName(name string) (m Company, err error)
 	GetOneCompanyByEmail(email string) (m Company, err error)
+	GetOneCompanyByUserID(userId uuid.UUID) (m Company, err error)
 
 	InsertCompany(p Company) (err error)
 
@@ -64,6 +65,21 @@ func (o *companyOrm) GetAllCompanyPaginated(c *gin.Context, userId uuid.UUID) (*
 		Find(&mArr)
 	pagination.Data = &mArr
 	return &pagination, nil
+}
+
+func (o *companyOrm) GetOneCompanyByUserID(userId uuid.UUID) (m Company, err error) {
+	result := o.db.Model(&m).
+		Preload("CreatedByUser", func(db *gorm.DB) *gorm.DB {
+			return db.
+				Select([]string{"ID", "Name", "CreatedBy", "UpdatedBy", "CreatedAt", "UpdatedAt"}).
+				First(&User{}, userId)
+		}).
+		Preload("UpdatedByUser", func(db *gorm.DB) *gorm.DB {
+			return db.Select([]string{"ID", "Name", "CreatedBy", "UpdatedAt"})
+		}).
+		Preload("Client").
+		First(&m)
+	return m, result.Error
 }
 
 func (o *companyOrm) GetAllCompany(userId uuid.UUID) (m []Company, err error) {

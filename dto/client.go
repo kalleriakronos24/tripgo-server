@@ -10,7 +10,7 @@ type InsertClientValidator struct {
 	Email       string `json:"email" binding:"required" validate:"required,email"`
 	Address     string `json:"address,omitempty"`
 	CreatedBy   uuid.UUID
-	CompanyID   string `json:"companyId" validate:"required,uuid4"`
+	CompanyID   string `json:"companyId" validate:"uuid4"`
 }
 
 type UpdateClientValidator struct {
@@ -20,7 +20,7 @@ type UpdateClientValidator struct {
 	Email       string    `json:"email" binding:"required"  validate:"required,email"`
 	Address     string    `json:"address,omitempty"`
 	UpdatedBy   uuid.UUID
-	CompanyID   string `json:"companyId" binding:"required"  validate:"required,uuid4"`
+	CompanyID   string `json:"companyId" binding:"required"  validate:"uuid4"`
 }
 
 type InsertClient struct {

@@ -23,8 +23,9 @@ type Quotation struct {
 	PaymentTerm string    `json:"paymentTerm,omitempty" gorm:"not null"`
 	SendAfter   string    `json:"sendAfter,omitempty" gorm:"not null"`
 	Date        time.Time `json:"date,omitempty" gorm:"not null;default:CURRENT_TIMESTAMP"`
+	Sequence    string    `json:"sequence,omitempty" gorm:"not null;default:0001"`
 
-	OperatingActivityID uuid.UUID          `json:"operatingActivityId" gorm:"type:uuid;not null;default:NULL"`
+	OperatingActivityID uuid.UUID          `json:"operatingActivityId" gorm:"type:uuid;default:NULL"`
 	OperatingActivity   *OperatingActivity `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;foreignKey:OperatingActivityID;references:ID" json:"operatingActivity"`
 
 	QuotationCreatedBy uuid.UUID          `json:"createdBy" gorm:"type:uuid;not null;default:NULL"`

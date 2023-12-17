@@ -24,6 +24,7 @@ type HandlerFunc interface {
 	CheckExistingCompany(id string, param CheckExistingCompanyStruct) (err error)
 	RetrieveAllCompanyPaginated(c *gin.Context, id uuid.UUID) (pagination *database.Pagination, err error)
 	RetrieveAllCompany(id uuid.UUID) (m []masterModels.Company, err error)
+	RetrieveCompanyByUserID(userId uuid.UUID) (m masterModels.Company, err error)
 	RetrieveCompany(id uuid.UUID) (m masterModels.Company, err error)
 	InsertCompany(p *dto.InsertCompany) (err error)
 	UpdateCompany(id uuid.UUID, p *dto.UpdateCompany) (err error)

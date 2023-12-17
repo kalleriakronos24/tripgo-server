@@ -152,3 +152,22 @@ func GetLastDocumentNumber(tx *gorm.DB, model interface{}) (m *interface{}, err 
 	return &model, nil
 
 }
+
+func GetLastDocumentInvoiceNumber(documentType string, tx *gorm.DB, model interface{}) (m *interface{}, err error) {
+
+	now := time.Now()
+	currentYear, currentMonth, _ := now.Date()
+	currentLocation := now.Location()
+
+	startingOfMonth := time.Date(currentYear, currentMonth, 1, 0, 0, 0, 0, currentLocation)
+	endingOfMonth := startingOfMonth.AddDate(0, 1, -1)
+
+	tx = tx.Model(&model).Where("type = ? AND created_at >= ? AND created_at <= ?", documentType, startingOfMonth, endingOfMonth).Last(&model)
+
+	if tx != nil {
+		return &model, errors.New("failed to get last document number")
+	}
+
+	return &model, nil
+
+}

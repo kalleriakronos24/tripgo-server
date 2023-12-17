@@ -8,7 +8,10 @@ import (
 	database "gitlab.com/odma1/odma-be/db"
 	"gitlab.com/odma1/odma-be/dto"
 	"gitlab.com/odma1/odma-be/models"
+	"gitlab.com/odma1/odma-be/utils"
+	"strconv"
 	"strings"
+	"time"
 )
 
 type CheckExistingQuotationStruct struct {
@@ -37,31 +40,89 @@ func (module *module) RetrieveQuotation(id uuid.UUID) (m models.Quotation, err e
 }
 
 func (module *module) InsertQuotation(p *dto.InsertQuotation) (err error) {
-	if err = module.db.quotationModel.InsertQuotation(models.Quotation{
-		Number:              strings.ToUpper(p.Number),
-		FrancoArea:          p.FrancoArea,
-		PaymentTerm:         p.PaymentTerm,
-		SendAfter:           p.SendAfter,
-		Date:                p.Date,
-		OperatingActivityID: p.OperatingActivityID,
-		QuotationCreatedBy:  p.CreatedBy,
-	}); err != nil {
-		return errors.New(err.Error())
+
+	tx := database.GetDatabaseConnection()
+	QuotationModel := models.Quotation{}
+
+	_, quotationLastDataErr := database.GetLastDocumentNumber(tx, &QuotationModel)
+
+	if quotationLastDataErr != nil {
+		QuotationModel.Sequence = "0001"
 	}
+
+	parsedNumber, _ := strconv.Atoi(QuotationModel.Sequence)
+	strLastNumber := strconv.Itoa(parsedNumber)
+	getFrontDigitNumber := strings.Replace(QuotationModel.Sequence, strLastNumber, "", -1)
+	convertActiveNumberToStr, _ := strconv.Atoi(strLastNumber)
+	addActiveNumberByOne := convertActiveNumberToStr + 1
+	convertAddedActiveNumberToStr := strconv.Itoa(addActiveNumberByOne)
+	finalNumber := getFrontDigitNumber + convertAddedActiveNumberToStr
+
+	now := time.Now()
+	year := now.Year()
+	month := now.Month()
+	monthInRoman := utils.IntegerToRoman(int(month))
+	formattedNumber := fmt.Sprintf("%s/%s/%s/%d", finalNumber, "SPH", monthInRoman, year)
+
+	if p.OperatingActivityID.String() != "" {
+		Quotation := models.Quotation{
+			Number:              formattedNumber,
+			FrancoArea:          p.FrancoArea,
+			PaymentTerm:         p.PaymentTerm,
+			SendAfter:           p.SendAfter,
+			Date:                p.Date,
+			Sequence:            finalNumber,
+			OperatingActivityID: p.OperatingActivityID,
+			QuotationCreatedBy:  p.CreatedBy,
+		}
+
+		if QuotationErr := tx.Create(&Quotation); err != nil {
+			tx.Rollback()
+			return QuotationErr.Error
+		}
+	} else {
+		Quotation := models.Quotation{
+			Number:             formattedNumber,
+			FrancoArea:         p.FrancoArea,
+			PaymentTerm:        p.PaymentTerm,
+			SendAfter:          p.SendAfter,
+			Date:               p.Date,
+			Sequence:           finalNumber,
+			QuotationCreatedBy: p.CreatedBy,
+		}
+
+		if QuotationErr := tx.Create(&Quotation); err != nil {
+			tx.Rollback()
+			return QuotationErr.Error
+		}
+	}
+	tx.Commit()
 	return
 }
 
 func (module *module) UpdateQuotation(id uuid.UUID, p *dto.UpdateQuotation) (err error) {
-	if err = module.db.quotationModel.UpdateQuotation(id, models.Quotation{
-		Number:              strings.ToUpper(p.Number),
-		FrancoArea:          p.FrancoArea,
-		PaymentTerm:         p.PaymentTerm,
-		SendAfter:           p.SendAfter,
-		Date:                p.Date,
-		OperatingActivityID: p.OperatingActivityID,
-		QuotationUpdatedBy:  p.UpdatedBy,
-	}); err != nil {
-		return errors.New(err.Error())
+
+	if p.OperatingActivityID.String() != "" {
+		if err = module.db.quotationModel.UpdateQuotation(id, models.Quotation{
+			FrancoArea:          p.FrancoArea,
+			PaymentTerm:         p.PaymentTerm,
+			SendAfter:           p.SendAfter,
+			Date:                p.Date,
+			OperatingActivityID: p.OperatingActivityID,
+			QuotationUpdatedBy:  p.UpdatedBy,
+		}); err != nil {
+			return errors.New(err.Error())
+		}
+	} else {
+		if err = module.db.quotationModel.UpdateQuotation(id, models.Quotation{
+			FrancoArea:         p.FrancoArea,
+			PaymentTerm:        p.PaymentTerm,
+			SendAfter:          p.SendAfter,
+			Date:               p.Date,
+			QuotationUpdatedBy: p.UpdatedBy,
+		}); err != nil {
+			return errors.New(err.Error())
+		}
 	}
 	return
 }

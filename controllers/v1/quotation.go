@@ -68,27 +68,31 @@ func POSTQuotation(c *gin.Context) {
 		return
 	}
 
-	operatingActivityId, _ := uuid.Parse(pValidator.OperatingActivityID)
+	var p *dto.InsertQuotation
+	if pValidator.OperatingActivityID != "" {
+		operatingActivityId, _ := uuid.Parse(pValidator.OperatingActivityID)
 
-	p := &dto.InsertQuotation{
-		Number:              pValidator.Number,
-		FrancoArea:          pValidator.FrancoArea,
-		PaymentTerm:         pValidator.PaymentTerm,
-		SendAfter:           pValidator.SendAfter,
-		Date:                utils.ConvertStrToDateTime(pValidator.Date),
-		OperatingActivityID: operatingActivityId,
-		CreatedBy:           pValidator.CreatedBy,
+		p = &dto.InsertQuotation{
+			FrancoArea:          pValidator.FrancoArea,
+			PaymentTerm:         pValidator.PaymentTerm,
+			SendAfter:           pValidator.SendAfter,
+			Date:                utils.ConvertStrToDateTime(pValidator.Date),
+			OperatingActivityID: operatingActivityId,
+			CreatedBy:           pValidator.CreatedBy,
+		}
+	} else {
+
+		p = &dto.InsertQuotation{
+			FrancoArea:  pValidator.FrancoArea,
+			PaymentTerm: pValidator.PaymentTerm,
+			SendAfter:   pValidator.SendAfter,
+			Date:        utils.ConvertStrToDateTime(pValidator.Date),
+			CreatedBy:   pValidator.CreatedBy,
+		}
 	}
 
 	if err := services.Handler.CheckExistingOperatingActivity(p.OperatingActivityID.String(), struct{ *models.OperatingActivity }{&models.OperatingActivity{}}); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("operating id %s is not found", p.OperatingActivityID)))
-		return
-	}
-
-	if err := services.Handler.CheckExistingQuotation("", struct{ *models.Quotation }{&models.Quotation{
-		Number: p.Number,
-	}}); err == nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-existing", err, ""))
 		return
 	}
 
@@ -115,15 +119,26 @@ func PUTQuotation(c *gin.Context) {
 		return
 	}
 
-	operatingActivityId, _ := uuid.Parse(pValidator.OperatingActivityID)
-	p := &dto.UpdateQuotation{
-		Number:              pValidator.Number,
-		FrancoArea:          pValidator.FrancoArea,
-		PaymentTerm:         pValidator.PaymentTerm,
-		SendAfter:           pValidator.SendAfter,
-		Date:                utils.ConvertStrToDateTime(pValidator.Date),
-		OperatingActivityID: operatingActivityId,
-		UpdatedBy:           pValidator.UpdatedBy,
+	var p *dto.UpdateQuotation
+	if pValidator.OperatingActivityID != "" {
+		operatingActivityId, _ := uuid.Parse(pValidator.OperatingActivityID)
+
+		p = &dto.UpdateQuotation{
+			FrancoArea:          pValidator.FrancoArea,
+			PaymentTerm:         pValidator.PaymentTerm,
+			SendAfter:           pValidator.SendAfter,
+			Date:                utils.ConvertStrToDateTime(pValidator.Date),
+			OperatingActivityID: operatingActivityId,
+			UpdatedBy:           pValidator.UpdatedBy,
+		}
+	} else {
+		p = &dto.UpdateQuotation{
+			FrancoArea:  pValidator.FrancoArea,
+			PaymentTerm: pValidator.PaymentTerm,
+			SendAfter:   pValidator.SendAfter,
+			Date:        utils.ConvertStrToDateTime(pValidator.Date),
+			UpdatedBy:   pValidator.UpdatedBy,
+		}
 	}
 
 	id, _ := c.Params.Get("id")
@@ -138,17 +153,7 @@ func PUTQuotation(c *gin.Context) {
 		return
 	}
 
-	if quotation, err := services.Handler.RetrieveQuotation(quotationId); err == nil {
-
-		if quotation.Number != p.Number {
-			if err := services.Handler.CheckExistingQuotation(id, struct{ *models.Quotation }{&models.Quotation{
-				Number: p.Number,
-			}}); err == nil {
-				c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-existing", err, p.Number))
-				return
-			}
-		}
-	} else {
+	if _, err := services.Handler.RetrieveQuotation(quotationId); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "quotation"))
 		return
 	}

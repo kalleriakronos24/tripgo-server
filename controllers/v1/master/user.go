@@ -14,16 +14,12 @@ import (
 
 func GETUser(c *gin.Context) {
 	var err error
-	id, _ := c.Params.Get("id")
-	userId, err := uuid.Parse(id)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("uuid-error", err, ""))
-		return
-	}
+	userLoggedInId := c.GetString("user_id")
+	userId, err := uuid.Parse(userLoggedInId)
 
 	var user masterModels.User
 	if user, err = services.Handler.RetrieveUser(userId); err != nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "company"))
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "user"))
 		return
 	}
 

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"gitlab.com/odma1/odma-be/constants"
 	"gitlab.com/odma1/odma-be/models"
-	masterModels "gitlab.com/odma1/odma-be/models/master"
 	"gitlab.com/odma1/odma-be/utils"
 	"net/http"
 
@@ -14,6 +13,25 @@ import (
 	"gitlab.com/odma1/odma-be/dto"
 	"gitlab.com/odma1/odma-be/services"
 )
+
+func GETAllProducts(c *gin.Context) {
+	var err error
+
+	userLoggedInId := c.GetString("user_id")
+	userId, err := uuid.Parse(userLoggedInId)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("uuid-error", err, ""))
+		return
+	}
+
+	if product, err := services.Handler.RetrieveAllProduct(userId); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "product"))
+		return
+	} else {
+		c.JSON(http.StatusOK, dto.Response{Data: product})
+	}
+}
 
 func GETAllProduct(c *gin.Context) {
 	var err error
@@ -70,7 +88,14 @@ func POSTProduct(c *gin.Context) {
 		return
 	}
 
-	companyId, _ := uuid.Parse(pValidator.CompanyID)
+	var companyId uuid.UUID
+	if company, err := services.Handler.RetrieveCompanyByUserID(userId); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "company"))
+		return
+	} else {
+		companyId = company.ID
+	}
+
 	p := &dto.InsertProduct{
 		Name:      pValidator.Name,
 		UnitPrice: pValidator.UnitPrice,
@@ -79,11 +104,6 @@ func POSTProduct(c *gin.Context) {
 		Note:      pValidator.Note,
 		CompanyID: companyId,
 		CreatedBy: pValidator.CreatedBy,
-	}
-
-	if err := services.Handler.CheckExistingCompany(p.CompanyID.String(), struct{ *masterModels.Company }{&masterModels.Company{}}); err != nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("company id %s is not found", p.CompanyID)))
-		return
 	}
 
 	if err := services.Handler.CheckExistingProduct("", struct{ *models.Product }{&models.Product{
@@ -116,7 +136,14 @@ func PUTProduct(c *gin.Context) {
 		return
 	}
 
-	companyId, _ := uuid.Parse(pValidator.CompanyID)
+	var companyId uuid.UUID
+	if company, err := services.Handler.RetrieveCompanyByUserID(userId); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "company"))
+		return
+	} else {
+		companyId = company.ID
+	}
+
 	p := &dto.UpdateProduct{
 		ID:        pValidator.ID,
 		Name:      pValidator.Name,
@@ -132,11 +159,6 @@ func PUTProduct(c *gin.Context) {
 	productId, err := uuid.Parse(id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("uuid-error", err, ""))
-		return
-	}
-
-	if err := services.Handler.CheckExistingCompany(p.CompanyID.String(), struct{ *masterModels.Company }{&masterModels.Company{}}); err != nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("company id %s is not found", p.CompanyID)))
 		return
 	}
 
