@@ -30,6 +30,13 @@ func GetDatabaseConnection() *gorm.DB {
 		DisableForeignKeyConstraintWhenMigrating: false,
 		Logger:                                   logger.Default.LogMode(logger.Info),
 	})
+
+	if con, err := db.DB(); err != nil {
+		con.SetConnMaxLifetime(5 * time.Second)
+		con.SetMaxOpenConns(10)
+		con.SetMaxIdleConns(10)
+	}
+
 	if err != nil {
 		log.Println("[INIT] failed connecting to PostgresSQL")
 		return nil
