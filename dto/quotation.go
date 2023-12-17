@@ -10,7 +10,7 @@ type InsertQuotationValidator struct {
 	PaymentTerm         string `json:"paymentTerm,omitempty" binding:"required" validate:"required"`
 	SendAfter           string `json:"sendAfter,omitempty" binding:"required" validate:"required"`
 	Date                string `json:"date,omitempty" binding:"required" validate:"required,ISO8601date"`
-	OperatingActivityID string `json:"operatingActivityId" validate:"uuid4"`
+	OperatingActivityID string `json:"operatingActivityId,omitempty"`
 	CreatedBy           uuid.UUID
 }
 
@@ -20,7 +20,7 @@ type UpdateQuotationValidator struct {
 	PaymentTerm         string `json:"paymentTerm,omitempty" binding:"required" validate:"required"`
 	SendAfter           string `json:"sendAfter,omitempty" binding:"required" validate:"required"`
 	Date                string `json:"date,omitempty" binding:"required" validate:"required,ISO8601date"`
-	OperatingActivityID string `json:"operatingActivityId" validate:"uuid4"`
+	OperatingActivityID string `json:"operatingActivityId,omitempty"`
 	UpdatedBy           uuid.UUID
 }
 
