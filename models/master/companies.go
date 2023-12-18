@@ -68,17 +68,23 @@ func (o *companyOrm) GetAllCompanyPaginated(c *gin.Context, userId uuid.UUID) (*
 }
 
 func (o *companyOrm) GetOneCompanyByUserID(userId uuid.UUID) (m Company, err error) {
+	user := User{
+		ID: userId,
+	}
+	userResult := o.db.Model(&user).First(&user)
+	if userResult.Error != nil {
+		return m, userResult.Error
+	}
 	result := o.db.Model(&m).
 		Preload("CreatedByUser", func(db *gorm.DB) *gorm.DB {
 			return db.
-				Select([]string{"ID", "Name", "CreatedBy", "UpdatedBy", "CreatedAt", "UpdatedAt"}).
-				First(&User{}, userId)
+				Select([]string{"ID", "Name", "CreatedBy", "UpdatedBy", "CreatedAt", "UpdatedAt"})
 		}).
 		Preload("UpdatedByUser", func(db *gorm.DB) *gorm.DB {
 			return db.Select([]string{"ID", "Name", "CreatedBy", "UpdatedAt"})
 		}).
 		Preload("Client").
-		First(&m)
+		Where("id = ? ", user.CompanyID).First(&m)
 	return m, result.Error
 }
 
