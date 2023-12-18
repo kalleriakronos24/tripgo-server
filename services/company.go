@@ -44,9 +44,8 @@ func (module *module) RetrieveCompany(id uuid.UUID) (m masterModels.Company, err
 }
 
 func (module *module) InsertCompany(p *dto.InsertCompany) (err error) {
-
-	//user := masterModels.User{}
-	if err = module.db.companyModel.InsertCompany(masterModels.Company{
+	tx := database.GetDatabaseConnection()
+	companyModel := masterModels.Company{
 		Name:              p.Name,
 		PhoneNumber:       p.PhoneNumber,
 		Email:             strings.ToLower(p.Email),
@@ -57,15 +56,34 @@ func (module *module) InsertCompany(p *dto.InsertCompany) (err error) {
 		BankAccountNumber: p.BankAccountNumber,
 		CompanyCreatedBy:  p.CreatedBy,
 		CompanyUpdatedBy:  p.CreatedBy,
-	}); err != nil {
-		return errors.New(err.Error())
 	}
+
+	if errCompany := tx.Create(&companyModel); err != nil {
+		tx.Rollback()
+		return errCompany.Error
+	}
+
+	userModel := masterModels.User{
+		ID:        p.CreatedBy,
+		CompanyID: companyModel.ID,
+	}
+
+	if errUser := tx.Updates(&userModel); err != nil {
+		tx.Rollback()
+		return errUser.Error
+	}
+
+	tx.Commit()
+	con, _ := database.GetDatabaseConnection().DB()
+	_ = con.Close()
 	return
 }
 
 func (module *module) UpdateCompany(id uuid.UUID, p *dto.UpdateCompany) (err error) {
-	if err = module.db.companyModel.UpdateCompany(id, masterModels.Company{
-		ID:                p.ID,
+
+	tx := database.GetDatabaseConnection()
+	companyModel := masterModels.Company{
+		ID:                id,
 		Name:              p.Name,
 		PhoneNumber:       p.PhoneNumber,
 		Email:             strings.ToLower(p.Email),
@@ -74,10 +92,29 @@ func (module *module) UpdateCompany(id uuid.UUID, p *dto.UpdateCompany) (err err
 		PICDesignation:    p.PICDesignation,
 		BankAccountName:   p.BankAccountName,
 		BankAccountNumber: p.BankAccountNumber,
+		CompanyCreatedBy:  p.UpdatedBy,
 		CompanyUpdatedBy:  p.UpdatedBy,
-	}); err != nil {
-		return errors.New(err.Error())
 	}
+
+	if errCompany := tx.Updates(&companyModel); err != nil {
+		tx.Rollback()
+		return errCompany.Error
+	}
+
+	userModel := masterModels.User{
+		ID:        p.UpdatedBy,
+		CompanyID: companyModel.ID,
+	}
+
+	if errUser := tx.Updates(&userModel); err != nil {
+		tx.Rollback()
+		return errUser.Error
+	}
+
+	tx.Commit()
+	con, _ := database.GetDatabaseConnection().DB()
+	_ = con.Close()
+
 	return
 }
 
