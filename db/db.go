@@ -76,8 +76,6 @@ func DropUnusedColumns(dst interface{}) {
 			}
 		}
 	}
-	con, _ := db.DB()
-	_ = con.Close()
 }
 
 func Paginator(c *gin.Context, value interface{}, relations []string, pagination *Pagination) func(db *gorm.DB) *gorm.DB {
@@ -142,8 +140,6 @@ func Paginator(c *gin.Context, value interface{}, relations []string, pagination
 			}
 		}
 		*db = *db.Offset(offset).Limit(limit).Order(sortWithDirection)
-		con, _ := db.DB()
-		_ = con.Close()
 		return db
 	}
 }

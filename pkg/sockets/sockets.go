@@ -29,7 +29,10 @@ func RunSocketConnection(socket *socketio.Server) *socketio.Server {
 	server.OnEvent("/", "bye", func(s socketio.Conn) string {
 		last := s.Context().(string)
 		s.Emit("bye", last)
-		s.Close()
+		err := s.Close()
+		if err != nil {
+			return err.Error()
+		}
 		return last
 	})
 
@@ -43,8 +46,18 @@ func RunSocketConnection(socket *socketio.Server) *socketio.Server {
 		fmt.Println("closed", reason)
 	})
 
-	go server.Serve()
-	defer server.Close()
+	go func() {
+		err := server.Serve()
+		if err != nil {
+
+		}
+	}()
+	defer func(server *socketio.Server) {
+		err := server.Close()
+		if err != nil {
+
+		}
+	}(server)
 
 	return server
 }

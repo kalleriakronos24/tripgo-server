@@ -74,8 +74,6 @@ func (module *module) InsertCompany(p *dto.InsertCompany) (err error) {
 	}
 
 	tx.Commit()
-	con, _ := database.GetDatabaseConnection().DB()
-	_ = con.Close()
 	return
 }
 
@@ -112,8 +110,6 @@ func (module *module) UpdateCompany(id uuid.UUID, p *dto.UpdateCompany) (err err
 	}
 
 	tx.Commit()
-	con, _ := database.GetDatabaseConnection().DB()
-	_ = con.Close()
 
 	return
 }
