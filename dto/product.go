@@ -10,7 +10,7 @@ type InsertProductValidator struct {
 	Packaging   string  `json:"packaging,omitempty" validate:"required"`
 	Stock       float64 `json:"stock,omitempty" validate:"required"`
 	Note        string  `json:"note,omitempty"`
-	VATIncluded bool    `json:"vatIncluded,omitempty" validate:"exist"`
+	VATIncluded bool    `json:"vatIncluded,omitempty"`
 	CompanyID   string  `json:"companyId,omitempty"`
 	CreatedBy   uuid.UUID
 }
@@ -22,7 +22,7 @@ type UpdateProductValidator struct {
 	Packaging   string  `json:"packaging,omitempty" validate:"required"`
 	Stock       float64 `json:"stock,omitempty" validate:"required"`
 	Note        string  `json:"note,omitempty"`
-	VATIncluded bool    `json:"vatIncluded,omitempty" validate:"exist"`
+	VATIncluded bool    `json:"vatIncluded,omitempty"`
 	CompanyID   string  `json:"companyId,omitempty"`
 	UpdatedBy   uuid.UUID
 }
