@@ -44,6 +44,7 @@ func (module *module) InsertProduct(p *dto.InsertProduct) (err error) {
 		Stock:            p.Stock,
 		Note:             p.Note,
 		CompanyID:        p.CompanyID,
+		VATIncluded:      p.VATIncluded,
 		ProductCreatedBy: p.CreatedBy,
 	}); err != nil {
 		return errors.New(err.Error())
@@ -59,6 +60,7 @@ func (module *module) UpdateProduct(id uuid.UUID, p *dto.UpdateProduct) (err err
 		Stock:            p.Stock,
 		Note:             p.Note,
 		CompanyID:        p.CompanyID,
+		VATIncluded:      p.VATIncluded,
 		ProductUpdatedBy: p.UpdatedBy,
 	}); err != nil {
 		return errors.New(err.Error())

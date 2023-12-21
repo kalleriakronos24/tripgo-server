@@ -99,24 +99,26 @@ func POSTProduct(c *gin.Context) {
 		}
 
 		p = &dto.InsertProduct{
-			Name:      pValidator.Name,
-			UnitPrice: pValidator.UnitPrice,
-			Packaging: pValidator.Packaging,
-			Stock:     pValidator.Stock,
-			Note:      pValidator.Note,
-			CompanyID: companyId,
-			CreatedBy: pValidator.CreatedBy,
+			Name:        pValidator.Name,
+			UnitPrice:   pValidator.UnitPrice,
+			Packaging:   pValidator.Packaging,
+			Stock:       pValidator.Stock,
+			Note:        pValidator.Note,
+			CompanyID:   companyId,
+			VATIncluded: pValidator.VATIncluded,
+			CreatedBy:   pValidator.CreatedBy,
 		}
 	} else {
 		companyId, _ := uuid.Parse(userLoggedInId)
 		p = &dto.InsertProduct{
-			Name:      pValidator.Name,
-			UnitPrice: pValidator.UnitPrice,
-			Packaging: pValidator.Packaging,
-			Stock:     pValidator.Stock,
-			Note:      pValidator.Note,
-			CompanyID: companyId,
-			CreatedBy: pValidator.CreatedBy,
+			Name:        pValidator.Name,
+			UnitPrice:   pValidator.UnitPrice,
+			Packaging:   pValidator.Packaging,
+			Stock:       pValidator.Stock,
+			Note:        pValidator.Note,
+			CompanyID:   companyId,
+			VATIncluded: pValidator.VATIncluded,
+			CreatedBy:   pValidator.CreatedBy,
 		}
 	}
 
@@ -161,26 +163,28 @@ func PUTProduct(c *gin.Context) {
 		}
 
 		p = &dto.UpdateProduct{
-			ID:        pValidator.ID,
-			Name:      pValidator.Name,
-			UnitPrice: pValidator.UnitPrice,
-			Packaging: pValidator.Packaging,
-			Stock:     pValidator.Stock,
-			Note:      pValidator.Note,
-			CompanyID: companyId,
-			UpdatedBy: pValidator.UpdatedBy,
+			ID:          pValidator.ID,
+			Name:        pValidator.Name,
+			UnitPrice:   pValidator.UnitPrice,
+			Packaging:   pValidator.Packaging,
+			Stock:       pValidator.Stock,
+			Note:        pValidator.Note,
+			CompanyID:   companyId,
+			VATIncluded: pValidator.VATIncluded,
+			UpdatedBy:   pValidator.UpdatedBy,
 		}
 	} else {
 		companyId, _ := uuid.Parse(pValidator.CompanyID)
 		p = &dto.UpdateProduct{
-			ID:        pValidator.ID,
-			Name:      pValidator.Name,
-			UnitPrice: pValidator.UnitPrice,
-			Packaging: pValidator.Packaging,
-			Stock:     pValidator.Stock,
-			Note:      pValidator.Note,
-			CompanyID: companyId,
-			UpdatedBy: pValidator.UpdatedBy,
+			ID:          pValidator.ID,
+			Name:        pValidator.Name,
+			UnitPrice:   pValidator.UnitPrice,
+			Packaging:   pValidator.Packaging,
+			Stock:       pValidator.Stock,
+			Note:        pValidator.Note,
+			CompanyID:   companyId,
+			VATIncluded: pValidator.VATIncluded,
+			UpdatedBy:   pValidator.UpdatedBy,
 		}
 	}
 
