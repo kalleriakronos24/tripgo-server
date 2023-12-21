@@ -22,7 +22,7 @@ type Product struct {
 	Packaging   string    `json:"packaging,omitempty" gorm:"not null;"`
 	Stock       float64   `json:"stock,omitempty" gorm:"not null;default:0"`
 	Note        string    `json:"note,omitempty"`
-	VATIncluded bool      `json:"VATIncluded,omitempty" gorm:"default:true;"`
+	VATIncluded bool      `json:"VATIncluded,omitempty"`
 
 	CompanyID            uuid.UUID               `json:"companyId" gorm:"type:uuid;not null;default:NULL;"`
 	Company              *masterModels.Company   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;foreignKey:CompanyID;references:ID" json:"company"`

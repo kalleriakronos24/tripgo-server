@@ -92,7 +92,7 @@ func POSTProduct(c *gin.Context) {
 	if pValidator.CompanyID == "" {
 		var companyId uuid.UUID
 		if company, err := services.Handler.RetrieveCompanyByUserID(userId); err != nil {
-			c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "company"))
+			c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("your user is not linked to company")))
 			return
 		} else {
 			companyId = company.ID
@@ -156,7 +156,7 @@ func PUTProduct(c *gin.Context) {
 	if pValidator.CompanyID == "" {
 		var companyId uuid.UUID
 		if company, err := services.Handler.RetrieveCompanyByUserID(userId); err != nil {
-			c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "company"))
+			c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("your user is not linked to company")))
 			return
 		} else {
 			companyId = company.ID

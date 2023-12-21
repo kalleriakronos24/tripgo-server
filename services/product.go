@@ -8,6 +8,7 @@ import (
 	database "gitlab.com/odma1/odma-be/db"
 	"gitlab.com/odma1/odma-be/dto"
 	"gitlab.com/odma1/odma-be/models"
+	"log"
 	"strings"
 )
 
@@ -37,6 +38,8 @@ func (module *module) RetrieveProduct(id uuid.UUID) (m models.Product, err error
 }
 
 func (module *module) InsertProduct(p *dto.InsertProduct) (err error) {
+
+	log.Printf("%v", p)
 	if err = module.db.productModel.InsertProduct(models.Product{
 		Name:             strings.ToUpper(p.Name),
 		UnitPrice:        p.UnitPrice,

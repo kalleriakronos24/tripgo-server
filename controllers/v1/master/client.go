@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"fmt"
 	"gitlab.com/odma1/odma-be/constants"
 	"gitlab.com/odma1/odma-be/utils"
 	"net/http"
@@ -90,7 +91,7 @@ func POSTClient(c *gin.Context) {
 	if pValidator.CompanyID == "" {
 		var companyId uuid.UUID
 		if company, err := services.Handler.RetrieveCompanyByUserID(userId); err != nil {
-			c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "company"))
+			c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("your user is not linked to company")))
 			return
 		} else {
 			companyId = company.ID
@@ -157,7 +158,7 @@ func PUTClient(c *gin.Context) {
 	if pValidator.CompanyID == "" {
 		var companyId uuid.UUID
 		if company, err := services.Handler.RetrieveCompanyByUserID(userId); err != nil {
-			c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "company"))
+			c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("your user is not linked to company")))
 			return
 		} else {
 			companyId = company.ID
