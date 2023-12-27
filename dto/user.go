@@ -36,6 +36,7 @@ type UserUpdate struct {
 	Username  string    `json:"username,omitempty" validate:"required"`
 	Email     string    `json:"email" validate:"required,email"`
 	Role      string    `json:"role" validate:"required"`
+	Status    string    `json:"status" validate:"required"`
 	CompanyID string    `json:"companyId" binding:"required" validate:"required,uuid4"`
 }
 

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/google/uuid"
+	database "gitlab.com/odma1/odma-be/db"
 	"gitlab.com/odma1/odma-be/dto"
 	masterModels "gitlab.com/odma1/odma-be/models/master"
 )
@@ -33,6 +34,19 @@ func (module *module) UpdateUser(id uuid.UUID, p dto.UserUpdate) (err error) {
 	}); err != nil {
 		return errors.New(err.Error())
 	}
+	return
+}
+
+func (module *module) DeleteUser(id uuid.UUID) (err error) {
+
+	tx := database.GetDatabaseConnection().Begin()
+
+	if err = module.db.userModel.DeleteUser(id, tx); err != nil {
+		tx.Rollback()
+		return errors.New(err.Error())
+	}
+	tx.Commit()
+
 	return
 }
 

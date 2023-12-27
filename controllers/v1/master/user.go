@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"fmt"
 	"gitlab.com/odma1/odma-be/constants"
 	"gitlab.com/odma1/odma-be/utils"
 	"net/http"
@@ -11,6 +12,25 @@ import (
 	masterModels "gitlab.com/odma1/odma-be/models/master"
 	"gitlab.com/odma1/odma-be/services"
 )
+
+func GETUserByID(c *gin.Context) {
+	var err error
+
+	id, _ := c.Params.Get("id")
+	userId, err := uuid.Parse(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("uuid-error", err, ""))
+		return
+	}
+
+	var user masterModels.User
+	if user, err = services.Handler.RetrieveUser(userId); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "user"))
+		return
+	}
+
+	c.JSON(http.StatusOK, dto.Response{Data: user})
+}
 
 func GETUser(c *gin.Context) {
 	var err error
@@ -74,5 +94,29 @@ func PUTUser(c *gin.Context) {
 		c.JSON(http.StatusNotModified, constants.GetErrorResponse("update-failed", err, "user"))
 		return
 	}
+	c.JSON(http.StatusOK, dto.Response{Message: "success"})
+}
+
+func DELETEUser(c *gin.Context) {
+	var err error
+
+	id, _ := c.Params.Get("id")
+	userId, err := uuid.Parse(id)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("uuid-error", err, ""))
+		return
+	}
+
+	if err := services.Handler.CheckExistingUser(userId.String(), struct{ *masterModels.User }{&masterModels.User{}}); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("user id %s is not found", userId)))
+		return
+	}
+
+	if err = services.Handler.DeleteUser(userId); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("delete-failed", err, "user"))
+		return
+	}
+
 	c.JSON(http.StatusOK, dto.Response{Message: "success"})
 }

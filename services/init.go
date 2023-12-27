@@ -20,6 +20,7 @@ type HandlerFunc interface {
 	RegisterUserSuperAdmin(p dto.UserSignupSuperAdmin) (err error)
 	RetrieveUser(id uuid.UUID) (m masterModels.User, err error)
 	UpdateUser(id uuid.UUID, p dto.UserUpdate) (err error)
+	DeleteUser(id uuid.UUID) (err error)
 
 	CheckExistingCompany(id string, param CheckExistingCompanyStruct) (err error)
 	RetrieveAllCompanyPaginated(c *gin.Context, id uuid.UUID) (pagination *database.Pagination, err error)

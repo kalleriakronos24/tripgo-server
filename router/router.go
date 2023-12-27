@@ -26,7 +26,6 @@ func InitializeRouter() (router *gin.Engine) {
 		auth := v1route.Group("/auth")
 		{
 			auth.POST("/signin", v1.POSTLogin)
-			auth.POST("/signup", utils.AuthOnly, v1.POSTRegister)
 			auth.POST("/signup/sa", v1.POSTRegisterSuperAdmin)
 		}
 
@@ -169,8 +168,13 @@ func InitializeRouter() (router *gin.Engine) {
 		user := v1route.Group("/user")
 		{
 			user.GET("/", utils.AuthOnly, v1Master.GETUser)
+			user.GET("/:id", utils.AuthOnly, v1Master.GETUserByID)
+
+			user.POST("/", utils.AuthOnly, v1.POSTRegister)
 
 			user.PUT("/:id", utils.AuthOnly, v1Master.PUTUser)
+
+			user.DELETE("/:id", utils.AuthOnly, v1Master.DELETEUser)
 		}
 
 		misc := v1route.Group("/misc")

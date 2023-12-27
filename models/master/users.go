@@ -1,6 +1,7 @@
 package master
 
 import (
+	"errors"
 	"fmt"
 	"github.com/google/uuid"
 	"gitlab.com/odma1/odma-be/types"
@@ -15,12 +16,12 @@ type userOrm struct {
 type User struct {
 	ID       uuid.UUID `gorm:"index:id,unique;type:uuid;default:gen_random_uuid();" json:"id"`
 	Name     string    `json:"name" gorm:"not null" binding:"required"`
-	Address  string    `json:",omitempty"`
-	Username string    `json:",omitempty" binding:"required" gorm:"not null"`
+	Address  string    `json:"address,omitempty"`
+	Username string    `json:"username,omitempty" binding:"required" gorm:"not null"`
 	Email    string    `gorm:"email:id,unique" json:",omitempty" binding:"required" gorm:"not null"`
-	Password string    `json:",omitempty" binding:"required" gorm:"not null"`
-	Role     string    `json:",omitempty" binding:"required" gorm:"not null;"`
-	Status   string    `json:",omitempty" binding:"required" gorm:"not null;default:active;"`
+	Password string    `json:"password,omitempty" binding:"required" gorm:"not null"`
+	Role     string    `json:"role,omitempty" binding:"required" gorm:"not null;"`
+	Status   string    `json:"status,omitempty" binding:"required" gorm:"not null;default:active;"`
 
 	CreatedBy           uuid.UUID `json:"createdBy,omitempty" gorm:"type:uuid;default:NULL"`
 	UpdatedBy           uuid.UUID `json:"updatedBy,omitempty" gorm:"type:uuid;default:NULL"`
@@ -42,6 +43,7 @@ type UserModelAction interface {
 	UpdateUser(id uuid.UUID, p User) (err error)
 	UpdateUserToInactive(id uuid.UUID, tx *gorm.DB) (err error)
 	RemoveUserFromCompany(id uuid.UUID, tx *gorm.DB) (err error)
+	DeleteUser(id uuid.UUID, tx *gorm.DB) (err error)
 }
 
 func NewUserAction(db *gorm.DB) UserModelAction {
@@ -64,6 +66,11 @@ func (o *userOrm) GetOneByEmail(email string) (m User, err error) {
 
 func (o *userOrm) GetOneByUserName(username string) (m User, err error) {
 	result := o.db.Model(&m).Where("username = ?", username).First(&m)
+
+	if m.Status == "inactive" {
+		return m, errors.New("user has no company related. please ask your admin for verification")
+	}
+
 	return m, result.Error
 }
 
@@ -85,5 +92,10 @@ func (o *userOrm) InsertUser(p User) (err error) {
 
 func (o *userOrm) UpdateUser(id uuid.UUID, p User) (err error) {
 	result := o.db.Model(&p).Where("id", id).Updates(&p)
+	return result.Error
+}
+
+func (o *userOrm) DeleteUser(id uuid.UUID, tx *gorm.DB) (err error) {
+	result := tx.Model(&User{}).Delete(&User{}, id)
 	return result.Error
 }
