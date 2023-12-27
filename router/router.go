@@ -38,6 +38,7 @@ func InitializeRouter() (router *gin.Engine) {
 			company.POST("/", utils.AuthOnly, v1Master.POSTCompany)
 
 			company.PUT("/:id", utils.AuthOnly, v1Master.PUTCompany)
+			company.DELETE("/:id", utils.AuthOnly, v1Master.DELETECompany)
 		}
 
 		client := v1route.Group("/client")
@@ -49,6 +50,7 @@ func InitializeRouter() (router *gin.Engine) {
 			client.POST("/", utils.AuthOnly, v1Master.POSTClient)
 
 			client.PUT("/:id", utils.AuthOnly, v1Master.PUTClient)
+			client.DELETE("/:id", utils.AuthOnly, v1Master.DELETEClient)
 		}
 
 		operatingActivity := v1route.Group("/operating-activity")

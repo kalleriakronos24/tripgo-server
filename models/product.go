@@ -37,8 +37,6 @@ type Product struct {
 	types.DefaultModelProperty
 }
 
-//
-
 type ProductModelAction interface {
 	GetAllProduct(userId uuid.UUID) (m []Product, err error)
 	GetAllProductPaginated(c *gin.Context, userId uuid.UUID) (*database.Pagination, error)
@@ -48,6 +46,7 @@ type ProductModelAction interface {
 	InsertProduct(p Product) (err error)
 	UpdateProduct(id uuid.UUID, p Product) (err error)
 	DeleteProduct(id uuid.UUID, tx *gorm.DB) (err error)
+	DeleteProductByCompanyID(id uuid.UUID, tx *gorm.DB) (err error)
 }
 
 func NewProductAction(db *gorm.DB) ProductModelAction {
@@ -55,6 +54,22 @@ func NewProductAction(db *gorm.DB) ProductModelAction {
 }
 
 func (o *productOrm) GetAllProduct(userId uuid.UUID) (m []Product, err error) {
+
+	var companies []masterModels.Company
+
+	companyResult := o.db.Model(&companies).Where("company_created_by = ?", userId).Find(&companies)
+	companyIds := make([]uuid.UUID, len(companies))
+
+	if len(companies) > 0 {
+		for _, company := range companies {
+			companyIds = append(companyIds, company.ID)
+		}
+	}
+
+	if companyResult.Error != nil {
+		return nil, companyResult.Error
+	}
+
 	result := o.db.Model(&m).
 		Preload("CreatedByUser", func(db *gorm.DB) *gorm.DB {
 			return db.
@@ -68,6 +83,7 @@ func (o *productOrm) GetAllProduct(userId uuid.UUID) (m []Product, err error) {
 			return db.Select([]string{"ID", "Name", "CreatedAt", "UpdatedAt"})
 		}).
 		Preload("ProductHistory").
+		Where("company_id IN ?", companyIds).
 		Find(&m)
 	return m, result.Error
 }
@@ -77,9 +93,24 @@ func (o *productOrm) GetAllProductPaginated(c *gin.Context, userId uuid.UUID) (*
 	var mArr []*Product
 	var pagination database.Pagination
 
+	var companies []masterModels.Company
+
+	companyResult := o.db.Model(&companies).Where("company_created_by = ?", userId).Find(&companies)
+	companyIds := make([]uuid.UUID, len(companies))
+
+	if len(companies) > 0 {
+		for _, company := range companies {
+			companyIds = append(companyIds, company.ID)
+		}
+	}
+
+	if companyResult.Error != nil {
+		return nil, companyResult.Error
+	}
+
 	o.db.
 		Scopes(database.Paginator(c, &mArr, []string{"CreatedByUser", "UpdatedByUser", "Company", "ProductHistory"}, &pagination)).
-		Where("product_created_by", userId).
+		Where("company_id in", companyIds).
 		Find(&mArr)
 	pagination.Data = &mArr
 	return &pagination, nil
@@ -117,5 +148,10 @@ func (o *productOrm) UpdateProduct(id uuid.UUID, p Product) (err error) {
 
 func (o *productOrm) DeleteProduct(id uuid.UUID, tx *gorm.DB) (err error) {
 	result := tx.Model(&Product{}).Delete(&Product{}, id)
+	return result.Error
+}
+
+func (o *productOrm) DeleteProductByCompanyID(id uuid.UUID, tx *gorm.DB) (err error) {
+	result := tx.Model(&Product{}).Where("company_id", id).Delete(&Product{})
 	return result.Error
 }

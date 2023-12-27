@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 	database "gitlab.com/odma1/odma-be/db"
 	"gitlab.com/odma1/odma-be/dto"
+	"gitlab.com/odma1/odma-be/models"
 	masterModels "gitlab.com/odma1/odma-be/models/master"
 	"strings"
 )
@@ -61,6 +62,77 @@ func (module *module) UpdateClient(id uuid.UUID, p *dto.UpdateClient) (err error
 	}); err != nil {
 		return errors.New(err.Error())
 	}
+	return
+}
+
+func (module *module) DeleteClient(id uuid.UUID) (err error) {
+
+	tx := database.GetDatabaseConnection().Begin()
+
+	if err = module.db.clientModel.DeleteClient(id, tx); err != nil {
+		tx.Rollback()
+		return errors.New(err.Error())
+	}
+
+	var operatingActivities []models.OperatingActivity
+	var optActErr error
+	if operatingActivities, optActErr = module.db.operatingActivityModel.GetOneOperatingActivityByClientID(id); optActErr != nil {
+		//tx.Rollback()
+		//return errors.New(optActErr.Error())
+	}
+
+	if len(operatingActivities) > 0 {
+
+		for _, operatingActivity := range operatingActivities {
+
+			if err = module.db.operatingActivityModel.DeleteOperatingActivityByClientID(id, tx); err != nil {
+				tx.Rollback()
+				return errors.New(err.Error())
+			}
+
+			if err = module.db.purchaseOrderProductModel.DeletePurchaseOrderProductByClientID(id, tx); err != nil {
+				tx.Rollback()
+				return errors.New(err.Error())
+			}
+
+			if err = module.db.operatingActivityProductModel.DeleteOptActProductByOptActID(operatingActivity.ID, tx); err != nil {
+				tx.Rollback()
+				return errors.New(err.Error())
+			}
+
+			if err = module.db.deliveryOrderModel.DeleteDeliveryOrderByOptActID(operatingActivity.ID, tx); err != nil {
+				tx.Rollback()
+				return errors.New(err.Error())
+			}
+
+			if err = module.db.invoiceModel.DeleteInvoiceByOptActID(operatingActivity.ID, tx); err != nil {
+				tx.Rollback()
+				return errors.New(err.Error())
+			}
+
+			if err = module.db.quotationModel.DeleteQuotationByOptActID(operatingActivity.ID, tx); err != nil {
+				tx.Rollback()
+				return errors.New(err.Error())
+			}
+
+			if err = module.db.purchaseOrderModel.DeletePurchaseOrderByOptActID(operatingActivity.ID, tx); err != nil {
+				tx.Rollback()
+				return errors.New(err.Error())
+			}
+
+			if err = module.db.paymentModel.DeletePaymentByOptActID(operatingActivity.ID, tx); err != nil {
+				tx.Rollback()
+				return errors.New(err.Error())
+			}
+
+			if err = module.db.paymentInstallmentModel.DeletePaymentInstallmentByOptActID(operatingActivity.ID, tx); err != nil {
+				tx.Rollback()
+				return errors.New(err.Error())
+			}
+		}
+	}
+
+	tx.Commit()
 	return
 }
 

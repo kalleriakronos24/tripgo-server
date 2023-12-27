@@ -28,6 +28,7 @@ type HandlerFunc interface {
 	RetrieveCompany(id uuid.UUID) (m masterModels.Company, err error)
 	InsertCompany(p *dto.InsertCompany) (err error)
 	UpdateCompany(id uuid.UUID, p *dto.UpdateCompany) (err error)
+	DeleteCompany(id uuid.UUID, userId uuid.UUID) (err error)
 
 	CheckExistingClient(id string, param CheckExistingClientStruct) (err error)
 	RetrieveAllClient(id uuid.UUID) (m []masterModels.Client, err error)
@@ -35,6 +36,7 @@ type HandlerFunc interface {
 	RetrieveClient(id uuid.UUID) (m masterModels.Client, err error)
 	InsertClient(p *dto.InsertClient) (err error)
 	UpdateClient(id uuid.UUID, p *dto.UpdateClient) (err error)
+	DeleteClient(id uuid.UUID) (err error)
 
 	CheckExistingOperatingActivity(id string, param CheckExistingOperatingActivityStruct) (err error)
 	RetrieveAllOperatingActivity(id uuid.UUID) (m []models.OperatingActivity, err error)

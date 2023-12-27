@@ -45,6 +45,7 @@ type OperatingActivityProductModelAction interface {
 	UpdateOperatingActivityProduct(id uuid.UUID, p OperatingActivityProduct) (err error)
 	DeleteOperatingActivityProduct(id uuid.UUID, p OperatingActivityProduct) (err error)
 	DeleteOperatingActivityProductByProductID(id uuid.UUID, tx *gorm.DB) (err error)
+	DeleteOptActProductByOptActID(id uuid.UUID, tx *gorm.DB) (err error)
 }
 
 func NewOperatingActivityProductAction(db *gorm.DB) OperatingActivityProductModelAction {
@@ -125,5 +126,10 @@ func (o *OperatingActivityProductOrm) DeleteOperatingActivityProduct(id uuid.UUI
 
 func (o *OperatingActivityProductOrm) DeleteOperatingActivityProductByProductID(id uuid.UUID, tx *gorm.DB) (err error) {
 	result := tx.Model(&OperatingActivityProduct{}).Where("product_id", id).Delete(&OperatingActivityProduct{})
+	return result.Error
+}
+
+func (o *OperatingActivityProductOrm) DeleteOptActProductByOptActID(id uuid.UUID, tx *gorm.DB) (err error) {
+	result := tx.Model(&OperatingActivityProduct{}).Where("operating_activity_id = ?", id).Delete(&OperatingActivityProduct{})
 	return result.Error
 }

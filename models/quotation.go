@@ -44,6 +44,7 @@ type QuotationModelAction interface {
 
 	InsertQuotation(p Quotation) (err error)
 	UpdateQuotation(id uuid.UUID, p Quotation) (err error)
+	DeleteQuotationByOptActID(id uuid.UUID, tx *gorm.DB) (err error)
 }
 
 func NewQuotationAction(db *gorm.DB) QuotationModelAction {
@@ -104,5 +105,10 @@ func (o *quotationOrm) InsertQuotation(p Quotation) (err error) {
 
 func (o *quotationOrm) UpdateQuotation(id uuid.UUID, p Quotation) (err error) {
 	result := o.db.Model(&p).Where("id = ?", id).Updates(&p)
+	return result.Error
+}
+
+func (o *quotationOrm) DeleteQuotationByOptActID(id uuid.UUID, tx *gorm.DB) (err error) {
+	result := tx.Model(&Quotation{}).Where("operating_activity_id = ?", id).Delete(&Quotation{})
 	return result.Error
 }

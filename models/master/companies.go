@@ -8,7 +8,6 @@ import (
 	"gitlab.com/odma1/odma-be/types"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
-	"log"
 	"strings"
 )
 
@@ -46,8 +45,8 @@ type CompanyModelAction interface {
 	GetOneCompanyByUserID(userId uuid.UUID) (m Company, err error)
 
 	InsertCompany(p Company) (err error)
-
 	UpdateCompany(id uuid.UUID, p Company) (err error)
+	DeleteCompany(id uuid.UUID, tx *gorm.DB) (err error)
 }
 
 func NewCompanyAction(db *gorm.DB) CompanyModelAction {
@@ -84,7 +83,7 @@ func (o *companyOrm) GetOneCompanyByUserID(userId uuid.UUID) (m Company, err err
 			return db.Select([]string{"ID", "Name", "CreatedBy", "UpdatedAt"})
 		}).
 		Preload("Client").
-		Where("id = ? ", user.CompanyID).First(&m)
+		Where("company_created_by = ? ", user.ID).First(&m)
 	return m, result.Error
 }
 
@@ -135,8 +134,11 @@ func (o *companyOrm) InsertCompany(p Company) (err error) {
 }
 
 func (o *companyOrm) UpdateCompany(id uuid.UUID, p Company) (err error) {
-	log.Println(id)
-	fmt.Printf("%v", p)
 	result := o.db.Model(&p).Where("id = ?", id).Updates(&p)
+	return result.Error
+}
+
+func (o *companyOrm) DeleteCompany(id uuid.UUID, tx *gorm.DB) (err error) {
+	result := tx.Model(&Company{}).Delete(&Company{}, id)
 	return result.Error
 }

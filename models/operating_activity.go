@@ -48,9 +48,11 @@ type OperatingActivityModelAction interface {
 	GetAllOperatingActivityPaginated(c *gin.Context, userId uuid.UUID) (*database.Pagination, error)
 	GetOneOperatingActivityByID(id uuid.UUID) (m OperatingActivity, err error)
 	GetOneOperatingActivityByTaxNumber(taxNumber string) (m OperatingActivity, err error)
+	GetOneOperatingActivityByClientID(clientId uuid.UUID) (m []OperatingActivity, err error)
 
 	InsertOperatingActivity(p OperatingActivity) (err error)
 	UpdateOperatingActivity(id uuid.UUID, p OperatingActivity) (err error)
+	DeleteOperatingActivityByClientID(id uuid.UUID, tx *gorm.DB) (err error)
 }
 
 func NewOperatingActivityAction(db *gorm.DB) OperatingActivityModelAction {
@@ -116,6 +118,11 @@ func (o *operatingActivityOrm) GetOneOperatingActivityByTaxNumber(taxNumber stri
 	return m, result.Error
 }
 
+func (o *operatingActivityOrm) GetOneOperatingActivityByClientID(clientId uuid.UUID) (m []OperatingActivity, err error) {
+	result := o.db.Model(&m).Where("client_id = ?", clientId).Find(&m)
+	return m, result.Error
+}
+
 func (o *operatingActivityOrm) InsertOperatingActivity(p OperatingActivity) (err error) {
 	result := o.db.Model(&p).Omit(clause.Associations).Create(&p)
 	return result.Error
@@ -123,5 +130,10 @@ func (o *operatingActivityOrm) InsertOperatingActivity(p OperatingActivity) (err
 
 func (o *operatingActivityOrm) UpdateOperatingActivity(id uuid.UUID, p OperatingActivity) (err error) {
 	result := o.db.Model(&p).Where("id = ?", id).Updates(&p)
+	return result.Error
+}
+
+func (o *operatingActivityOrm) DeleteOperatingActivityByClientID(id uuid.UUID, tx *gorm.DB) (err error) {
+	result := tx.Model(&OperatingActivity{}).Where("client_id = ?", id).Delete(&OperatingActivity{})
 	return result.Error
 }

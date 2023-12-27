@@ -15,6 +15,7 @@ import (
 type InvoiceOrm struct {
 	db *gorm.DB
 }
+
 type Invoice struct {
 	ID       uuid.UUID `gorm:"index:id,unique;type:uuid;default:gen_random_uuid();" json:"id"`
 	Number   string    `json:"number,omitempty" gorm:"not null;unique"`
@@ -42,6 +43,7 @@ type InvoiceModelAction interface {
 
 	InsertInvoice(p Invoice) (err error)
 	UpdateInvoice(id uuid.UUID, p Invoice) (err error)
+	DeleteInvoiceByOptActID(id uuid.UUID, tx *gorm.DB) (err error)
 }
 
 func NewInvoiceAction(db *gorm.DB) InvoiceModelAction {
@@ -106,5 +108,10 @@ func (o *InvoiceOrm) InsertInvoice(p Invoice) (err error) {
 
 func (o *InvoiceOrm) UpdateInvoice(id uuid.UUID, p Invoice) (err error) {
 	result := o.db.Model(&p).Where("id = ?", id).Updates(&p)
+	return result.Error
+}
+
+func (o *InvoiceOrm) DeleteInvoiceByOptActID(id uuid.UUID, tx *gorm.DB) (err error) {
+	result := tx.Model(&Invoice{}).Where("operating_activity_id = ?", id).Delete(&Invoice{})
 	return result.Error
 }

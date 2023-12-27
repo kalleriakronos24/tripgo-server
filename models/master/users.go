@@ -19,7 +19,8 @@ type User struct {
 	Username string    `json:",omitempty" binding:"required" gorm:"not null"`
 	Email    string    `gorm:"email:id,unique" json:",omitempty" binding:"required" gorm:"not null"`
 	Password string    `json:",omitempty" binding:"required" gorm:"not null"`
-	Role     string    `json:",omitempty" binding:"required" gorm:"not null"`
+	Role     string    `json:",omitempty" binding:"required" gorm:"not null;"`
+	Status   string    `json:",omitempty" binding:"required" gorm:"not null;default:active;"`
 
 	CreatedBy           uuid.UUID `json:"createdBy,omitempty" gorm:"type:uuid;default:NULL"`
 	UpdatedBy           uuid.UUID `json:"updatedBy,omitempty" gorm:"type:uuid;default:NULL"`
@@ -39,6 +40,8 @@ type UserModelAction interface {
 	InsertUser(p User) (err error)
 
 	UpdateUser(id uuid.UUID, p User) (err error)
+	UpdateUserToInactive(id uuid.UUID, tx *gorm.DB) (err error)
+	RemoveUserFromCompany(id uuid.UUID, tx *gorm.DB) (err error)
 }
 
 func NewUserAction(db *gorm.DB) UserModelAction {
@@ -62,6 +65,16 @@ func (o *userOrm) GetOneByEmail(email string) (m User, err error) {
 func (o *userOrm) GetOneByUserName(username string) (m User, err error) {
 	result := o.db.Model(&m).Where("username = ?", username).First(&m)
 	return m, result.Error
+}
+
+func (o *userOrm) UpdateUserToInactive(id uuid.UUID, tx *gorm.DB) (err error) {
+	result := tx.Model(&User{}).Where("created_by = ? AND role != 'superadmin'", id).Update("status", "inactive")
+	return result.Error
+}
+
+func (o *userOrm) RemoveUserFromCompany(id uuid.UUID, tx *gorm.DB) (err error) {
+	result := tx.Model(&User{}).Where("id", id).Update("company_id", nil)
+	return result.Error
 }
 
 func (o *userOrm) InsertUser(p User) (err error) {

@@ -44,6 +44,7 @@ type PaymentModelAction interface {
 
 	InsertPayment(p Payment) (m Payment, err error)
 	UpdatePayment(id uuid.UUID, p Payment) (err error)
+	DeletePaymentByOptActID(id uuid.UUID, tx *gorm.DB) (err error)
 }
 
 func NewPaymentAction(db *gorm.DB) PaymentModelAction {
@@ -103,5 +104,10 @@ func (o *PaymentOrm) InsertPayment(p Payment) (m Payment, err error) {
 
 func (o *PaymentOrm) UpdatePayment(id uuid.UUID, p Payment) (err error) {
 	result := o.db.Model(&p).Where("id = ?", id).Updates(&p)
+	return result.Error
+}
+
+func (o *PaymentOrm) DeletePaymentByOptActID(id uuid.UUID, tx *gorm.DB) (err error) {
+	result := tx.Model(&Payment{}).Where("operating_activity_id = ?", id).Delete(&Payment{})
 	return result.Error
 }

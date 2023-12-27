@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"fmt"
 	"gitlab.com/odma1/odma-be/constants"
 	"gitlab.com/odma1/odma-be/utils"
 	"net/http"
@@ -130,6 +131,32 @@ func PUTCompany(c *gin.Context) {
 
 	if err = services.Handler.UpdateCompany(companyId, p); err != nil {
 		c.JSON(http.StatusNotModified, constants.GetErrorResponse("update-failed", err, "company"))
+		return
+	}
+	c.JSON(http.StatusOK, dto.Response{Message: "success"})
+}
+
+func DELETECompany(c *gin.Context) {
+	var err error
+
+	id, _ := c.Params.Get("id")
+	companyId, err := uuid.Parse(id)
+
+	userLoggedInId := c.GetString("user_id")
+	userId, err := uuid.Parse(userLoggedInId)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("uuid-error", err, ""))
+		return
+	}
+
+	if err := services.Handler.CheckExistingCompany(companyId.String(), struct{ *masterModels.Company }{&masterModels.Company{}}); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("company id %s is not found", companyId)))
+		return
+	}
+
+	if err = services.Handler.DeleteCompany(companyId, userId); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("delete-failed", err, "company"))
 		return
 	}
 	c.JSON(http.StatusOK, dto.Response{Message: "success"})

@@ -41,6 +41,7 @@ type ProductHistoryModelAction interface {
 	InsertProductHistory(p ProductHistory) (err error)
 	UpdateProductHistory(id uuid.UUID, p ProductHistory) (err error)
 	DeleteProductHistoryByProductID(id uuid.UUID, tx *gorm.DB) (err error)
+	DeleteProductHistoryByOptActID(id uuid.UUID, tx *gorm.DB) (err error)
 }
 
 func NewProductHistoryAction(db *gorm.DB) ProductHistoryModelAction {
@@ -107,5 +108,10 @@ func (o *ProductHistoryOrm) UpdateProductHistory(id uuid.UUID, p ProductHistory)
 
 func (o *ProductHistoryOrm) DeleteProductHistoryByProductID(id uuid.UUID, tx *gorm.DB) (err error) {
 	result := tx.Model(&ProductHistory{}).Where("product_id = ?", id).Delete(&ProductHistory{})
+	return result.Error
+}
+
+func (o *ProductHistoryOrm) DeleteProductHistoryByOptActID(id uuid.UUID, tx *gorm.DB) (err error) {
+	result := tx.Model(&ProductHistory{}).Where("operating_activity_id = ?", id).Delete(&ProductHistory{})
 	return result.Error
 }

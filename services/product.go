@@ -8,7 +8,6 @@ import (
 	database "gitlab.com/odma1/odma-be/db"
 	"gitlab.com/odma1/odma-be/dto"
 	"gitlab.com/odma1/odma-be/models"
-	"strings"
 )
 
 type CheckExistingProductStruct struct {
@@ -37,9 +36,8 @@ func (module *module) RetrieveProduct(id uuid.UUID) (m models.Product, err error
 }
 
 func (module *module) InsertProduct(p *dto.InsertProduct) (err error) {
-
 	if err = module.db.productModel.InsertProduct(models.Product{
-		Name:             strings.ToUpper(p.Name),
+		Name:             p.Name,
 		UnitPrice:        p.UnitPrice,
 		Packaging:        p.Packaging,
 		Stock:            p.Stock,
@@ -55,7 +53,7 @@ func (module *module) InsertProduct(p *dto.InsertProduct) (err error) {
 
 func (module *module) UpdateProduct(id uuid.UUID, p *dto.UpdateProduct) (err error) {
 	if err = module.db.productModel.UpdateProduct(id, models.Product{
-		Name:             strings.ToUpper(p.Name),
+		Name:             p.Name,
 		UnitPrice:        p.UnitPrice,
 		Packaging:        p.Packaging,
 		Stock:            p.Stock,

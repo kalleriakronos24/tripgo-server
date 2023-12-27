@@ -44,6 +44,7 @@ type PurchaseOrderProductModelAction interface {
 	InsertPurchaseOrderProduct(p PurchaseOrderProduct) (err error)
 	UpdatePurchaseOrderProduct(id uuid.UUID, p PurchaseOrderProduct) (err error)
 	DeletePurchaseOrderProductByProductID(id uuid.UUID, tx *gorm.DB) (err error)
+	DeletePurchaseOrderProductByClientID(id uuid.UUID, tx *gorm.DB) (err error)
 }
 
 func NewPurchaseOrderProductAction(db *gorm.DB) PurchaseOrderProductModelAction {
@@ -112,5 +113,10 @@ func (o *PurchaseOrderProductOrm) UpdatePurchaseOrderProduct(id uuid.UUID, p Pur
 
 func (o *PurchaseOrderProductOrm) DeletePurchaseOrderProductByProductID(id uuid.UUID, tx *gorm.DB) (err error) {
 	result := tx.Model(&PurchaseOrderProduct{}).Where("product_id = ?", id).Delete(&PurchaseOrderProduct{})
+	return result.Error
+}
+
+func (o *PurchaseOrderProductOrm) DeletePurchaseOrderProductByClientID(id uuid.UUID, tx *gorm.DB) (err error) {
+	result := tx.Model(&PurchaseOrderProduct{}).Where("client_id = ?", id).Delete(&PurchaseOrderProduct{})
 	return result.Error
 }

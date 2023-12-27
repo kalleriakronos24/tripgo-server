@@ -72,6 +72,7 @@ func GETClient(c *gin.Context) {
 }
 
 func POSTClient(c *gin.Context) {
+
 	var err error
 	userLoggedInId := c.GetString("user_id")
 	userId, err := uuid.Parse(userLoggedInId)
@@ -89,6 +90,7 @@ func POSTClient(c *gin.Context) {
 
 	var p *dto.InsertClient
 	if pValidator.CompanyID == "" {
+
 		var companyId uuid.UUID
 		if company, err := services.Handler.RetrieveCompanyByUserID(userId); err != nil {
 			c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("your user is not linked to company")))
@@ -96,6 +98,7 @@ func POSTClient(c *gin.Context) {
 		} else {
 			companyId = company.ID
 		}
+
 		p = &dto.InsertClient{
 			Name:        pValidator.Name,
 			PhoneNumber: pValidator.PhoneNumber,
@@ -104,7 +107,9 @@ func POSTClient(c *gin.Context) {
 			CreatedBy:   pValidator.CreatedBy,
 			CompanyID:   companyId,
 		}
+
 	} else {
+
 		companyId, _ := uuid.Parse(pValidator.CompanyID)
 		p = &dto.InsertClient{
 			Name:        pValidator.Name,
@@ -114,6 +119,7 @@ func POSTClient(c *gin.Context) {
 			CreatedBy:   pValidator.CreatedBy,
 			CompanyID:   companyId,
 		}
+
 	}
 
 	if err := services.Handler.CheckExistingClient("", struct{ *masterModels.Client }{&masterModels.Client{
@@ -210,6 +216,29 @@ func PUTClient(c *gin.Context) {
 
 	if err = services.Handler.UpdateClient(clientId, p); err != nil {
 		c.JSON(http.StatusNotModified, constants.GetErrorResponse("update-failed", err, "client"))
+		return
+	}
+	c.JSON(http.StatusOK, dto.Response{Message: "success"})
+}
+
+func DELETEClient(c *gin.Context) {
+	var err error
+
+	id, _ := c.Params.Get("id")
+	clientId, err := uuid.Parse(id)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("uuid-error", err, ""))
+		return
+	}
+
+	if err := services.Handler.CheckExistingClient(clientId.String(), struct{ *masterModels.Client }{&masterModels.Client{}}); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("client id %s is not found", clientId)))
+		return
+	}
+
+	if err = services.Handler.DeleteClient(clientId); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("delete-failed", err, "client"))
 		return
 	}
 	c.JSON(http.StatusOK, dto.Response{Message: "success"})
