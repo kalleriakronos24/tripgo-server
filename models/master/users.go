@@ -3,7 +3,9 @@ package master
 import (
 	"errors"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	database "gitlab.com/odma1/odma-be/db"
 	"gitlab.com/odma1/odma-be/types"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -37,6 +39,7 @@ type UserModelAction interface {
 	GetOneByID(id uuid.UUID) (m User, err error)
 	GetOneByUserName(username string) (m User, err error)
 	GetOneByEmail(email string) (m User, err error)
+	GetAllUserPaginated(c *gin.Context, userId uuid.UUID) (*database.Pagination, error)
 
 	InsertUser(p User) (err error)
 
@@ -50,8 +53,20 @@ func NewUserAction(db *gorm.DB) UserModelAction {
 	return &userOrm{db}
 }
 
-func (o *userOrm) GetOneByID(id uuid.UUID) (user User, err error) {
+func (o *userOrm) GetAllUserPaginated(c *gin.Context, userId uuid.UUID) (*database.Pagination, error) {
 
+	var mArr []*User
+	var pagination database.Pagination
+
+	o.db.
+		Scopes(database.Paginator(c, &mArr, []string{"CreatedBy", "UpdatedBy", "Company"}, &pagination)).
+		Where("created_by", userId).
+		Find(&mArr)
+	pagination.Data = &mArr
+	return &pagination, nil
+}
+
+func (o *userOrm) GetOneByID(id uuid.UUID) (user User, err error) {
 	result := o.db.Model(&user).
 		Where("id = ?", id).
 		Preload(clause.Associations).

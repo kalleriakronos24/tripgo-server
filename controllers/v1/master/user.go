@@ -32,6 +32,26 @@ func GETUserByID(c *gin.Context) {
 	c.JSON(http.StatusOK, dto.Response{Data: user})
 }
 
+func GETAllUser(c *gin.Context) {
+	var err error
+
+	userLoggedInId := c.GetString("user_id")
+	userId, err := uuid.Parse(userLoggedInId)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("uuid-error", err, ""))
+		return
+	}
+
+	if company, err := services.Handler.RetrieveAllUserPaginated(c, userId); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "user"))
+		return
+	} else {
+		c.JSON(http.StatusOK, dto.Response{Data: &company})
+	}
+
+}
+
 func GETUser(c *gin.Context) {
 	var err error
 	userLoggedInId := c.GetString("user_id")

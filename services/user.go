@@ -3,6 +3,7 @@ package services
 import (
 	"errors"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	database "gitlab.com/odma1/odma-be/db"
 	"gitlab.com/odma1/odma-be/dto"
@@ -16,6 +17,13 @@ type CheckExistingUserStruct struct {
 func (module *module) RetrieveUser(id uuid.UUID) (m masterModels.User, err error) {
 	if m, err = module.db.userModel.GetOneByID(id); err != nil {
 		return masterModels.User{}, fmt.Errorf("user not found")
+	}
+	return
+}
+
+func (module *module) RetrieveAllUserPaginated(c *gin.Context, id uuid.UUID) (pagination *database.Pagination, err error) {
+	if pagination, err = module.db.userModel.GetAllUserPaginated(c, id); err != nil {
+		return pagination, fmt.Errorf(err.Error())
 	}
 	return
 }

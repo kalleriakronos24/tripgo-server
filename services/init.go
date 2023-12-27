@@ -16,6 +16,7 @@ type HandlerFunc interface {
 	AuthenticateUser(p dto.UserLogin) (token string, err error)
 
 	CheckExistingUser(id string, param CheckExistingUserStruct) (err error)
+	RetrieveAllUserPaginated(c *gin.Context, id uuid.UUID) (pagination *database.Pagination, err error)
 	RegisterUser(p *dto.UserSignup) (err error)
 	RegisterUserSuperAdmin(p dto.UserSignupSuperAdmin) (err error)
 	RetrieveUser(id uuid.UUID) (m masterModels.User, err error)

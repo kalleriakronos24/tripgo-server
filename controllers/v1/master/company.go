@@ -25,7 +25,7 @@ func GETAllCompany(c *gin.Context) {
 	}
 
 	if company, err := services.Handler.RetrieveAllCompanyPaginated(c, userId); err != nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "client"))
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "company"))
 		return
 	} else {
 		c.JSON(http.StatusOK, dto.Response{Data: &company})

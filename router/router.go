@@ -163,15 +163,16 @@ func InitializeRouter() (router *gin.Engine) {
 			invoice.POST("/", utils.AuthOnly, v1.POSTInvoice)
 
 			invoice.PUT("/:id", utils.AuthOnly, v1.PUTInvoice)
+
+			invoice.GET("/generate", utils.AuthOnly, v1.GETInvoice)
 		}
 
 		user := v1route.Group("/user")
 		{
-			user.GET("/", utils.AuthOnly, v1Master.GETUser)
+			user.GET("/", utils.AuthOnly, v1Master.GETAllUser)
+			user.GET("/profile", utils.AuthOnly, v1Master.GETUser)
 			user.GET("/:id", utils.AuthOnly, v1Master.GETUserByID)
-
 			user.POST("/", utils.AuthOnly, v1.POSTRegister)
-
 			user.PUT("/:id", utils.AuthOnly, v1Master.PUTUser)
 
 			user.DELETE("/:id", utils.AuthOnly, v1Master.DELETEUser)
