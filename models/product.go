@@ -55,15 +55,26 @@ func NewProductAction(db *gorm.DB) ProductModelAction {
 
 func (o *productOrm) GetAllProduct(userId uuid.UUID) (m []Product, err error) {
 
-	var companies []masterModels.Company
+	user := masterModels.User{
+		ID: userId,
+	}
 
+	userResult := o.db.Model(&user).Where("id = ?", userId).First(&user)
+
+	if userResult.Error != nil {
+		return nil, userResult.Error
+	}
+
+	var companies []masterModels.Company
 	companyResult := o.db.Model(&companies).Where("company_created_by = ?", userId).Find(&companies)
 	companyIds := make([]uuid.UUID, len(companies))
 
-	if len(companies) > 0 {
+	if len(companies) > 0 && user.Role == "superadmin" {
 		for _, company := range companies {
 			companyIds = append(companyIds, company.ID)
 		}
+	} else {
+		companyIds = append(companyIds, user.CompanyID)
 	}
 
 	if companyResult.Error != nil {
@@ -93,15 +104,26 @@ func (o *productOrm) GetAllProductPaginated(c *gin.Context, userId uuid.UUID) (*
 	var mArr []*Product
 	var pagination database.Pagination
 
-	var companies []masterModels.Company
+	user := masterModels.User{
+		ID: userId,
+	}
 
+	userResult := o.db.Model(&user).Where("id = ?", userId).First(&user)
+
+	if userResult.Error != nil {
+		return nil, userResult.Error
+	}
+
+	var companies []masterModels.Company
 	companyResult := o.db.Model(&companies).Where("company_created_by = ?", userId).Find(&companies)
 	companyIds := make([]uuid.UUID, len(companies))
 
-	if len(companies) > 0 {
+	if len(companies) > 0 && user.Role == "superadmin" {
 		for _, company := range companies {
 			companyIds = append(companyIds, company.ID)
 		}
+	} else {
+		companyIds = append(companyIds, user.CompanyID)
 	}
 
 	if companyResult.Error != nil {

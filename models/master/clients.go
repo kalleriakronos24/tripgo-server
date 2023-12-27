@@ -54,15 +54,26 @@ func (o *clientOrm) GetAllClientPaginated(c *gin.Context, userId uuid.UUID) (*da
 	var mArr []*Client
 	var pagination database.Pagination
 
-	var companies []Company
+	user := User{
+		ID: userId,
+	}
 
+	userResult := o.db.Model(&user).Where("id = ?", userId).First(&user)
+
+	if userResult.Error != nil {
+		return nil, userResult.Error
+	}
+
+	var companies []Company
 	companyResult := o.db.Model(&companies).Where("company_created_by = ?", userId).Find(&companies)
 	companyIds := make([]uuid.UUID, len(companies))
 
-	if len(companies) > 0 {
+	if len(companies) > 0 && user.Role == "superadmin" {
 		for _, company := range companies {
 			companyIds = append(companyIds, company.ID)
 		}
+	} else {
+		companyIds = append(companyIds, user.CompanyID)
 	}
 
 	if companyResult.Error != nil {
@@ -80,15 +91,26 @@ func (o *clientOrm) GetAllClientPaginated(c *gin.Context, userId uuid.UUID) (*da
 
 func (o *clientOrm) GetAllClient(userId uuid.UUID) (m []Client, err error) {
 
-	var companies []Company
+	user := User{
+		ID: userId,
+	}
 
+	userResult := o.db.Model(&user).Where("id = ?", userId).First(&user)
+
+	if userResult.Error != nil {
+		return nil, userResult.Error
+	}
+
+	var companies []Company
 	companyResult := o.db.Model(&companies).Where("company_created_by = ?", userId).Find(&companies)
 	companyIds := make([]uuid.UUID, len(companies))
 
-	if len(companies) > 0 {
+	if len(companies) > 0 && user.Role == "superadmin" {
 		for _, company := range companies {
 			companyIds = append(companyIds, company.ID)
 		}
+	} else {
+		companyIds = append(companyIds, user.CompanyID)
 	}
 
 	if companyResult.Error != nil {
