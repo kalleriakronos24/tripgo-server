@@ -33,7 +33,6 @@ func InitializeRouter() (router *gin.Engine) {
 		{
 			company.GET("/", utils.AuthOnly, v1Master.GETAllCompany)
 			company.GET("/:id", utils.AuthOnly, v1Master.GETCompany)
-
 			company.POST("/", utils.AuthOnly, v1Master.POSTCompany)
 
 			company.PUT("/:id", utils.AuthOnly, v1Master.PUTCompany)
@@ -45,7 +44,6 @@ func InitializeRouter() (router *gin.Engine) {
 			client.GET("/list", utils.AuthOnly, v1Master.GETAllClients)
 			client.GET("/", utils.AuthOnly, v1Master.GETAllClient)
 			client.GET("/:id", utils.AuthOnly, v1Master.GETClient)
-
 			client.POST("/", utils.AuthOnly, v1Master.POSTClient)
 
 			client.PUT("/:id", utils.AuthOnly, v1Master.PUTClient)
@@ -58,7 +56,6 @@ func InitializeRouter() (router *gin.Engine) {
 			operatingActivity.GET("/:id", utils.AuthOnly, v1.GETOperatingActivity)
 
 			operatingActivity.POST("/", utils.AuthOnly, v1.POSTOperatingActivity)
-
 			operatingActivity.PUT("/:id", utils.AuthOnly, v1.PUTOperatingActivity)
 		}
 
@@ -68,7 +65,6 @@ func InitializeRouter() (router *gin.Engine) {
 			operatingActivityProduct.GET("/:id", utils.AuthOnly, v1.GETOperatingActivityProduct)
 
 			operatingActivityProduct.POST("/", utils.AuthOnly, v1.POSTOperatingActivityProduct)
-
 			operatingActivityProduct.PUT("/:id", utils.AuthOnly, v1.PUTOperatingActivityProduct)
 		}
 
@@ -79,9 +75,7 @@ func InitializeRouter() (router *gin.Engine) {
 			product.GET("/:id", utils.AuthOnly, v1.GETProduct)
 
 			product.POST("/", utils.AuthOnly, v1.POSTProduct)
-
 			product.PUT("/:id", utils.AuthOnly, v1.PUTProduct)
-
 			product.DELETE("/:id", utils.AuthOnly, v1.DELETEProduct)
 		}
 
@@ -91,7 +85,6 @@ func InitializeRouter() (router *gin.Engine) {
 			productHistory.GET("/:id", utils.AuthOnly, v1.GETProductHistory)
 
 			productHistory.POST("/", utils.AuthOnly, v1.POSTProductHistory)
-
 			productHistory.PUT("/:id", utils.AuthOnly, v1.PUTProductHistory)
 		}
 
@@ -101,7 +94,6 @@ func InitializeRouter() (router *gin.Engine) {
 			quotation.GET("/:id", utils.AuthOnly, v1.GETQuotation)
 
 			quotation.POST("/", utils.AuthOnly, v1.POSTQuotation)
-
 			quotation.PUT("/:id", utils.AuthOnly, v1.PUTQuotation)
 		}
 
@@ -111,7 +103,6 @@ func InitializeRouter() (router *gin.Engine) {
 			payment.GET("/:id", utils.AuthOnly, v1.GETPayment)
 
 			payment.POST("/", utils.AuthOnly, v1.POSTPayment)
-
 			payment.PUT("/:id", utils.AuthOnly, v1.PUTPayment)
 		}
 
@@ -121,7 +112,6 @@ func InitializeRouter() (router *gin.Engine) {
 			paymentInstallment.GET("/:id", utils.AuthOnly, v1.GETPaymentInstallment)
 
 			paymentInstallment.POST("/", utils.AuthOnly, v1.POSTPaymentInstallment)
-
 			paymentInstallment.PUT("/:id", utils.AuthOnly, v1.PUTPaymentInstallment)
 		}
 
@@ -131,7 +121,6 @@ func InitializeRouter() (router *gin.Engine) {
 			purchaseOrder.GET("/:id", utils.AuthOnly, v1.GETPurchaseOrder)
 
 			purchaseOrder.POST("/", utils.AuthOnly, v1.POSTPurchaseOrder)
-
 			purchaseOrder.PUT("/:id", utils.AuthOnly, v1.PUTPurchaseOrder)
 		}
 
@@ -141,7 +130,6 @@ func InitializeRouter() (router *gin.Engine) {
 			purchaseOrderProduct.GET("/:id", utils.AuthOnly, v1.GETPurchaseOrderProduct)
 
 			purchaseOrderProduct.POST("/", utils.AuthOnly, v1.POSTPurchaseOrderProduct)
-
 			purchaseOrderProduct.PUT("/:id", utils.AuthOnly, v1.PUTPurchaseOrderProduct)
 		}
 
@@ -151,7 +139,6 @@ func InitializeRouter() (router *gin.Engine) {
 			deliveryOrder.GET("/:id", utils.AuthOnly, v1.GETDeliveryOrder)
 
 			deliveryOrder.POST("/", utils.AuthOnly, v1.POSTDeliveryOrder)
-
 			deliveryOrder.PUT("/:id", utils.AuthOnly, v1.PUTDeliveryOrder)
 		}
 
@@ -159,11 +146,8 @@ func InitializeRouter() (router *gin.Engine) {
 		{
 			invoice.GET("/", utils.AuthOnly, v1.GETAllInvoice)
 			invoice.GET("/:id", utils.AuthOnly, v1.GETInvoice)
-
 			invoice.POST("/", utils.AuthOnly, v1.POSTInvoice)
-
 			invoice.PUT("/:id", utils.AuthOnly, v1.PUTInvoice)
-
 			invoice.GET("/generate", utils.AuthOnly, v1.GETInvoice)
 		}
 
@@ -172,19 +156,17 @@ func InitializeRouter() (router *gin.Engine) {
 			user.GET("/", utils.AuthOnly, v1Master.GETAllUser)
 			user.GET("/profile", utils.AuthOnly, v1Master.GETUser)
 			user.GET("/:id", utils.AuthOnly, v1Master.GETUserByID)
+
 			user.POST("/", utils.AuthOnly, v1.POSTRegister)
 			user.PUT("/:id", utils.AuthOnly, v1Master.PUTUser)
-
 			user.DELETE("/:id", utils.AuthOnly, v1Master.DELETEUser)
 		}
 
 		misc := v1route.Group("/misc")
 		{
 			misc.GET("/ping", v1.Pong)
-
 			misc.POST("/upload", v1.UploadFileSingle)
 			misc.POST("/upload-multiple", v1.UploadFileMultiple)
-
 			if config.AppConfig.Environment == "PRODUCTION" {
 				misc.POST("/restore/:fileName", utils.AuthOnly, v1.RestoreDatabase)
 			}

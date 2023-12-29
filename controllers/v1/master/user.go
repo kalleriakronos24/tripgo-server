@@ -49,7 +49,6 @@ func GETAllUser(c *gin.Context) {
 	} else {
 		c.JSON(http.StatusOK, dto.Response{Data: &company})
 	}
-
 }
 
 func GETUser(c *gin.Context) {

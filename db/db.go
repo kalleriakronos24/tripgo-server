@@ -121,6 +121,9 @@ func Paginator(c *gin.Context, value interface{}, relations []string, pagination
 		limit = 20
 	}
 
+	/**
+	* TODO change count by user who logged in or by company
+	**/
 	var totalRows int64
 	*db = *db.Model(&value).Count(&totalRows)
 	pagination.TotalRows = totalRows

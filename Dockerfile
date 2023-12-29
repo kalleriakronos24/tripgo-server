@@ -14,20 +14,20 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 RUN go env -w GO111MODULE=auto
 
 FROM base AS go-builder-production
-COPY . .
+#COPY . .
 RUN go mod tidy && go get ./
-RUN go build -buildvcs=false -v -o ./bin/server ./main.go
+RUN go build -buildvcs=false -o /server
 #RUN go build -ldflags="-s -w" -o ./bin/server ./main.go
 
-FROM base AS go-builder-developement
+FROM init AS go-builder-developement
 RUN go mod tidy && go get ./
 
 
 FROM alpine:latest AS production
-WORKDIR /usr/bin
-COPY --from=go-builder-production /opt/app/api/bin /usr/bin
-CMD ["./usr/bin/server"]
+WORKDIR /usr/bin/
+COPY --from=go-builder-production . .
+CMD ["ls"]
 
 FROM go-builder-developement AS development
-COPY --from=go-builder-developement . /opt/app/api
+COPY --from=go-builder-developement . /opt/app/api/
 CMD ["air"]
