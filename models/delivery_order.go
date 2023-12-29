@@ -56,6 +56,7 @@ type DeliveryOrderModelAction interface {
 
 	InsertDeliveryOrder(p DeliveryOrder) (err error)
 	UpdateDeliveryOrder(id uuid.UUID, p DeliveryOrder) (err error)
+	DeleteDeliveryOrderByOptActID(id uuid.UUID, tx *gorm.DB) (err error)
 }
 
 func NewDeliveryOrderAction(db *gorm.DB) DeliveryOrderModelAction {
@@ -121,5 +122,10 @@ func (o *DeliveryOrderOrm) InsertDeliveryOrder(p DeliveryOrder) (err error) {
 
 func (o *DeliveryOrderOrm) UpdateDeliveryOrder(id uuid.UUID, p DeliveryOrder) (err error) {
 	result := o.db.Model(&p).Where("id = ?", id).Updates(&p)
+	return result.Error
+}
+
+func (o *DeliveryOrderOrm) DeleteDeliveryOrderByOptActID(id uuid.UUID, tx *gorm.DB) (err error) {
+	result := tx.Model(&DeliveryOrder{}).Where("operating_activity_id = ?", id).Delete(&DeliveryOrder{})
 	return result.Error
 }

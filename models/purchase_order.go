@@ -66,6 +66,7 @@ type PurchaseOrderModelAction interface {
 
 	InsertPurchaseOrder(p PurchaseOrder) (err error)
 	UpdatePurchaseOrder(id uuid.UUID, p PurchaseOrder) (err error)
+	DeletePurchaseOrderByOptActID(id uuid.UUID, tx *gorm.DB) (err error)
 }
 
 func NewPurchaseOrderAction(db *gorm.DB) PurchaseOrderModelAction {
@@ -187,5 +188,10 @@ func (o *PurchaseOrderOrm) InsertPurchaseOrder(p PurchaseOrder) (err error) {
 
 func (o *PurchaseOrderOrm) UpdatePurchaseOrder(id uuid.UUID, p PurchaseOrder) (err error) {
 	result := o.db.Model(&p).Where("id = ?", id).Updates(&p)
+	return result.Error
+}
+
+func (o *PurchaseOrderOrm) DeletePurchaseOrderByOptActID(id uuid.UUID, tx *gorm.DB) (err error) {
+	result := tx.Model(&PurchaseOrder{}).Where("operating_activity_id = ?", id).Delete(&PurchaseOrder{})
 	return result.Error
 }
