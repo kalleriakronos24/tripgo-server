@@ -38,7 +38,7 @@ func (module *module) RetrievePurchaseOrderProduct(id uuid.UUID) (m models.Purch
 
 func (module *module) InsertPurchaseOrderProduct(p *dto.InsertPurchaseOrderProduct) (err error) {
 
-	tx := database.GetDatabaseConnection().Begin()
+	//tx := database.GetDatabaseConnection().Begin()
 	//
 	//purchaseOrder := models.PurchaseOrder{}
 	//productModel := models.Product{}
@@ -66,7 +66,26 @@ func (module *module) InsertPurchaseOrderProduct(p *dto.InsertPurchaseOrderProdu
 	//	}
 	//}
 
-	purchaseOrderProductModel := models.PurchaseOrderProduct{
+	fmt.Printf("%v", p)
+
+	//purchaseOrderProductModel := models.PurchaseOrderProduct{
+	//	Quantity:                      p.Quantity,
+	//	VATRate:                       p.VATRate,
+	//	SubTotal:                      p.SubTotal,
+	//	GrandTotal:                    p.GrandTotal,
+	//	PurchaseOrderID:               p.PurchaseOrderID,
+	//	ClientID:                      p.ClientID,
+	//	ProductID:                     p.ProductID,
+	//	PurchaseOrderProductCreatedBy: p.CreatedBy,
+	//}
+	//
+	//if err := tx.Model(&purchaseOrderProductModel).Create(&purchaseOrderProductModel); err != nil {
+	//	tx.Rollback()
+	//	return err.Error
+	//}
+	//tx.Commit()
+
+	if err = module.db.purchaseOrderProductModel.InsertPurchaseOrderProduct(models.PurchaseOrderProduct{
 		Quantity:                      p.Quantity,
 		VATRate:                       p.VATRate,
 		SubTotal:                      p.SubTotal,
@@ -75,18 +94,14 @@ func (module *module) InsertPurchaseOrderProduct(p *dto.InsertPurchaseOrderProdu
 		ClientID:                      p.ClientID,
 		ProductID:                     p.ProductID,
 		PurchaseOrderProductCreatedBy: p.CreatedBy,
+	}); err != nil {
+		return errors.New(err.Error())
 	}
-
-	if err := tx.Model(&purchaseOrderProductModel).Create(&purchaseOrderProductModel); err != nil {
-		tx.Rollback()
-		return err.Error
-	}
-	tx.Commit()
 	return
 }
 
 func (module *module) UpdatePurchaseOrderProduct(id uuid.UUID, p *dto.UpdatePurchaseOrderProduct) (err error) {
-	tx := database.GetDatabaseConnection().Begin()
+	//tx := database.GetDatabaseConnection().Begin()
 
 	//purchaseOrder := models.PurchaseOrder{}
 	//productModel := models.Product{}
@@ -121,8 +136,25 @@ func (module *module) UpdatePurchaseOrderProduct(id uuid.UUID, p *dto.UpdatePurc
 	//	}
 	//}
 
-	purchaseOrderProductModel := models.PurchaseOrderProduct{
-		ID:                            id,
+	//purchaseOrderProductModel := models.PurchaseOrderProduct{
+	//	ID:                            id,
+	//	Quantity:                      p.Quantity,
+	//	VATRate:                       p.VATRate,
+	//	SubTotal:                      p.SubTotal,
+	//	GrandTotal:                    p.GrandTotal,
+	//	PurchaseOrderID:               p.PurchaseOrderID,
+	//	ClientID:                      p.ClientID,
+	//	ProductID:                     p.ProductID,
+	//	PurchaseOrderProductUpdatedBy: p.UpdatedBy,
+	//}
+	//
+	//if err := tx.Model(&purchaseOrderProductModel).Where(id).Updates(&purchaseOrderProductModel); err != nil {
+	//	tx.Rollback()
+	//	return err.Error
+	//}
+	//tx.Commit()
+
+	if err = module.db.purchaseOrderProductModel.UpdatePurchaseOrderProduct(id, models.PurchaseOrderProduct{
 		Quantity:                      p.Quantity,
 		VATRate:                       p.VATRate,
 		SubTotal:                      p.SubTotal,
@@ -131,13 +163,10 @@ func (module *module) UpdatePurchaseOrderProduct(id uuid.UUID, p *dto.UpdatePurc
 		ClientID:                      p.ClientID,
 		ProductID:                     p.ProductID,
 		PurchaseOrderProductUpdatedBy: p.UpdatedBy,
+	}); err != nil {
+		return errors.New(err.Error())
 	}
 
-	if err := tx.Model(&purchaseOrderProductModel).Where(id).Updates(&purchaseOrderProductModel); err != nil {
-		tx.Rollback()
-		return err.Error
-	}
-	tx.Commit()
 	return
 }
 

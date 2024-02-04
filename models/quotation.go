@@ -89,6 +89,7 @@ func (o *quotationOrm) GetOneQuotationByID(id uuid.UUID) (m Quotation, err error
 			return db.Select([]string{"ID", "Name", "CreatedBy", "UpdatedBy", "CreatedAt", "UpdatedAt"})
 		}).
 		Preload("OperatingActivity.Client").
+		Preload("OperatingActivity.OperatingActivityProduct.Product").
 		First(&m, id)
 	return m, result.Error
 }

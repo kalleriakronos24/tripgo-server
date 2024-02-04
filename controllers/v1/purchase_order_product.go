@@ -7,6 +7,7 @@ import (
 	"gitlab.com/odma1/odma-be/models"
 	masterModels "gitlab.com/odma1/odma-be/models/master"
 	"gitlab.com/odma1/odma-be/utils"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -95,19 +96,22 @@ func POSTPurchaseOrderProduct(c *gin.Context) {
 		return
 	}
 
+	log.Println("PO ID >> ", p.PurchaseOrderID)
+
 	if err := services.Handler.CheckExistingPurchaseOrder(p.PurchaseOrderID.String(), struct{ *models.PurchaseOrder }{&models.PurchaseOrder{}}); err != nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("purchase order id %s is not found", p.ClientID)))
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("purchase order id %s is not found", p.PurchaseOrderID)))
 		return
 	}
 
-	if err := services.Handler.CheckExistingPurchaseOrderProduct("", struct {
-		*models.PurchaseOrderProduct
-	}{&models.PurchaseOrderProduct{
-		PurchaseOrderID: p.PurchaseOrderID,
-	}}); err == nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", errors.New("data cannot be duplicated"), fmt.Sprintf("data is already existing with purchase order id %s", p.PurchaseOrderID.String())))
-		return
-	}
+	//log.Println("qq")
+	//if err := services.Handler.CheckExistingPurchaseOrderProduct("", struct {
+	//	*models.PurchaseOrderProduct
+	//}{&models.PurchaseOrderProduct{
+	//	PurchaseOrderID: p.PurchaseOrderID,
+	//}}); err == nil {
+	//	c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", errors.New("data cannot be duplicated"), fmt.Sprintf("data is already existing with purchase order id %s", p.PurchaseOrderID.String())))
+	//	return
+	//}
 
 	if err = services.Handler.InsertPurchaseOrderProduct(p); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("insert-failed", err, "purchase order product"))

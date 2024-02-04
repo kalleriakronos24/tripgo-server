@@ -11,7 +11,40 @@ import (
 	"gitlab.com/odma1/odma-be/services"
 	"gitlab.com/odma1/odma-be/utils"
 	"net/http"
+	"os"
 )
+
+func GeneratePurchaseOrderOut(c *gin.Context) {
+	var err error
+
+	id, _ := c.Params.Get("id")
+	purchaseOrderId, err := uuid.Parse(id)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("uuid-error", err, ""))
+		return
+	}
+
+	if Data, err := services.Handler.GeneratePurchaseOrderDocument(purchaseOrderId); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "purchase order not found"))
+		return
+	} else {
+		fileName := fmt.Sprintf("attachment; filename=%s.pdf", Data.FileName)
+		byteFile, err := os.ReadFile(Data.OutputPath)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", errors.New("failed to retrieve purchase order pdf"), ""))
+			return
+		}
+		c.Header("Content-Disposition", fileName)
+		c.Data(http.StatusOK, "application/pdf", byteFile)
+		err = os.Remove(Data.OutputPath)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", errors.New("failed to remove purchase order pdf"), ""))
+			return
+		}
+		return
+	}
+}
 
 func GETAllPurchaseOrder(c *gin.Context) {
 	var err error
@@ -30,7 +63,6 @@ func GETAllPurchaseOrder(c *gin.Context) {
 	} else {
 		c.JSON(http.StatusOK, dto.Response{Data: PurchaseOrder})
 	}
-
 }
 
 func GETPurchaseOrder(c *gin.Context) {
@@ -57,11 +89,6 @@ func POSTPurchaseOrder(c *gin.Context) {
 	var err error
 	userLoggedInId := c.GetString("user_id")
 	userId, err := uuid.Parse(userLoggedInId)
-	fPurchaseOrderDocument, _ := c.FormFile("document")
-	if fPurchaseOrderDocument == nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", errors.New("field document is required"), "cannot submit if document is empty"))
-		return
-	}
 
 	pValidator := &dto.InsertFormDataPurchaseOrder{CreatedBy: userId}
 	if err = c.Bind(&pValidator); err != nil {
@@ -74,15 +101,39 @@ func POSTPurchaseOrder(c *gin.Context) {
 	}
 
 	operatingActivityId, _ := uuid.Parse(pValidator.OperatingActivityID)
-	p := &dto.InsertPurchaseOrder{
-		Number:              pValidator.Number,
-		Type:                pValidator.Type,
-		Recipient:           pValidator.Recipient,
-		RecipientEmail:      pValidator.RecipientEmail,
-		Date:                utils.ConvertStrToDateTime(pValidator.Date),
-		OperatingActivityID: operatingActivityId,
-		Document:            fPurchaseOrderDocument,
-		CreatedBy:           pValidator.CreatedBy,
+
+	var p *dto.InsertPurchaseOrder
+
+	if pValidator.Type == "in" {
+		fPurchaseOrderDocument, _ := c.FormFile("document")
+		if fPurchaseOrderDocument == nil {
+			c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", errors.New("field document is required"), "cannot submit if document is empty"))
+			return
+		}
+
+		p = &dto.InsertPurchaseOrder{
+			Number:              pValidator.Number,
+			Type:                pValidator.Type,
+			Recipient:           pValidator.Recipient,
+			RecipientEmail:      pValidator.RecipientEmail,
+			Date:                utils.ConvertStrToDateTime(pValidator.Date),
+			OperatingActivityID: operatingActivityId,
+			Document:            fPurchaseOrderDocument,
+			CreatedBy:           pValidator.CreatedBy,
+		}
+	}
+
+	if pValidator.Type == "out" {
+		p = &dto.InsertPurchaseOrder{
+			Number:              pValidator.Number,
+			Type:                pValidator.Type,
+			Recipient:           pValidator.Recipient,
+			RecipientEmail:      pValidator.RecipientEmail,
+			Date:                utils.ConvertStrToDateTime(pValidator.Date),
+			OperatingActivityID: operatingActivityId,
+			Document:            nil,
+			CreatedBy:           pValidator.CreatedBy,
+		}
 	}
 
 	if err := services.Handler.CheckExistingOperatingActivity(p.OperatingActivityID.String(), struct{ *models.OperatingActivity }{&models.OperatingActivity{}}); err != nil {
@@ -91,14 +142,14 @@ func POSTPurchaseOrder(c *gin.Context) {
 	}
 
 	// check existing operating id
-	if err := services.Handler.CheckExistingPurchaseOrder("", struct {
-		*models.PurchaseOrder
-	}{&models.PurchaseOrder{
-		OperatingActivityID: p.OperatingActivityID,
-	}}); err != nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("operating id %s is not found", p.OperatingActivityID)))
-		return
-	}
+	//if err := services.Handler.CheckExistingPurchaseOrder("", struct {
+	//	*models.PurchaseOrder
+	//}{&models.PurchaseOrder{
+	//	OperatingActivityID: p.OperatingActivityID,
+	//}}); err != nil {
+	//	c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("operating id %s is not found", p.OperatingActivityID)))
+	//	return
+	//}
 
 	// check duplication operating id
 	if err := services.Handler.CheckExistingPurchaseOrder("", struct {
@@ -114,6 +165,7 @@ func POSTPurchaseOrder(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("insert-failed", err, "purchase order"))
 		return
 	}
+
 	c.JSON(http.StatusOK, dto.Response{Message: "success"})
 }
 
@@ -121,12 +173,6 @@ func PUTPurchaseOrder(c *gin.Context) {
 	var err error
 	userLoggedInId := c.GetString("user_id")
 	userId, err := uuid.Parse(userLoggedInId)
-
-	fPurchaseOrderDocument, _ := c.FormFile("document")
-	if fPurchaseOrderDocument == nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", errors.New("field document is required"), "cannot submit if document is empty"))
-		return
-	}
 
 	pValidator := &dto.UpdateFormDataPurchaseOrder{UpdatedBy: userId}
 	if err = c.Bind(&pValidator); err != nil {
@@ -139,16 +185,38 @@ func PUTPurchaseOrder(c *gin.Context) {
 	}
 
 	operatingActivityId, _ := uuid.Parse(pValidator.OperatingActivityID)
-	p := &dto.UpdatePurchaseOrder{
-		ID:                  pValidator.ID,
-		Number:              pValidator.Number,
-		Type:                pValidator.Type,
-		Recipient:           pValidator.Recipient,
-		RecipientEmail:      pValidator.RecipientEmail,
-		Date:                utils.ConvertStrToDateTime(pValidator.Date),
-		OperatingActivityID: operatingActivityId,
-		Document:            fPurchaseOrderDocument,
-		UpdatedBy:           pValidator.UpdatedBy,
+	var p *dto.UpdatePurchaseOrder
+	if pValidator.Type == "in" {
+		fPurchaseOrderDocument, _ := c.FormFile("document")
+		if fPurchaseOrderDocument == nil {
+			c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", errors.New("field document is required"), "cannot submit if document is empty"))
+			return
+		}
+		p = &dto.UpdatePurchaseOrder{
+			ID:                  pValidator.ID,
+			Number:              pValidator.Number,
+			Type:                pValidator.Type,
+			Recipient:           pValidator.Recipient,
+			RecipientEmail:      pValidator.RecipientEmail,
+			Date:                utils.ConvertStrToDateTime(pValidator.Date),
+			OperatingActivityID: operatingActivityId,
+			Document:            fPurchaseOrderDocument,
+			UpdatedBy:           pValidator.UpdatedBy,
+		}
+	}
+
+	if pValidator.Type == "out" {
+		p = &dto.UpdatePurchaseOrder{
+			ID:                  pValidator.ID,
+			Number:              pValidator.Number,
+			Type:                pValidator.Type,
+			Recipient:           pValidator.Recipient,
+			RecipientEmail:      pValidator.RecipientEmail,
+			Date:                utils.ConvertStrToDateTime(pValidator.Date),
+			OperatingActivityID: operatingActivityId,
+			Document:            nil,
+			UpdatedBy:           pValidator.UpdatedBy,
+		}
 	}
 
 	id, _ := c.Params.Get("id")

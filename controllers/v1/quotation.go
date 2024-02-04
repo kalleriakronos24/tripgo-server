@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -10,7 +11,40 @@ import (
 	"gitlab.com/odma1/odma-be/services"
 	"gitlab.com/odma1/odma-be/utils"
 	"net/http"
+	"os"
 )
+
+func GenerateSPHDocument(c *gin.Context) {
+	var err error
+
+	id, _ := c.Params.Get("id")
+	invoiceId, err := uuid.Parse(id)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("uuid-error", err, ""))
+		return
+	}
+
+	if Data, err := services.Handler.GenerateSPHDocument(invoiceId); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, ""))
+		return
+	} else {
+		fileName := fmt.Sprintf("attachment; filename=%s.pdf", Data.FileName)
+		byteFile, err := os.ReadFile(Data.OutputPath)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", errors.New("failed to retrieve sph pdf"), ""))
+			return
+		}
+		c.Header("Content-Disposition", fileName)
+		c.Data(http.StatusOK, "application/pdf", byteFile)
+		err = os.Remove(Data.OutputPath)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", errors.New("failed to remove sph pdf"), ""))
+			return
+		}
+		return
+	}
+}
 
 func GETAllQuotation(c *gin.Context) {
 	var err error

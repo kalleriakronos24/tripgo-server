@@ -231,6 +231,8 @@ $RECYCLE.BIN/
 # Air
 tmp/
 
+storage/
+
 .env
 .air.toml
 

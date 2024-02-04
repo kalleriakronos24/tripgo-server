@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"gitlab.com/odma1/odma-be/dto"
+	pdfGenerator "gitlab.com/odma1/odma-be/pkg/pdf-generator"
 	"io"
-	"log"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -31,10 +31,8 @@ func ConvertMultipartFileToBase64(c *gin.Context, file *multipart.FileHeader, ds
 	// on the MIME type
 	switch mimeType {
 	case "image/jpeg":
-		log.Println("jpeg")
 		base64Encoding += "data:image/jpeg;base64,"
 	case "image/png":
-		log.Println("png")
 		base64Encoding += "data:image/png;base64,"
 	}
 	// Append the base64 encoded output
@@ -47,23 +45,51 @@ func ConvertMultipartFileToBase64(c *gin.Context, file *multipart.FileHeader, ds
 			return "", err
 		}
 	}
+
 	return base64Encoding, err
 }
 
-func SaveFileToDockerVolume(c *gin.Context, ownerType string, documentType string, file *multipart.FileHeader) error {
+func SaveFileToDockerVolume(c *gin.Context, ownerType string, documentType string, file *multipart.FileHeader, data interface{}) (outputPath string, err error) {
 
 	workdir, err := os.Getwd()
-	// Upload the file to specific dst.
 
 	filePath := fmt.Sprintf("../files-uploaded/%s/%s", ownerType, documentType)
-	err = c.SaveUploadedFile(file, filepath.Join(workdir, filePath, file.Filename))
+	if file != nil && data == nil {
+		err = c.SaveUploadedFile(file, filepath.Join(workdir, filePath, file.Filename))
+	}
+
+	document := documentType
+	if document == "quotation" {
+		outputPath := fmt.Sprintf("storage/po-%s.pdf", RandStringBytes())
+		pdfGenerator.WriteHTMLToPDF(outputPath, "templates/html/sph-document.html", data)
+		return outputPath, nil
+	}
+
+	if document == "po-out" {
+		outputPath := fmt.Sprintf("storage/po-%s.pdf", RandStringBytes())
+		pdfGenerator.WriteHTMLToPDF(outputPath, "templates/html/po-out-document.html", data)
+		return outputPath, nil
+	}
+
+	if document == "invoice" {
+		outputPath := fmt.Sprintf("storage/inv-%s.pdf", RandStringBytes())
+		pdfGenerator.WriteHTMLToPDF(outputPath, "templates/html/invoice-document.html", data)
+		return outputPath, nil
+	}
+
+	if document == "delivery-order" {
+		outputPath := fmt.Sprintf("storage/do-%s.pdf", RandStringBytes())
+		pdfGenerator.WriteHTMLToPDF(outputPath, "templates/html/do-document.html", data)
+
+		return outputPath, nil
+	}
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, dto.Response{Code: 401, Data: nil, Message: "Failed to save uploaded files into our server.", Error: err})
-		return err
+		return "", err
 	}
 
-	return err
+	return "", err
 }
 
 func toBase64(b []byte) string {

@@ -92,6 +92,7 @@ func InitializeRouter() (router *gin.Engine) {
 		{
 			quotation.GET("/", utils.AuthOnly, v1.GETAllQuotation)
 			quotation.GET("/:id", utils.AuthOnly, v1.GETQuotation)
+			quotation.GET("/:id/generate", utils.AuthOnly, v1.GenerateSPHDocument)
 
 			quotation.POST("/", utils.AuthOnly, v1.POSTQuotation)
 			quotation.PUT("/:id", utils.AuthOnly, v1.PUTQuotation)
@@ -119,6 +120,7 @@ func InitializeRouter() (router *gin.Engine) {
 		{
 			purchaseOrder.GET("/", utils.AuthOnly, v1.GETAllPurchaseOrder)
 			purchaseOrder.GET("/:id", utils.AuthOnly, v1.GETPurchaseOrder)
+			purchaseOrder.GET("/:id/generate", utils.AuthOnly, v1.GeneratePurchaseOrderOut)
 
 			purchaseOrder.POST("/", utils.AuthOnly, v1.POSTPurchaseOrder)
 			purchaseOrder.PUT("/:id", utils.AuthOnly, v1.PUTPurchaseOrder)
@@ -146,9 +148,10 @@ func InitializeRouter() (router *gin.Engine) {
 		{
 			invoice.GET("/", utils.AuthOnly, v1.GETAllInvoice)
 			invoice.GET("/:id", utils.AuthOnly, v1.GETInvoice)
+			invoice.GET("/:id/generate", utils.AuthOnly, v1.GenerateInvoiceDocument)
+
 			invoice.POST("/", utils.AuthOnly, v1.POSTInvoice)
 			invoice.PUT("/:id", utils.AuthOnly, v1.PUTInvoice)
-			invoice.GET("/generate", utils.AuthOnly, v1.GETInvoice)
 		}
 
 		user := v1route.Group("/user")

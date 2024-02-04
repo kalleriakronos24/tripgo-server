@@ -55,6 +55,7 @@ type HandlerFunc interface {
 	UpdateProduct(id uuid.UUID, p *dto.UpdateProduct) (err error)
 	DeleteProduct(id uuid.UUID) (err error)
 
+	GenerateSPHDocument(id uuid.UUID) (output GenerateDocumentOutput, err error)
 	CheckExistingQuotation(id string, param CheckExistingQuotationStruct) (err error)
 	RetrieveAllQuotationPaginated(c *gin.Context, id uuid.UUID) (pagination *database.Pagination, err error)
 	RetrieveAllQuotation(id uuid.UUID) (m []models.Quotation, err error)
@@ -92,6 +93,7 @@ type HandlerFunc interface {
 	UpdateOperatingActivityProduct(id uuid.UUID, p *dto.UpdateOperatingActivityProduct) (err error)
 
 	CheckExistingPurchaseOrder(id string, param CheckExistingPurchaseOrderStruct) (err error)
+	GeneratePurchaseOrderDocument(id uuid.UUID) (output GenerateDocumentOutput, err error)
 	RetrieveAllPurchaseOrderPaginated(c *gin.Context, id uuid.UUID) (pagination *database.Pagination, err error)
 	RetrieveAllPurchaseOrder(id uuid.UUID) (m []models.PurchaseOrder, err error)
 	RetrievePurchaseOrder(id uuid.UUID) (m models.CustomResponsePurchaseOrder, err error)
@@ -112,6 +114,7 @@ type HandlerFunc interface {
 	InsertDeliveryOrder(c *gin.Context, p *dto.InsertDeliveryOrder) (err error)
 	UpdateDeliveryOrder(c *gin.Context, id uuid.UUID, p *dto.UpdateDeliveryOrder) (err error)
 
+	GenerateInvoiceDocument(id uuid.UUID) (output GenerateDocumentOutput, err error)
 	CheckExistingInvoice(id string, param CheckExistingInvoiceStruct) (err error)
 	RetrieveAllInvoicePaginated(c *gin.Context, id uuid.UUID) (pagination *database.Pagination, err error)
 	RetrieveInvoice(id uuid.UUID) (m models.Invoice, err error)
@@ -141,6 +144,11 @@ type dbEntity struct {
 	purchaseOrderProductModel     models.PurchaseOrderProductModelAction
 	deliveryOrderModel            models.DeliveryOrderModelAction
 	invoiceModel                  models.InvoiceModelAction
+}
+
+type GenerateDocumentOutput struct {
+	OutputPath string
+	FileName   string
 }
 
 func InitializeServices() (err error) {

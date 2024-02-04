@@ -23,8 +23,9 @@ type PurchaseOrder struct {
 	Recipient      string    `json:"recipient,omitempty" gorm:"not null;"`
 	RecipientEmail string    `json:"recipientEmail,omitempty" gorm:"not null;"`
 	Date           time.Time `json:"date,omitempty" gorm:"not null"`
+	Sequence       string    `json:"sequence,omitempty" gorm:"not null;default:0001"`
 
-	DocumentID           uuid.UUID               `json:"documentId,omitempty" gorm:"not null;"`
+	DocumentID           uuid.UUID               `json:"documentId,omitempty" gorm:"default:NULL;"` //
 	Document             *Document               `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;foreignKey:DocumentID;references:ID" json:"document"`
 	OperatingActivityID  uuid.UUID               `json:"operatingActivityId" gorm:"type:uuid;not null;default:NULL;"`
 	OperatingActivity    *OperatingActivity      `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:OperatingActivityID;references:ID" json:"operatingActivity"`
@@ -46,11 +47,12 @@ type CustomResponsePurchaseOrder struct {
 	RecipientEmail string    `json:"recipientEmail,omitempty"`
 	Date           time.Time `json:"date,omitempty"`
 
-	OperatingActivityID uuid.UUID          `json:"operatingActivityId"`
-	DocumentID          uuid.UUID          `json:"documentId,omitempty"`
-	Document            *Document          `json:"document"`
-	OperatingActivity   *OperatingActivity `json:"operatingActivity"`
-	Product             []any              `json:"product"`
+	OperatingActivityID  uuid.UUID               `json:"operatingActivityId"`
+	DocumentID           uuid.UUID               `json:"documentId,omitempty"`
+	Document             *Document               `json:"document"`
+	OperatingActivity    *OperatingActivity      `json:"operatingActivity"`
+	Product              []any                   `json:"product"`
+	PurchaseOrderProduct []*PurchaseOrderProduct `json:"purchaseOrderProduct,omitempty"`
 
 	CreatedByUser *masterModels.User `json:"createdByUser"`
 	UpdatedByUser *masterModels.User `json:"updatedByUser"`
@@ -111,7 +113,7 @@ func (o *PurchaseOrderOrm) GetOnePurchaseOrderByID(id uuid.UUID) (m CustomRespon
 		Preload("UpdatedByUser", func(db *gorm.DB) *gorm.DB {
 			return db.Select([]string{"ID", "Name", "CreatedBy", "UpdatedBy", "CreatedAt", "UpdatedAt"})
 		}).
-		Preload("OperatingActivity").
+		Preload("OperatingActivity.Client").
 		Preload("Document").
 		First(&purchaseOrderModel, id)
 

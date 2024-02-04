@@ -1,17 +1,56 @@
 package v1
 
 import (
+	"errors"
 	"fmt"
 	"gitlab.com/odma1/odma-be/constants"
 	"gitlab.com/odma1/odma-be/models"
 	"gitlab.com/odma1/odma-be/utils"
+	"log"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"gitlab.com/odma1/odma-be/dto"
 	"gitlab.com/odma1/odma-be/services"
 )
+
+func GenerateInvoiceDocument(c *gin.Context) {
+	var err error
+
+	id, _ := c.Params.Get("id")
+	invoiceId, err := uuid.Parse(id)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("uuid-error", err, ""))
+		return
+	}
+
+	if Data, err := services.Handler.GenerateInvoiceDocument(invoiceId); err != nil {
+		log.Printf("error >>> %s", err)
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, ""))
+		return
+	} else {
+
+		log.Printf("%v", Data)
+		fileName := fmt.Sprintf("attachment; filename=%s.pdf", Data.FileName)
+		byteFile, err := os.ReadFile(Data.OutputPath)
+		if err != nil {
+			log.Printf("error >>> %s", err.Error())
+			c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", errors.New("failed to retrieve invoice pdf"), ""))
+			return
+		}
+		c.Header("Content-Disposition", fileName)
+		c.Data(http.StatusOK, "application/pdf", byteFile)
+		err = os.Remove(Data.OutputPath)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", errors.New("failed to remove invoice pdf"), ""))
+			return
+		}
+		return
+	}
+}
 
 func GETAllInvoice(c *gin.Context) {
 	var err error

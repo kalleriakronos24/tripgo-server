@@ -5,12 +5,10 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"gitlab.com/odma1/odma-be/config"
 	database "gitlab.com/odma1/odma-be/db"
 	"gitlab.com/odma1/odma-be/dto"
 	"gitlab.com/odma1/odma-be/models"
 	"gitlab.com/odma1/odma-be/utils"
-	"path"
 	"strconv"
 	"strings"
 	"time"
@@ -45,58 +43,35 @@ func (module *module) InsertDeliveryOrder(c *gin.Context, p *dto.InsertDeliveryO
 
 	tx := database.GetDatabaseConnection().Begin()
 
-	var operatingActivity models.OperatingActivity
-	var operatingActivityErr error
-
-	if operatingActivity, operatingActivityErr = module.db.operatingActivityModel.GetOneOperatingActivityByID(p.OperatingActivityID); operatingActivityErr != nil {
-		return errors.New(operatingActivityErr.Error())
-	}
-	clientData := operatingActivity.Client
-	documentPath := fmt.Sprintf("/client/%s/delivery-order/%s", clientData.Name, p.Document.Filename)
-	fileExt := path.Ext(p.Document.Filename)
-
-	document := models.Document{
-		Base64:            "",
-		Path:              documentPath,
-		AbsolutePath:      fmt.Sprintf("%s/%s/%s/client/%s/delivery-order/%s", config.AppConfig.APPUrl, config.AppConfig.APPUrlStaticFileGroupRoute, config.AppConfig.AppUrlStaticFileMainRoute, clientData.Name, p.Document.Filename),
-		FileName:          p.Document.Filename,
-		Extension:         fileExt,
-		Location:          "local",
-		DocumentCreatedBy: p.CreatedBy,
-	}
-
-	if errDocument := tx.Create(&document); err != nil {
-		tx.Rollback()
-		return errDocument.Error
-	}
-
-	documentTypePath := fmt.Sprintf("%s/delivery-order", clientData.Name)
-
-	if saveFileErr := utils.SaveFileToDockerVolume(c, "client", documentTypePath, p.Document); saveFileErr != nil {
-		return errors.New(saveFileErr.Error())
-	}
-
 	DeliveryOrderModel := models.DeliveryOrder{}
 
 	_, deliveryLastDataErr := database.GetLastDocumentNumber(tx, &DeliveryOrderModel)
 
+	var formattedNumber string
+	var finalNumber string
 	if deliveryLastDataErr != nil {
-		DeliveryOrderModel.Sequence = "0001"
+		now := time.Now()
+		year := now.Year()
+		month := now.Month()
+		monthInRoman := utils.IntegerToRoman(int(month))
+		formattedNumber = fmt.Sprintf("%s/%s/%s/%d", "0001", "DO", monthInRoman, year)
+		finalNumber = "0001"
+	} else {
+		parsedNumber, _ := strconv.Atoi(DeliveryOrderModel.Sequence)
+		strLastNumber := strconv.Itoa(parsedNumber)
+		getFrontDigitNumber := strings.Replace(DeliveryOrderModel.Sequence, strLastNumber, "", -1)
+		convertActiveNumberToStr, _ := strconv.Atoi(strLastNumber)
+		addActiveNumberByOne := convertActiveNumberToStr + 1
+		convertAddedActiveNumberToStr := strconv.Itoa(addActiveNumberByOne)
+		poNumber := getFrontDigitNumber + convertAddedActiveNumberToStr
+
+		now := time.Now()
+		year := now.Year()
+		month := now.Month()
+		monthInRoman := utils.IntegerToRoman(int(month))
+		formattedNumber = fmt.Sprintf("%s/%s/%s/%d", poNumber, "DO", monthInRoman, year)
+		finalNumber = poNumber
 	}
-
-	parsedNumber, _ := strconv.Atoi(DeliveryOrderModel.Sequence)
-	strLastNumber := strconv.Itoa(parsedNumber)
-	getFrontDigitNumber := strings.Replace(DeliveryOrderModel.Sequence, strLastNumber, "", -1)
-	convertActiveNumberToStr, _ := strconv.Atoi(strLastNumber)
-	addActiveNumberByOne := convertActiveNumberToStr + 1
-	convertAddedActiveNumberToStr := strconv.Itoa(addActiveNumberByOne)
-	finalNumber := getFrontDigitNumber + convertAddedActiveNumberToStr
-
-	now := time.Now()
-	year := now.Year()
-	month := now.Month()
-	monthInRoman := utils.IntegerToRoman(int(month))
-	formattedNumber := fmt.Sprintf("%s/%s/%s/%d", finalNumber, "DO", monthInRoman, year)
 
 	DeliveryOrder := models.DeliveryOrder{
 		Number:                 formattedNumber,
@@ -106,7 +81,6 @@ func (module *module) InsertDeliveryOrder(c *gin.Context, p *dto.InsertDeliveryO
 		Note:                   p.Note,
 		Date:                   p.Date,
 		Status:                 p.Status,
-		DocumentID:             document.ID,
 		Sequence:               finalNumber,
 		OperatingActivityID:    p.OperatingActivityID,
 		DeliveryOrderCreatedBy: p.CreatedBy,
@@ -124,60 +98,6 @@ func (module *module) UpdateDeliveryOrder(c *gin.Context, id uuid.UUID, p *dto.U
 
 	tx := database.GetDatabaseConnection().Begin()
 
-	var operatingActivity models.OperatingActivity
-	var operatingActivityErr error
-
-	if operatingActivity, operatingActivityErr = module.db.operatingActivityModel.GetOneOperatingActivityByID(p.OperatingActivityID); operatingActivityErr != nil {
-		return errors.New(operatingActivityErr.Error())
-	}
-
-	currentDeliveryOrder, err := module.RetrieveDeliveryOrder(id)
-
-	if err != nil {
-		return errors.New(err.Error())
-	}
-
-	currentDocument, err := module.RetrieveDocument(currentDeliveryOrder.DocumentID)
-
-	if err != nil {
-		return errors.New(err.Error())
-	}
-
-	/**
-	in here we just update the document's values regardless the user upload a new file or the same
-
-	because the docker logic, if it's same file, it will replace the old one.
-
-	if it's different from the old one, it will add the new file, keeping the old one.
-
-	but since we update the values in our table, we will retrieve the latest file that user updated
-	*/
-	clientData := operatingActivity.Client
-	documentPath := fmt.Sprintf("/client/%s/delivery-order/%s", clientData.Name, p.Document.Filename)
-	fileExt := path.Ext(p.Document.Filename)
-
-	document := models.Document{
-		ID:                currentDocument.ID,
-		Base64:            "",
-		Path:              documentPath,
-		AbsolutePath:      fmt.Sprintf("%s/%s/%s/client/%s/delivery-order/%s", config.AppConfig.APPUrl, config.AppConfig.APPUrlStaticFileGroupRoute, config.AppConfig.AppUrlStaticFileMainRoute, clientData.Name, p.Document.Filename),
-		FileName:          p.Document.Filename,
-		Extension:         fileExt,
-		Location:          "local",
-		DocumentUpdatedBy: p.UpdatedBy,
-	}
-
-	if errDocument := tx.Updates(&document); err != nil {
-		tx.Rollback()
-		return errDocument.Error
-	}
-
-	documentTypePath := fmt.Sprintf("%s/delivery-order", clientData.Name)
-
-	if saveFileErr := utils.SaveFileToDockerVolume(c, "client", documentTypePath, p.Document); saveFileErr != nil {
-		return errors.New(saveFileErr.Error())
-	}
-
 	DeliveryOrder := models.DeliveryOrder{
 		ID: id,
 		//Number:                 p.Number,
@@ -187,14 +107,15 @@ func (module *module) UpdateDeliveryOrder(c *gin.Context, id uuid.UUID, p *dto.U
 		Note:                   p.Note,
 		Date:                   p.Date,
 		Status:                 p.Status,
-		DocumentID:             document.ID,
 		OperatingActivityID:    p.OperatingActivityID,
 		DeliveryOrderUpdatedBy: p.UpdatedBy,
 	}
+
 	if DeliveryOrderErr := tx.Updates(&DeliveryOrder); err != nil {
 		tx.Rollback()
 		return DeliveryOrderErr.Error
 	}
+
 	tx.Commit()
 	return
 }

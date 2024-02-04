@@ -86,7 +86,8 @@ func (o *InvoiceOrm) GetOneInvoiceByID(id uuid.UUID) (m Invoice, err error) {
 		Preload("UpdatedByUser", func(db *gorm.DB) *gorm.DB {
 			return db.Select([]string{"ID", "Name", "CreatedBy", "UpdatedBy", "CreatedAt", "UpdatedAt"})
 		}).
-		Preload("OperatingActivity.OperatingActivityProduct").
+		Preload("OperatingActivity.Client").
+		Preload("OperatingActivity.OperatingActivityProduct.Product").
 		First(&m, id)
 	return m, result.Error
 }

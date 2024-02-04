@@ -34,7 +34,7 @@ type DeliveryOrder struct {
 	Status        string    `json:"status,omitempty" gorm:"not null;default:shipped"`
 	Sequence      string    `json:"sequence,omitempty" gorm:"not null;default:0001"`
 
-	DocumentID          uuid.UUID          `json:"documentId,omitempty" gorm:"not null;"`
+	DocumentID          uuid.UUID          `json:"documentId,omitempty" gorm:"default:NULL;"`
 	Document            *Document          `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;foreignKey:DocumentID;references:ID" json:"document"`
 	OperatingActivityID uuid.UUID          `json:"operatingActivityId" gorm:"type:uuid;not null;default:NULL;"`
 	OperatingActivity   *OperatingActivity `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:OperatingActivityID;references:ID" json:"operatingActivity"`

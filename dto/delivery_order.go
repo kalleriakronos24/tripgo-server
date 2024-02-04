@@ -40,7 +40,6 @@ type UpdateDeliveryOrder struct {
 	Date                time.Time
 	Status              string
 	OperatingActivityID uuid.UUID
-	Document            *multipart.FileHeader
 	UpdatedBy           uuid.UUID
 }
 
@@ -52,6 +51,28 @@ type InsertDeliveryOrder struct {
 	Date                time.Time
 	Status              string
 	OperatingActivityID uuid.UUID
-	Document            *multipart.FileHeader
+	CreatedBy           uuid.UUID
+}
+
+type UpdateDeliveryOrderValidator struct {
+	ID                  uuid.UUID
+	ContactPerson       string `json:"contactPerson,omitempty" binding:"required" validate:"required"`
+	PhoneNumber         string `json:"phoneNumber,omitempty" binding:"required" validate:"required"`
+	Address             string `json:"address,omitempty" binding:"required" validate:"required"`
+	Note                string `json:"note,omitempty" binding:"required" validate:"required"`
+	Date                string `json:"date,omitempty" binding:"required" validate:"required,ISO8601date"`
+	Status              string `json:"status,omitempty" binding:"required" validate:"required,oneof=shipping delivery canceled"`
+	OperatingActivityID string `json:"operatingActivityId,omitempty" binding:"required" validate:"uuid4"`
+	UpdatedBy           uuid.UUID
+}
+
+type InsertDeliveryOrderValidator struct {
+	ContactPerson       string `json:"contactPerson,omitempty" binding:"required" validate:"required"`
+	PhoneNumber         string `json:"phoneNumber,omitempty" binding:"required" validate:"required"`
+	Address             string `json:"address,omitempty" binding:"required" validate:"required"`
+	Note                string `json:"note,omitempty" binding:"required" validate:"required"`
+	Date                string `json:"date,omitempty" binding:"required" validate:"required,ISO8601date"`
+	Status              string `json:"status,omitempty" binding:"required" validate:"required,oneof=shipping delivery canceled"`
+	OperatingActivityID string `json:"operatingActivityId,omitempty" binding:"required" validate:"uuid4"`
 	CreatedBy           uuid.UUID
 }

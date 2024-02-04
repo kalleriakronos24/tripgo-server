@@ -40,7 +40,7 @@ type PaymentModelAction interface {
 	GetAllPayment(userId uuid.UUID) (m []Payment, err error)
 	GetAllIPaymentPaginated(c *gin.Context, userId uuid.UUID) (*database.Pagination, error)
 	GetOnePaymentByID(id uuid.UUID) (m Payment, err error)
-	GetOnePaymentByOperatingActivityID(productId uuid.UUID) (m Payment, err error)
+	GetOnePaymentByOperatingActivityID(operatingActivityId uuid.UUID) (m Payment, err error)
 
 	InsertPayment(p Payment) (m Payment, err error)
 	UpdatePayment(id uuid.UUID, p Payment) (err error)

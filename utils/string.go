@@ -3,7 +3,12 @@ package utils
 import (
 	"strconv"
 	"strings"
+	"time"
 )
+
+func RandStringBytes() string {
+	return time.Now().Format(time.RFC3339)
+}
 
 func IntegerToRoman(number int) string {
 	maxRomanNumber := 3999

@@ -30,7 +30,6 @@ func GETAllCompany(c *gin.Context) {
 	} else {
 		c.JSON(http.StatusOK, dto.Response{Data: &company})
 	}
-
 }
 
 func GETCompany(c *gin.Context) {
@@ -52,6 +51,7 @@ func GETCompany(c *gin.Context) {
 
 	c.JSON(http.StatusOK, dto.Response{Data: company})
 }
+
 func POSTCompany(c *gin.Context) {
 	var err error
 	userLoggedInId := c.GetString("user_id")

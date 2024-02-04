@@ -15,6 +15,14 @@ type productOrm struct {
 	db *gorm.DB
 }
 
+type CustomProduct struct {
+	Name      string
+	UnitPrice string
+	Packaging string
+	Stock     float64
+	Note      string
+}
+
 type Product struct {
 	ID          uuid.UUID `gorm:"index:id,unique;type:uuid;default:gen_random_uuid();" json:"id"`
 	Name        string    `json:"name,omitempty" gorm:"not null"`

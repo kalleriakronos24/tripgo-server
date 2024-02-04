@@ -41,7 +41,8 @@ func GetErrorResponse(kind string, err error, message string) dto.Response {
 		response = dto.Response{
 			Data:    false,
 			Kind:    "data-not-found",
-			Message: "Data is not found",
+			Error:   err.Error(),
+			Message: message,
 		}
 		return response
 	case "data-existing":
