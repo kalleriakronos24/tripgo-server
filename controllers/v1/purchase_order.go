@@ -62,6 +62,7 @@ func GETAllPurchaseOrder(c *gin.Context) {
 		return
 	} else {
 		c.JSON(http.StatusOK, dto.Response{Data: PurchaseOrder})
+		return
 	}
 }
 
@@ -83,6 +84,7 @@ func GETPurchaseOrder(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, dto.Response{Data: PurchaseOrder})
+	return
 }
 
 func POSTPurchaseOrder(c *gin.Context) {
@@ -141,16 +143,6 @@ func POSTPurchaseOrder(c *gin.Context) {
 		return
 	}
 
-	// check existing operating id
-	//if err := services.Handler.CheckExistingPurchaseOrder("", struct {
-	//	*models.PurchaseOrder
-	//}{&models.PurchaseOrder{
-	//	OperatingActivityID: p.OperatingActivityID,
-	//}}); err != nil {
-	//	c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("operating id %s is not found", p.OperatingActivityID)))
-	//	return
-	//}
-
 	// check duplication operating id
 	if err := services.Handler.CheckExistingPurchaseOrder("", struct {
 		*models.PurchaseOrder
@@ -167,6 +159,7 @@ func POSTPurchaseOrder(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, dto.Response{Message: "success"})
+	return
 }
 
 func PUTPurchaseOrder(c *gin.Context) {
@@ -267,4 +260,5 @@ func PUTPurchaseOrder(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, dto.Response{Message: "success"})
+	return
 }

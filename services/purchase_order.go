@@ -68,7 +68,7 @@ func (module *module) InsertPurchaseOrder(c *gin.Context, p *dto.InsertPurchaseO
 			Location:          "local",
 			DocumentCreatedBy: p.CreatedBy,
 		}
-		if errDocument := tx.Create(&document); err != nil {
+		if errDocument := tx.Create(&document); errDocument.Error != nil {
 			tx.Rollback()
 			return errDocument.Error
 		}
@@ -87,7 +87,7 @@ func (module *module) InsertPurchaseOrder(c *gin.Context, p *dto.InsertPurchaseO
 			PurchaseOrderCreatedBy: p.CreatedBy,
 		}
 
-		if purchaseOrderErr := tx.Create(&purchaseOrder); err != nil {
+		if purchaseOrderErr := tx.Create(&purchaseOrder); purchaseOrderErr.Error != nil {
 			tx.Rollback()
 			return purchaseOrderErr.Error
 		}
@@ -104,7 +104,7 @@ func (module *module) InsertPurchaseOrder(c *gin.Context, p *dto.InsertPurchaseO
 			PurchaseOrderCreatedBy: p.CreatedBy,
 		}
 
-		if purchaseOrderErr := tx.Create(&purchaseOrder); err != nil {
+		if purchaseOrderErr := tx.Create(&purchaseOrder); purchaseOrderErr.Error != nil {
 			tx.Rollback()
 			return purchaseOrderErr.Error
 		}
@@ -163,7 +163,7 @@ func (module *module) UpdatePurchaseOrder(c *gin.Context, id uuid.UUID, p *dto.U
 			DocumentUpdatedBy: p.UpdatedBy,
 		}
 
-		if errDocument := tx.Updates(&document); err != nil {
+		if errDocument := tx.Updates(&document); errDocument.Error != nil {
 			tx.Rollback()
 			return errDocument.Error
 		}
@@ -185,7 +185,7 @@ func (module *module) UpdatePurchaseOrder(c *gin.Context, id uuid.UUID, p *dto.U
 			PurchaseOrderUpdatedBy: p.UpdatedBy,
 		}
 
-		if purchaseOrderErr := tx.Updates(&purchaseOrder); err != nil {
+		if purchaseOrderErr := tx.Updates(&purchaseOrder); purchaseOrderErr.Error != nil {
 			tx.Rollback()
 			return purchaseOrderErr.Error
 		}
@@ -235,7 +235,7 @@ func (module *module) UpdatePurchaseOrder(c *gin.Context, id uuid.UUID, p *dto.U
 			PurchaseOrderUpdatedBy: p.UpdatedBy,
 		}
 
-		if purchaseOrderErr := tx.Updates(&purchaseOrder); err != nil {
+		if purchaseOrderErr := tx.Updates(&purchaseOrder); purchaseOrderErr.Error != nil {
 			tx.Rollback()
 			return purchaseOrderErr.Error
 		}

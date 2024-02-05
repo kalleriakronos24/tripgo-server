@@ -4,27 +4,12 @@ import (
 	"fmt"
 )
 
-func WriteHTMLToPDF(path string, templatePath string, data interface{}) {
+func WriteHTMLToPDF(path string, templatePath string, data interface{}) error {
 
 	r := NewRequestPdf("")
 
 	//path for download pdf
 	outputPath := path
-
-	//html template data
-	//templateData := struct {
-	//	Title       string
-	//	Description string
-	//	Company     string
-	//	Contact     string
-	//	Country     string
-	//}{
-	//	Title:       "HTML to PDF generator",
-	//	Description: "This is the simple HTML to PDF file.",
-	//	Company:     "Jhon Lewis",
-	//	Contact:     "Maria Anders",
-	//	Country:     "Germany",
-	//}
 
 	if err := r.ParseTemplate(templatePath, data); err == nil {
 
@@ -32,9 +17,15 @@ func WriteHTMLToPDF(path string, templatePath string, data interface{}) {
 		args := []string{"no-pdf-compression"}
 
 		// Generate PDF
-		ok, _ := r.GeneratePDF(outputPath, args)
+		ok, err := r.GeneratePDF(outputPath, args)
+
+		if err != nil {
+			return err
+		}
 		fmt.Println(ok, "pdf generated successfully")
 	} else {
-		fmt.Println(err)
+		return err
 	}
+
+	return nil
 }

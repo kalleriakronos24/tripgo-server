@@ -156,10 +156,10 @@ func GetLastDocumentNumber(tx *gorm.DB, model interface{}) (m *interface{}, err 
 	startingOfMonth := time.Date(currentYear, currentMonth, 1, 0, 0, 0, 0, currentLocation)
 	endingOfMonth := startingOfMonth.AddDate(0, 1, -1)
 
-	result := tx.Model(&model).Where("created_at >= ? AND created_at <= ?", startingOfMonth, endingOfMonth).Last(&model)
+	result := tx.Model(&model).Where("created_at >= ? AND created_at <= ?", startingOfMonth, endingOfMonth).Order("created_at DESC").Last(&model)
 
 	if result.Error != nil {
-		return &model, errors.New("failed to get last document number")
+		return &model, result.Error
 	}
 
 	return &model, nil

@@ -62,6 +62,7 @@ func GETAllQuotation(c *gin.Context) {
 		return
 	} else {
 		c.JSON(http.StatusOK, dto.Response{Data: quotation})
+		return
 	}
 
 }
@@ -82,8 +83,8 @@ func GETQuotation(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "quotation"))
 		return
 	}
-
 	c.JSON(http.StatusOK, dto.Response{Data: quotation})
+	return
 }
 
 func POSTQuotation(c *gin.Context) {
@@ -135,6 +136,7 @@ func POSTQuotation(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, dto.Response{Message: "success"})
+	return
 }
 
 func PUTQuotation(c *gin.Context) {
@@ -197,4 +199,6 @@ func PUTQuotation(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, dto.Response{Message: "success"})
+
+	return
 }

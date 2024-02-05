@@ -22,7 +22,7 @@ type Quotation struct {
 	FrancoArea  string    `json:"francoArea,omitempty" gorm:"not null"`
 	PaymentTerm string    `json:"paymentTerm,omitempty" gorm:"not null"`
 	SendAfter   string    `json:"sendAfter,omitempty" gorm:"not null"`
-	Date        time.Time `json:"date,omitempty" gorm:"not null;default:CURRENT_TIMESTAMP"`
+	Date        time.Time `json:"date,omitempty" gorm:"not null"`
 	Sequence    string    `json:"sequence,omitempty" gorm:"not null;default:0001"`
 
 	OperatingActivityID uuid.UUID          `json:"operatingActivityId" gorm:"type:uuid;default:NULL"`

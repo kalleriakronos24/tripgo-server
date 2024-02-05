@@ -86,7 +86,7 @@ func (module *module) InsertDeliveryOrder(c *gin.Context, p *dto.InsertDeliveryO
 		DeliveryOrderCreatedBy: p.CreatedBy,
 	}
 
-	if DeliveryOrderErr := tx.Create(&DeliveryOrder); err != nil {
+	if DeliveryOrderErr := tx.Create(&DeliveryOrder); DeliveryOrderErr.Error != nil {
 		tx.Rollback()
 		return DeliveryOrderErr.Error
 	}
@@ -111,7 +111,7 @@ func (module *module) UpdateDeliveryOrder(c *gin.Context, id uuid.UUID, p *dto.U
 		DeliveryOrderUpdatedBy: p.UpdatedBy,
 	}
 
-	if DeliveryOrderErr := tx.Updates(&DeliveryOrder); err != nil {
+	if DeliveryOrderErr := tx.Updates(&DeliveryOrder); DeliveryOrderErr.Error != nil {
 		tx.Rollback()
 		return DeliveryOrderErr.Error
 	}

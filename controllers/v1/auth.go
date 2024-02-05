@@ -5,7 +5,6 @@ import (
 	"gitlab.com/odma1/odma-be/constants"
 	masterModels "gitlab.com/odma1/odma-be/models/master"
 	"gitlab.com/odma1/odma-be/utils"
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -31,8 +30,6 @@ func POSTLogin(c *gin.Context) {
 		c.JSON(http.StatusNotFound, constants.GetErrorResponse("logical", err, "Incorrect username or password. Please try again"))
 		return
 	}
-
-	log.Println("???")
 
 	c.JSON(http.StatusOK, dto.Response{Data: token})
 }

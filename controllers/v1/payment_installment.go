@@ -29,6 +29,7 @@ func GETAllPaymentInstallment(c *gin.Context) {
 		return
 	} else {
 		c.JSON(http.StatusOK, dto.Response{Data: PaymentInstallment})
+		return
 	}
 
 }
@@ -51,6 +52,7 @@ func GETPaymentInstallment(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, dto.Response{Data: PaymentInstallment})
+	return
 }
 
 func POSTPaymentInstallment(c *gin.Context) {
@@ -89,6 +91,7 @@ func POSTPaymentInstallment(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, dto.Response{Message: "success"})
+	return
 }
 
 func PUTPaymentInstallment(c *gin.Context) {
@@ -139,4 +142,5 @@ func PUTPaymentInstallment(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, dto.Response{Message: "success"})
+	return
 }

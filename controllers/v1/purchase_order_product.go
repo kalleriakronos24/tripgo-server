@@ -32,6 +32,7 @@ func GETAllPurchaseOrderProduct(c *gin.Context) {
 		return
 	} else {
 		c.JSON(http.StatusOK, dto.Response{Data: PurchaseOrderProduct})
+		return
 	}
 
 }
@@ -53,6 +54,7 @@ func GETPurchaseOrderProduct(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, dto.Response{Data: PurchaseOrderProduct})
+	return
 }
 
 func POSTPurchaseOrderProduct(c *gin.Context) {
@@ -103,21 +105,12 @@ func POSTPurchaseOrderProduct(c *gin.Context) {
 		return
 	}
 
-	//log.Println("qq")
-	//if err := services.Handler.CheckExistingPurchaseOrderProduct("", struct {
-	//	*models.PurchaseOrderProduct
-	//}{&models.PurchaseOrderProduct{
-	//	PurchaseOrderID: p.PurchaseOrderID,
-	//}}); err == nil {
-	//	c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", errors.New("data cannot be duplicated"), fmt.Sprintf("data is already existing with purchase order id %s", p.PurchaseOrderID.String())))
-	//	return
-	//}
-
 	if err = services.Handler.InsertPurchaseOrderProduct(p); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("insert-failed", err, "purchase order product"))
 		return
 	}
 	c.JSON(http.StatusOK, dto.Response{Message: "success"})
+	return
 }
 
 func PUTPurchaseOrderProduct(c *gin.Context) {
@@ -196,4 +189,5 @@ func PUTPurchaseOrderProduct(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, dto.Response{Message: "success"})
+	return
 }

@@ -1,8 +1,6 @@
 package services
 
 import (
-	"errors"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	database "gitlab.com/odma1/odma-be/db"
@@ -17,21 +15,21 @@ type CheckExistingPurchaseOrderProductStruct struct {
 
 func (module *module) RetrieveAllPurchaseOrderProduct(id uuid.UUID) (m []models.PurchaseOrderProduct, err error) {
 	if m, err = module.db.purchaseOrderProductModel.GetAllPurchaseOrderProduct(id); err != nil {
-		return m, fmt.Errorf(err.Error())
+		return m, err
 	}
 	return
 }
 
 func (module *module) RetrieveAllPurchaseOrderProductPaginated(c *gin.Context, id uuid.UUID) (pagination *database.Pagination, err error) {
 	if pagination, err = module.db.purchaseOrderProductModel.GetAllPurchaseOrderProductPaginated(c, id); err != nil {
-		return pagination, fmt.Errorf(err.Error())
+		return pagination, err
 	}
 	return
 }
 
 func (module *module) RetrievePurchaseOrderProduct(id uuid.UUID) (m models.PurchaseOrderProduct, err error) {
 	if m, err = module.db.purchaseOrderProductModel.GetOnePurchaseOrderProductByID(id); err != nil {
-		return m, fmt.Errorf(err.Error())
+		return m, err
 	}
 	return
 }
@@ -66,8 +64,6 @@ func (module *module) InsertPurchaseOrderProduct(p *dto.InsertPurchaseOrderProdu
 	//	}
 	//}
 
-	fmt.Printf("%v", p)
-
 	//purchaseOrderProductModel := models.PurchaseOrderProduct{
 	//	Quantity:                      p.Quantity,
 	//	VATRate:                       p.VATRate,
@@ -95,7 +91,7 @@ func (module *module) InsertPurchaseOrderProduct(p *dto.InsertPurchaseOrderProdu
 		ProductID:                     p.ProductID,
 		PurchaseOrderProductCreatedBy: p.CreatedBy,
 	}); err != nil {
-		return errors.New(err.Error())
+		return err
 	}
 	return
 }
@@ -164,7 +160,7 @@ func (module *module) UpdatePurchaseOrderProduct(id uuid.UUID, p *dto.UpdatePurc
 		ProductID:                     p.ProductID,
 		PurchaseOrderProductUpdatedBy: p.UpdatedBy,
 	}); err != nil {
-		return errors.New(err.Error())
+		return err
 	}
 
 	return
@@ -172,7 +168,7 @@ func (module *module) UpdatePurchaseOrderProduct(id uuid.UUID, p *dto.UpdatePurc
 
 func (module *module) DeletePurchaseOrderProduct(id uuid.UUID, tx *gorm.DB) (err error) {
 	if err = module.db.purchaseOrderProductModel.DeletePurchaseOrderProductByProductID(id, tx); err != nil {
-		return errors.New(err.Error())
+		return err
 	}
 	return
 }
@@ -181,7 +177,7 @@ func (module *module) CheckExistingPurchaseOrderProduct(id string, param CheckEx
 
 	if param.PurchaseOrderID.String() != "" {
 		if _, dbErr := module.db.purchaseOrderProductModel.GetOnePurchaseOrderProductByPurchaseOrderId(param.PurchaseOrderID); dbErr != nil {
-			return errors.New(dbErr.Error())
+			return dbErr
 		}
 		return
 	}
@@ -189,7 +185,7 @@ func (module *module) CheckExistingPurchaseOrderProduct(id string, param CheckEx
 	if id != "" {
 		uid, _ := uuid.Parse(id)
 		if _, dbErr := module.db.purchaseOrderProductModel.GetOnePurchaseOrderProductByID(uid); dbErr != nil {
-			return errors.New(dbErr.Error())
+			return dbErr
 		}
 	}
 	return

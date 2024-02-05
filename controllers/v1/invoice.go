@@ -68,8 +68,8 @@ func GETAllInvoice(c *gin.Context) {
 		return
 	} else {
 		c.JSON(http.StatusOK, dto.Response{Data: Invoice})
+		return
 	}
-
 }
 
 func GETInvoice(c *gin.Context) {

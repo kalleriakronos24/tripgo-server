@@ -10,7 +10,6 @@ import (
 	"gitlab.com/odma1/odma-be/models"
 	"gitlab.com/odma1/odma-be/services"
 	"gitlab.com/odma1/odma-be/utils"
-	"log"
 	"net/http"
 )
 
@@ -30,6 +29,7 @@ func GETAllDeliveryOrder(c *gin.Context) {
 		return
 	} else {
 		c.JSON(http.StatusOK, dto.Response{Data: DeliveryOrder})
+		return
 	}
 }
 
@@ -51,6 +51,7 @@ func GETDeliveryOrder(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, dto.Response{Data: DeliveryOrder})
+	return
 }
 
 func POSTDeliveryOrder(c *gin.Context) {
@@ -91,6 +92,7 @@ func POSTDeliveryOrder(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, dto.Response{Message: "success"})
+	return
 }
 
 func PUTDeliveryOrder(c *gin.Context) {
@@ -144,8 +146,6 @@ func PUTDeliveryOrder(c *gin.Context) {
 			}{&models.DeliveryOrder{
 				OperatingActivityID: p.OperatingActivityID,
 			}}); err != nil {
-
-				log.Println(err)
 				c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("operating id %s is not found", DeliveryOrder.OperatingActivityID)))
 				return
 			}
@@ -161,129 +161,5 @@ func PUTDeliveryOrder(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, dto.Response{Message: "success"})
+	return
 }
-
-//func PUTDeliveryOrderV2(c *gin.Context) {
-//	var err error
-//	userLoggedInId := c.GetString("user_id")
-//	userId, err := uuid.Parse(userLoggedInId)
-//
-//	fDeliveryOrderDocument, _ := c.FormFile("document")
-//
-//	if fDeliveryOrderDocument == nil {
-//		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", errors.New("field document is required"), "cannot submit if document is empty"))
-//		return
-//	}
-//	pValidator := &dto.UpdateFormDataDeliveryOrder{UpdatedBy: userId}
-//	if err = c.Bind(&pValidator); err != nil {
-//		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
-//		return
-//	}
-//	if err := utils.ValidateHTTPPayload(pValidator); err != nil {
-//		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
-//		return
-//	}
-//
-//	operatingActivityId, _ := uuid.Parse(pValidator.OperatingActivityID)
-//	p := &dto.UpdateDeliveryOrder{
-//		ID:                  pValidator.ID,
-//		ContactPerson:       pValidator.ContactPerson,
-//		PhoneNumber:         pValidator.PhoneNumber,
-//		Address:             pValidator.Address,
-//		Note:                pValidator.Note,
-//		Date:                utils.ConvertStrToDateTime(pValidator.Date),
-//		Status:              pValidator.Status,
-//		OperatingActivityID: operatingActivityId,
-//		Document:            fDeliveryOrderDocument,
-//		UpdatedBy:           pValidator.UpdatedBy,
-//	}
-//
-//	id, _ := c.Params.Get("id")
-//	DeliveryOrderId, err := uuid.Parse(id)
-//	if err != nil {
-//		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", errors.New("invalid uuid format"), "invalid uuid delivery order id parameter"))
-//		return
-//	}
-//
-//	// checks
-//	if DeliveryOrder, err := services.Handler.RetrieveDeliveryOrder(DeliveryOrderId); err == nil {
-//
-//		// check existing operating id
-//		if err := services.Handler.CheckExistingOperatingActivity(p.OperatingActivityID.String(), struct{ *models.OperatingActivity }{&models.OperatingActivity{}}); err != nil {
-//			c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("operating id %s is not found", p.OperatingActivityID)))
-//			return
-//		}
-//
-//		// check duplication operating id
-//		if DeliveryOrder.OperatingActivityID != p.OperatingActivityID {
-//			if err := services.Handler.CheckExistingDeliveryOrder(id, struct {
-//				*models.DeliveryOrder
-//			}{&models.DeliveryOrder{
-//				OperatingActivityID: p.OperatingActivityID,
-//			}}); err != nil {
-//
-//				log.Println(err)
-//				c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("operating id %s is not found", DeliveryOrder.OperatingActivityID)))
-//				return
-//			}
-//		}
-//
-//	} else {
-//		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "delivery order"))
-//		return
-//	}
-//
-//	if err = services.Handler.UpdateDeliveryOrder(c, DeliveryOrderId, p); err != nil {
-//		c.JSON(http.StatusNotModified, constants.GetErrorResponse("update-failed", err, "delivery order"))
-//		return
-//	}
-//	c.JSON(http.StatusOK, dto.Response{Message: "success"})
-//}
-
-//
-//func POSTDeliveryOrderV2(c *gin.Context) {
-//	var err error
-//	userLoggedInId := c.GetString("user_id")
-//	userId, err := uuid.Parse(userLoggedInId)
-//	fDeliveryOrderDocument, _ := c.FormFile("document")
-//
-//	if fDeliveryOrderDocument == nil {
-//		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", errors.New("field document is required"), "cannot submit if document is empty"))
-//		return
-//	}
-//
-//	pValidator := &dto.InsertFormDataDeliveryOrder{CreatedBy: userId}
-//	if err = c.Bind(&pValidator); err != nil {
-//		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
-//		return
-//	}
-//	if err := utils.ValidateHTTPPayload(pValidator); err != nil {
-//		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
-//		return
-//	}
-//
-//	operatingActivityId, _ := uuid.Parse(pValidator.OperatingActivityID)
-//	p := &dto.InsertDeliveryOrder{
-//		ContactPerson:       pValidator.ContactPerson,
-//		PhoneNumber:         pValidator.PhoneNumber,
-//		Address:             pValidator.Address,
-//		Note:                pValidator.Note,
-//		Date:                utils.ConvertStrToDateTime(pValidator.Date),
-//		Status:              pValidator.Status,
-//		OperatingActivityID: operatingActivityId,
-//		Document:            fDeliveryOrderDocument,
-//		CreatedBy:           pValidator.CreatedBy,
-//	}
-//
-//	// check existing operating id
-//	if err := services.Handler.CheckExistingOperatingActivity(p.OperatingActivityID.String(), struct{ *models.OperatingActivity }{&models.OperatingActivity{}}); err != nil {
-//		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("operating id %s is not found", p.OperatingActivityID)))
-//		return
-//	}
-//
-//	if err = services.Handler.InsertDeliveryOrder(c, p); err != nil {
-//		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("insert-failed", err, "delivery order"))
-//		return
-//	}
-//	c.JSON(http.StatusOK, dto.Response{Message: "success"})
-//}

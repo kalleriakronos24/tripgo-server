@@ -28,8 +28,8 @@ func GETAllPayment(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "payment"))
 		return
 	} else {
-
 		c.JSON(http.StatusOK, dto.Response{Data: Payment})
+		return
 	}
 
 }
@@ -52,6 +52,7 @@ func GETPayment(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, dto.Response{Data: Payment})
+	return
 }
 
 func POSTPayment(c *gin.Context) {
@@ -93,6 +94,7 @@ func POSTPayment(c *gin.Context) {
 		return
 	} else {
 		c.JSON(http.StatusOK, dto.Response{Message: "success", Data: m})
+		return
 	}
 }
 
@@ -147,4 +149,5 @@ func PUTPayment(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, dto.Response{Message: "success"})
+	return
 }

@@ -29,6 +29,7 @@ func GETAllProductHistory(c *gin.Context) {
 		return
 	} else {
 		c.JSON(http.StatusOK, dto.Response{Data: ProductHistory})
+		return
 	}
 
 }
@@ -51,6 +52,7 @@ func GETProductHistory(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, dto.Response{Data: ProductHistory})
+	return
 }
 
 func POSTProductHistory(c *gin.Context) {
@@ -95,6 +97,7 @@ func POSTProductHistory(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, dto.Response{Message: "success"})
+	return
 }
 
 func PUTProductHistory(c *gin.Context) {
@@ -152,4 +155,5 @@ func PUTProductHistory(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, dto.Response{Message: "success"})
+	return
 }

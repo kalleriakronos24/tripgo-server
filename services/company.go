@@ -59,7 +59,7 @@ func (module *module) InsertCompany(p *dto.InsertCompany) (err error) {
 		CompanyUpdatedBy:  p.CreatedBy,
 	}
 
-	if errCompany := tx.Create(&companyModel); err != nil {
+	if errCompany := tx.Create(&companyModel); errCompany.Error != nil {
 		tx.Rollback()
 		return errCompany.Error
 	}
@@ -69,7 +69,7 @@ func (module *module) InsertCompany(p *dto.InsertCompany) (err error) {
 		CompanyID: companyModel.ID,
 	}
 
-	if errUser := tx.Updates(&userModel); err != nil {
+	if errUser := tx.Updates(&userModel); errUser.Error != nil {
 		tx.Rollback()
 		return errUser.Error
 	}
@@ -95,7 +95,7 @@ func (module *module) UpdateCompany(id uuid.UUID, p *dto.UpdateCompany) (err err
 		CompanyUpdatedBy:  p.UpdatedBy,
 	}
 
-	if errCompany := tx.Updates(&companyModel); err != nil {
+	if errCompany := tx.Updates(&companyModel); errCompany.Error != nil {
 		tx.Rollback()
 		return errCompany.Error
 	}
@@ -105,7 +105,7 @@ func (module *module) UpdateCompany(id uuid.UUID, p *dto.UpdateCompany) (err err
 		CompanyID: companyModel.ID,
 	}
 
-	if errUser := tx.Updates(&userModel); err != nil {
+	if errUser := tx.Updates(&userModel); errUser.Error != nil {
 		tx.Rollback()
 		return errUser.Error
 	}

@@ -30,6 +30,7 @@ func GETAllProducts(c *gin.Context) {
 		return
 	} else {
 		c.JSON(http.StatusOK, dto.Response{Data: product})
+		return
 	}
 }
 
@@ -49,6 +50,7 @@ func GETAllProduct(c *gin.Context) {
 		return
 	} else {
 		c.JSON(http.StatusOK, dto.Response{Data: product})
+		return
 	}
 }
 
@@ -70,6 +72,7 @@ func GETProduct(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, dto.Response{Data: product})
+	return
 }
 
 func POSTProduct(c *gin.Context) {
@@ -134,6 +137,7 @@ func POSTProduct(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, dto.Response{Message: "success"})
+	return
 }
 
 func PUTProduct(c *gin.Context) {
@@ -214,6 +218,7 @@ func PUTProduct(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, dto.Response{Message: "success"})
+	return
 }
 
 func DELETEProduct(c *gin.Context) {
@@ -236,4 +241,5 @@ func DELETEProduct(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, dto.Response{Message: "success"})
+	return
 }

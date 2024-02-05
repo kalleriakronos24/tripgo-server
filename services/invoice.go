@@ -213,7 +213,7 @@ func (module *module) InsertInvoice(p *dto.InsertInvoice) (err error) {
 		OperatingActivityID: p.OperatingActivityID,
 		InvoiceCreatedBy:    p.CreatedBy,
 	}
-	if InvoiceErr := tx.Create(&Invoice); err != nil {
+	if InvoiceErr := tx.Create(&Invoice); InvoiceErr.Error != nil {
 		tx.Rollback()
 		return InvoiceErr.Error
 	}

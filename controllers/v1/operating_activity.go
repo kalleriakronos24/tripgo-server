@@ -30,6 +30,7 @@ func GETAllOperatingActivity(c *gin.Context) {
 		return
 	} else {
 		c.JSON(http.StatusOK, dto.Response{Data: operatingActivity})
+		return
 	}
 }
 
@@ -51,6 +52,7 @@ func GETOperatingActivity(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, dto.Response{Data: operatingActivity})
+	return
 }
 
 func POSTOperatingActivity(c *gin.Context) {
@@ -96,6 +98,7 @@ func POSTOperatingActivity(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, dto.Response{Message: "success"})
+	return
 }
 
 func PUTOperatingActivity(c *gin.Context) {
@@ -151,6 +154,7 @@ func PUTOperatingActivity(c *gin.Context) {
 					return
 				} else {
 					c.JSON(http.StatusOK, dto.Response{Message: "success"})
+					return
 				}
 			}
 		}
@@ -164,5 +168,6 @@ func PUTOperatingActivity(c *gin.Context) {
 		return
 	} else {
 		c.JSON(http.StatusOK, dto.Response{Message: "success"})
+		return
 	}
 }

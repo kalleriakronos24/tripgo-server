@@ -87,7 +87,7 @@ func (module *module) InsertQuotation(p *dto.InsertQuotation) (err error) {
 			QuotationCreatedBy:  p.CreatedBy,
 		}
 
-		if QuotationErr := tx.Create(&Quotation); err != nil {
+		if QuotationErr := tx.Create(&Quotation); QuotationErr.Error != nil {
 			tx.Rollback()
 			return QuotationErr.Error
 		}
@@ -102,7 +102,7 @@ func (module *module) InsertQuotation(p *dto.InsertQuotation) (err error) {
 			QuotationCreatedBy: p.CreatedBy,
 		}
 
-		if QuotationErr := tx.Create(&Quotation); err != nil {
+		if QuotationErr := tx.Create(&Quotation); QuotationErr.Error != nil {
 			tx.Rollback()
 			return QuotationErr.Error
 		}
@@ -122,7 +122,7 @@ func (module *module) UpdateQuotation(id uuid.UUID, p *dto.UpdateQuotation) (err
 			OperatingActivityID: p.OperatingActivityID,
 			QuotationUpdatedBy:  p.UpdatedBy,
 		}); err != nil {
-			return errors.New(err.Error())
+			return err
 		}
 	} else {
 		if err = module.db.quotationModel.UpdateQuotation(id, models.Quotation{
@@ -132,7 +132,7 @@ func (module *module) UpdateQuotation(id uuid.UUID, p *dto.UpdateQuotation) (err
 			Date:               p.Date,
 			QuotationUpdatedBy: p.UpdatedBy,
 		}); err != nil {
-			return errors.New(err.Error())
+			return err
 		}
 	}
 	return
@@ -203,7 +203,7 @@ func (module *module) GenerateSPHDocument(id uuid.UUID) (output GenerateDocument
 	var outputPath string
 	var saveFileErr error
 	if outputPath, saveFileErr = utils.SaveFileToDockerVolume(nil, "", "quotation", nil, templateData); saveFileErr != nil {
-		return output, errors.New(saveFileErr.Error())
+		return output, saveFileErr
 	}
 
 	data := GenerateDocumentOutput{

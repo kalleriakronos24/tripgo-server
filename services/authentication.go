@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/google/uuid"
-	"log"
 	"time"
 
 	"github.com/dgrijalva/jwt-go/v4"
@@ -45,7 +44,6 @@ func (module *module) RegisterUser(credentials *dto.UserSignup) (err error) {
 		UpdatedBy: credentials.CreatedBy,
 		Role:      credentials.Role,
 	}); err != nil {
-		log.Print(err)
 		return fmt.Errorf("error inserting user. %v", err)
 	}
 	return
@@ -66,7 +64,6 @@ func (module *module) RegisterUserSuperAdmin(credentials dto.UserSignupSuperAdmi
 		CreatedBy: uuid.Nil,
 		UpdatedBy: uuid.Nil,
 	}); err != nil {
-		log.Print(err)
 		return fmt.Errorf("error inserting user. %v", err)
 	}
 	return
