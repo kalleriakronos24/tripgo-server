@@ -13,7 +13,7 @@ import (
 )
 
 func Pong(c *gin.Context) {
-	c.JSON(http.StatusOK, dto.Response{Data: "pong"})
+	c.JSON(http.StatusOK, dto.Response{Data: "pongin"})
 }
 
 func UploadFileMultiple(c *gin.Context) {
