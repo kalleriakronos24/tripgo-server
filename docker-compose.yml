@@ -26,11 +26,11 @@ services:
 
   nginx:
     image: nginx:latest
-    container_name: odma-be-nginx
+    container_name: booklap-be-nginx
     restart: unless-stopped
     tty: true
     ports:
-      - '8000:8000'
+      - "8000:8000"
     expose:
       - 8000
     volumes:
@@ -40,18 +40,18 @@ services:
 
   adminer:
     image: adminer:4.8.1-standalone
-    container_name: odma-be-adminer
+    container_name: booklap-be-adminer
     restart: unless-stopped
     environment:
       ADMINER_DEFAULT_SERVER: db
     ports:
-      - '8001:8080'
+      - "8001:8080"
     networks:
       - internal
 
   db:
     image: postgres:latest
-    container_name: odma-db
+    container_name: booklap-db
     restart: on-failure
     environment:
       - POSTGRES_HOST=${DB_HOST}
@@ -60,21 +60,21 @@ services:
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_DB=${DB_DATABASE}
     ports:
-      - '5432:5432'
+      - "5432:5432"
     expose:
       - 5432
     volumes:
-      - odma-db:/var/lib/postgresql/data"
+      - booklap-db:/var/lib/postgresql/data"
     networks:
       - internal
 
 networks:
-    internal:
-      driver: bridge
+  internal:
+    driver: bridge
 volumes:
-    odma-db:
-      driver: local
-    files-uploaded:
-      driver: local
-    database-backup:
-        driver: local
+  odma-db:
+    driver: local
+  files-uploaded:
+    driver: local
+  database-backup:
+    driver: local
