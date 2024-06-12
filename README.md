@@ -33,7 +33,7 @@ Standard validation for data values in this project are:
 
 - E16.4 Phone Number formatting
 - ISO 8601 for Date formatting
-- UUID v4 formatting for any tables ID
+- UUID v7 formatting for any tables ID
 
 Make sure you have go version 1.21 installed on your machine before running this application
 *this is bug, but we'll go this way for now.
