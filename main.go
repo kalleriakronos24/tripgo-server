@@ -2,19 +2,20 @@ package main
 
 import (
 	"fmt"
-	"gitlab.com/odma1/odma-be/utils"
 	"log"
 	"net/http"
 	"time"
 
+	"github.com/kalleriakronos24/booklap-be/utils"
+
 	"github.com/gin-gonic/gin"
 	socketio "github.com/googollee/go-socket.io"
+	"github.com/kalleriakronos24/booklap-be/config"
+	"github.com/kalleriakronos24/booklap-be/migrations"
+	"github.com/kalleriakronos24/booklap-be/pkg/sockets"
+	"github.com/kalleriakronos24/booklap-be/router"
+	"github.com/kalleriakronos24/booklap-be/services"
 	"github.com/spf13/viper"
-	"gitlab.com/odma1/odma-be/config"
-	"gitlab.com/odma1/odma-be/migrations"
-	"gitlab.com/odma1/odma-be/pkg/sockets"
-	"gitlab.com/odma1/odma-be/router"
-	"gitlab.com/odma1/odma-be/services"
 )
 
 func init() {
@@ -26,7 +27,10 @@ func init() {
 
 func runServer() {
 
-	// set application timezone globally
+	/*
+	* set server timezone to Jakarta, Indonesia
+	* so is any request from client will converted to our TimeZone
+	 */
 	loc, err := time.LoadLocation("Asia/Jakarta")
 	if err != nil {
 		log.Fatalln(err)
@@ -58,7 +62,7 @@ func runServer() {
 }
 
 func main() {
-	if viper.GetBool("SOCKET_ENABLED") == true {
+	if viper.GetBool("SOCKET_ENABLED") {
 		server := socketio.NewServer(nil)
 		var serv = sockets.RunSocketConnection(server)
 		http.Handle("/socket.io/", serv)

@@ -2,7 +2,7 @@ package dto
 
 import (
 	"github.com/google/uuid"
-	models "gitlab.com/odma1/odma-be/models/master"
+	models "github.com/kalleriakronos24/booklap-be/models/master"
 )
 
 type UserLogin struct {

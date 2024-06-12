@@ -2,14 +2,15 @@ package v1
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"gitlab.com/odma1/odma-be/config"
-	"gitlab.com/odma1/odma-be/dto"
 	"log"
 	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
+
+	"github.com/gin-gonic/gin"
+	"github.com/kalleriakronos24/booklap-be/config"
+	"github.com/kalleriakronos24/booklap-be/dto"
 )
 
 func Pong(c *gin.Context) {

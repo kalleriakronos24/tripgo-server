@@ -1,0 +1,103 @@
+BOOKLAP SCHEMAS
+Available Roles:
+- Customer
+- Admin
+- BusinessOwner
+- BusinessAdmin
+
+# if owner/b.admin successfully registered, we add them to table UserBusiness
+User:
+- Nama
+- Email
+- Password
+- Profile Image - ImageStorage - Optional
+- Role ( Customer / Admin / BusinessOwner / BusinessAdmin )
+- No.HP - Optional
+- BookedBusinessFields[]
+- UserAuth[]
+- UserBusiness
+- ImageStorage
+- Payment[]
+- BookedBusinessFields[]
+
+
+# When owner logged in to Owner Dashboard, we check table User to match
+# any record.
+# If record match, we retrieve the dashboard based on their businessID
+# when businessOwner / businessAdmin want to switch business, we re query on this table
+UserBusiness:
+- UserID ( BusinessOwner / BusinessAdmin )
+- BusinessID
+- BusinessType (Primary / Secondary). When owner login we select the primary business to their dashboard.
+
+# to check user sessions on specific API routes.
+UserAuth:
+- UserID
+- Token
+- ValidUntil
+
+# banner will retrieve from ImageStorage
+# we will create the business manually from our end
+# and later we will assign a owner/b.admin to this specific business
+Business:
+- Banner image - ImageStorageID
+- Location / Map Link
+- Address
+- Work Hour
+- BusinessFacility[]
+- BusinessFields[]
+- UserBusiness[]
+
+# predefined columns can be stored in frontend, and saved to table
+BusinessFacility:
+- Predefined name
+- Predefined Icon
+- BusinessID
+
+# every image that being uploaded, we will retrieve the image based on SourceID
+# no relation needed, manually query
+ImageStorage:
+- URL
+- Extension
+- Image Kind (thumbnail / banner / banner-details)
+- Profiling (business / profile / business-fields)
+- SourceID (BusinessID, UserID, BusinessFieldsID)
+
+
+# thumbnail will retrieve the image from ImageStorage to frontend
+# carousel will retrieve the images from ImageStorage to frontend
+# dates will just displayed manually on frontend
+# list of hours will retrieved from backend
+BusinessFields:
+- Name
+- Category
+- Thumbnail - ImageStorageID
+- Price Range
+- Carousel Banner < ImageStorageID[]
+- Dates (just by frontend)
+- Hours (retrieve hours and disable hours that already booked from table BookedBusinessFields)
+- BookedBusinessFields[]
+
+# when user check out, we will store their payment status and what field they booked
+# into this table
+# and if payment is succeeded, we will save the booked hours into table BookedBusinessFields
+Payment:
+- UserID 
+- Status
+- Hash / Token
+- BusinessFieldsID
+
+
+# this table will create record after customer made a check out on field and specific hours they booked
+BookedBusinessFields:
+- BusinessFieldsID
+- Date
+- From (hour)
+- To (hour)
+- UserID
+
+
+
+Other notes:
+
+Business Owner can have multiple business

@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
-	"gitlab.com/odma1/odma-be/config"
+	"github.com/kalleriakronos24/booklap-be/config"
 )
 
 func CORSMiddleware(c *gin.Context) {

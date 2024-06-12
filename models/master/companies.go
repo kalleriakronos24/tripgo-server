@@ -2,13 +2,14 @@ package master
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	database "gitlab.com/odma1/odma-be/db"
-	"gitlab.com/odma1/odma-be/types"
+	database "github.com/kalleriakronos24/booklap-be/db"
+	"github.com/kalleriakronos24/booklap-be/types"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
-	"strings"
 )
 
 type companyOrm struct {

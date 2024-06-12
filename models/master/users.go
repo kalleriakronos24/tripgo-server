@@ -3,10 +3,11 @@ package master
 import (
 	"errors"
 	"fmt"
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	database "gitlab.com/odma1/odma-be/db"
-	"gitlab.com/odma1/odma-be/types"
+	database "github.com/kalleriakronos24/booklap-be/db"
+	"github.com/kalleriakronos24/booklap-be/types"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -18,9 +19,7 @@ type userOrm struct {
 type User struct {
 	ID       uuid.UUID `gorm:"index:id,unique;type:uuid;default:gen_random_uuid();" json:"id"`
 	Name     string    `json:"name" gorm:"not null" binding:"required"`
-	Address  string    `json:"address,omitempty"`
-	Username string    `json:"username,omitempty" binding:"required" gorm:"not null"`
-	Email    string    `gorm:"email:id,unique" json:",omitempty" binding:"required" gorm:"not null"`
+	Email    string    `gorm:"email:id,unique" json:",omitempty" binding:"required"`
 	Password string    `json:"password,omitempty" binding:"required" gorm:"not null"`
 	Role     string    `json:"role,omitempty" binding:"required" gorm:"not null;"`
 	Status   string    `json:"status,omitempty" binding:"required" gorm:"not null;default:active;"`
@@ -30,8 +29,8 @@ type User struct {
 	CreatedBySuperAdmin *User     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:CreatedBy;references:ID" json:"createdBySuperAdmin"`
 	UpdatedBySuperAdmin *User     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:UpdatedBy;references:ID" json:"updatedBySuperAdmin"`
 
-	CompanyID uuid.UUID `json:"companyId,omitempty" gorm:"type:uuid;default:NULL"`
-	Company   *Company  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;foreignKey:CompanyID;references:ID" json:"company"`
+	//CompanyID uuid.UUID `json:"companyId,omitempty" gorm:"type:uuid;default:NULL"`
+	//Company   *Company  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;foreignKey:CompanyID;references:ID" json:"company"`
 	types.DefaultModelProperty
 }
 
@@ -43,7 +42,6 @@ type UserModelAction interface {
 
 	InsertUser(p User) (err error)
 
-	UpdateUser(id uuid.UUID, p User) (err error)
 	UpdateUserToInactive(id uuid.UUID, tx *gorm.DB) (err error)
 	RemoveUserFromCompany(id uuid.UUID, tx *gorm.DB) (err error)
 	DeleteUser(id uuid.UUID, tx *gorm.DB) (err error)
@@ -102,11 +100,6 @@ func (o *userOrm) RemoveUserFromCompany(id uuid.UUID, tx *gorm.DB) (err error) {
 func (o *userOrm) InsertUser(p User) (err error) {
 	fmt.Printf("%v", p)
 	result := o.db.Model(&p).Create(&p)
-	return result.Error
-}
-
-func (o *userOrm) UpdateUser(id uuid.UUID, p User) (err error) {
-	result := o.db.Model(&p).Where("id", id).Updates(&p)
 	return result.Error
 }
 

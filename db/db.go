@@ -2,23 +2,24 @@ package database
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
-	"gorm.io/gorm/logger"
 	"log"
 	"math"
 	"strconv"
 	"time"
 
-	"gitlab.com/odma1/odma-be/config"
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm/logger"
+
+	"github.com/kalleriakronos24/booklap-be/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 type Pagination struct {
-	Limit      int         `json:"limit,omitempty;query:limit"`
-	Page       int         `json:"page,omitempty;query:page"`
-	Sort       string      `json:"sort,omitempty;query:sort"`
-	SortDesc   string      `json:"sortDesc,omitempty;query:sortDesc"`
+	Limit      int         `json:"limit"`
+	Page       int         `json:"page"`
+	Sort       string      `json:"sort"`
+	SortDesc   string      `json:"sortDesc"`
 	TotalRows  int64       `json:"totalRows"`
 	TotalPages int         `json:"totalPages"`
 	Data       interface{} `json:"rows"`
@@ -26,10 +27,19 @@ type Pagination struct {
 
 func GetDatabaseConnection() *gorm.DB {
 	var db *gorm.DB
-	db, err := gorm.Open(postgres.Open(config.AppConfig.DBUrl), &gorm.Config{
+
+	loggerConfig := &gorm.Config{
 		DisableForeignKeyConstraintWhenMigrating: false,
 		Logger:                                   logger.Default.LogMode(logger.Info),
-	})
+	}
+
+	if config.AppConfig.Environment == "PRODUCTION" {
+		loggerConfig = &gorm.Config{
+			DisableForeignKeyConstraintWhenMigrating: false,
+		}
+	}
+
+	db, err := gorm.Open(postgres.Open(config.AppConfig.DBUrl), loggerConfig)
 
 	if con, _ := db.DB(); err != nil {
 		log.Println("[INIT] failed connecting to PostgresSQL")
@@ -40,10 +50,10 @@ func GetDatabaseConnection() *gorm.DB {
 		con.SetMaxIdleConns(20)
 	}
 
-	if err != nil {
-		log.Println("[INIT] failed connecting to PostgresSQL")
-		return nil
-	}
+	// if err != nil {
+	// 	log.Println("[INIT] failed connecting to PostgresSQL")
+	// 	return nil
+	// }
 	return db
 }
 
@@ -163,7 +173,6 @@ func GetLastDocumentNumber(tx *gorm.DB, model interface{}) (m *interface{}, err 
 	}
 
 	return &model, nil
-
 }
 
 func GetLastDocumentInvoiceNumber(documentType string, tx *gorm.DB, model interface{}) (m *interface{}, err error) {

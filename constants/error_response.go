@@ -2,7 +2,8 @@ package constants
 
 import (
 	"fmt"
-	"gitlab.com/odma1/odma-be/dto"
+
+	"github.com/kalleriakronos24/booklap-be/dto"
 )
 
 func GetErrorResponse(kind string, err error, message string) dto.Response {

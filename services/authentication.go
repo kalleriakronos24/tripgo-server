@@ -3,14 +3,15 @@ package services
 import (
 	"errors"
 	"fmt"
-	"github.com/google/uuid"
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/dgrijalva/jwt-go/v4"
-	"gitlab.com/odma1/odma-be/config"
-	"gitlab.com/odma1/odma-be/constants"
-	"gitlab.com/odma1/odma-be/dto"
-	masterModels "gitlab.com/odma1/odma-be/models/master"
+	"github.com/kalleriakronos24/booklap-be/config"
+	"github.com/kalleriakronos24/booklap-be/constants"
+	"github.com/kalleriakronos24/booklap-be/dto"
+	masterModels "github.com/kalleriakronos24/booklap-be/models/master"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -32,14 +33,10 @@ func (module *module) RegisterUser(credentials *dto.UserSignup) (err error) {
 		return errors.New("failed hashing password")
 	}
 
-	companyId, _ := uuid.Parse(credentials.CompanyID)
 	if err = module.db.userModel.InsertUser(masterModels.User{
 		Name:      credentials.Name,
-		Address:   credentials.Address,
-		Username:  credentials.Username,
 		Email:     credentials.Email,
 		Password:  string(hashedPassword),
-		CompanyID: companyId,
 		CreatedBy: credentials.CreatedBy,
 		UpdatedBy: credentials.CreatedBy,
 		Role:      credentials.Role,
@@ -56,8 +53,6 @@ func (module *module) RegisterUserSuperAdmin(credentials dto.UserSignupSuperAdmi
 	}
 	if err = module.db.userModel.InsertUser(masterModels.User{
 		Name:      credentials.Name,
-		Address:   credentials.Address,
-		Username:  credentials.Username,
 		Email:     credentials.Email,
 		Password:  string(hashedPassword),
 		Role:      "superadmin",

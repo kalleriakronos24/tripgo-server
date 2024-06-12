@@ -4,14 +4,15 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"gitlab.com/odma1/odma-be/dto"
-	pdfGenerator "gitlab.com/odma1/odma-be/pkg/pdf-generator"
 	"io"
 	"mime/multipart"
 	"net/http"
 	"os"
 	"path/filepath"
+
+	"github.com/gin-gonic/gin"
+	"github.com/kalleriakronos24/booklap-be/dto"
+	pdfGenerator "github.com/kalleriakronos24/booklap-be/pkg/pdf-generator"
 )
 
 func ConvertMultipartFileToBase64(c *gin.Context, file *multipart.FileHeader, dst string) (base64 string, err error) {

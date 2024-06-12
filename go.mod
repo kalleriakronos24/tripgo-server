@@ -1,4 +1,4 @@
-module gitlab.com/odma1/odma-be
+module github.com/kalleriakronos24/booklap-be
 
 go 1.21
 
@@ -10,17 +10,9 @@ require (
 )
 
 require (
+	github.com/SebastiaanKlippert/go-wkhtmltopdf v1.9.2
 	github.com/claudiu/gocron v0.0.0-20151103142354-980c96bf412b
 	github.com/google/uuid v1.4.0
-)
-
-require (
-	github.com/SebastiaanKlippert/go-wkhtmltopdf v1.9.2 // indirect
-	github.com/cockroachdb/apd v1.1.0 // indirect
-	github.com/leekchan/accounting v1.0.0 // indirect
-	github.com/pkg/errors v0.9.1 // indirect
-	github.com/shopspring/decimal v0.0.0-20180709203117-cd690d0c9e24 // indirect
-	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e // indirect
 )
 
 require (
@@ -53,11 +45,10 @@ require (
 	github.com/chenzhuoyu/base64x v0.0.0-20230717121745-296ad89f973d // indirect
 	github.com/dgrijalva/jwt-go/v4 v4.0.0-preview1
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
-	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
-	github.com/go-playground/validator/v10 v10.15.4 // indirect
+	github.com/go-playground/validator/v10 v10.15.4
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/googollee/go-socket.io v1.7.0
 	github.com/jinzhu/inflection v1.0.0 // indirect

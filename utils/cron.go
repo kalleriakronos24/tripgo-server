@@ -2,12 +2,13 @@ package utils
 
 import (
 	"fmt"
-	"github.com/claudiu/gocron"
-	"gitlab.com/odma1/odma-be/config"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"time"
+
+	"github.com/claudiu/gocron"
+	"github.com/kalleriakronos24/booklap-be/config"
 )
 
 func backupDatabase() {

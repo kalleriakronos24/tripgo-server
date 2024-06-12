@@ -1,15 +1,16 @@
 package v1
 
 import (
-	"github.com/google/uuid"
-	"gitlab.com/odma1/odma-be/constants"
-	masterModels "gitlab.com/odma1/odma-be/models/master"
-	"gitlab.com/odma1/odma-be/utils"
 	"net/http"
 
+	"github.com/google/uuid"
+	"github.com/kalleriakronos24/booklap-be/constants"
+	masterModels "github.com/kalleriakronos24/booklap-be/models/master"
+	"github.com/kalleriakronos24/booklap-be/utils"
+
 	"github.com/gin-gonic/gin"
-	"gitlab.com/odma1/odma-be/dto"
-	"gitlab.com/odma1/odma-be/services"
+	"github.com/kalleriakronos24/booklap-be/dto"
+	"github.com/kalleriakronos24/booklap-be/services"
 )
 
 func POSTLogin(c *gin.Context) {

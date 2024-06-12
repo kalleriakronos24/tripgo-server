@@ -3,11 +3,11 @@ package services
 import (
 	"errors"
 	"fmt"
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	database "gitlab.com/odma1/odma-be/db"
-	"gitlab.com/odma1/odma-be/dto"
-	masterModels "gitlab.com/odma1/odma-be/models/master"
+	database "github.com/kalleriakronos24/booklap-be/db"
+	masterModels "github.com/kalleriakronos24/booklap-be/models/master"
 )
 
 type CheckExistingUserStruct struct {
@@ -28,23 +28,6 @@ func (module *module) RetrieveAllUserPaginated(c *gin.Context, id uuid.UUID) (pa
 	return
 }
 
-func (module *module) UpdateUser(id uuid.UUID, p dto.UserUpdate) (err error) {
-
-	companyId, _ := uuid.Parse(p.CompanyID)
-	if err = module.db.userModel.UpdateUser(id, masterModels.User{
-		ID:        id,
-		Name:      p.Name,
-		Address:   p.Address,
-		Username:  p.Username,
-		Email:     p.Email,
-		Role:      p.Role,
-		CompanyID: companyId,
-	}); err != nil {
-		return errors.New(err.Error())
-	}
-	return
-}
-
 func (module *module) DeleteUser(id uuid.UUID) (err error) {
 
 	tx := database.GetDatabaseConnection().Begin()
@@ -60,22 +43,8 @@ func (module *module) DeleteUser(id uuid.UUID) (err error) {
 
 func (module *module) CheckExistingUser(id string, param CheckExistingUserStruct) (err error) {
 
-	if param.Name != "" {
-		if _, dbErr := module.db.userModel.GetOneByUserName(param.Username); dbErr != nil {
-			return errors.New(dbErr.Error())
-		}
-		return
-	}
-
 	if param.Email != "" {
 		if _, dbErr := module.db.userModel.GetOneByEmail(param.Email); dbErr != nil {
-			return errors.New(dbErr.Error())
-		}
-		return
-	}
-
-	if param.Username != "" {
-		if _, dbErr := module.db.userModel.GetOneByUserName(param.Username); dbErr != nil {
 			return errors.New(dbErr.Error())
 		}
 		return

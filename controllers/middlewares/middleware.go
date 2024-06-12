@@ -7,9 +7,9 @@ import (
 
 	"github.com/dgrijalva/jwt-go/v4"
 	"github.com/gin-gonic/gin"
-	"gitlab.com/odma1/odma-be/config"
-	"gitlab.com/odma1/odma-be/constants"
-	"gitlab.com/odma1/odma-be/dto"
+	"github.com/kalleriakronos24/booklap-be/config"
+	"github.com/kalleriakronos24/booklap-be/constants"
+	"github.com/kalleriakronos24/booklap-be/dto"
 )
 
 func AuthMiddleware(c *gin.Context) {

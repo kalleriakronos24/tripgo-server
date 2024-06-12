@@ -2,8 +2,8 @@ package models
 
 import (
 	"github.com/google/uuid"
-	masterModels "gitlab.com/odma1/odma-be/models/master"
-	"gitlab.com/odma1/odma-be/types"
+	masterModels "github.com/kalleriakronos24/booklap-be/models/master"
+	"github.com/kalleriakronos24/booklap-be/types"
 	"gorm.io/gorm"
 )
 

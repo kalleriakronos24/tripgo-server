@@ -1,10 +1,11 @@
 package utils
 
 import (
-	"github.com/gin-gonic/gin"
-	"gitlab.com/odma1/odma-be/constants"
-	"gitlab.com/odma1/odma-be/dto"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"github.com/kalleriakronos24/booklap-be/constants"
+	"github.com/kalleriakronos24/booklap-be/dto"
 )
 
 type AuthResponseData struct {

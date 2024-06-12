@@ -3,9 +3,8 @@ package migrations
 import (
 	"fmt"
 
-	database "gitlab.com/odma1/odma-be/db"
-	"gitlab.com/odma1/odma-be/models"
-	masterModels "gitlab.com/odma1/odma-be/models/master"
+	database "github.com/kalleriakronos24/booklap-be/db"
+	masterModels "github.com/kalleriakronos24/booklap-be/models/master"
 )
 
 func Migrate() {
@@ -13,44 +12,17 @@ func Migrate() {
 	if err := database.GetDatabaseConnection().AutoMigrate(
 		// master
 		masterModels.User{},
-		masterModels.Company{},
-		masterModels.Client{},
+		// masterModels.Company{},
+		// masterModels.Client{},
 		// common
-		models.UserLog{},
-		models.OperatingActivity{},
-		models.Product{},
-		models.Quotation{},
-		models.ProductHistory{},
-		models.Payment{},
-		models.PaymentInstallment{},
-		models.OperatingActivityProduct{},
-		models.PurchaseOrder{},
-		models.Document{},
-		models.PurchaseOrderProduct{},
-		models.DeliveryOrder{},
-		models.Invoice{},
 	); err != nil {
 		panic(err)
 	}
 	fmt.Println("Database Migrated")
 
 	database.DropUnusedColumns(masterModels.User{})
-	database.DropUnusedColumns(masterModels.Company{})
-	database.DropUnusedColumns(masterModels.Client{})
-
-	database.DropUnusedColumns(models.UserLog{})
-	database.DropUnusedColumns(models.OperatingActivity{})
-	database.DropUnusedColumns(models.Product{})
-	database.DropUnusedColumns(models.Quotation{})
-	database.DropUnusedColumns(models.ProductHistory{})
-	database.DropUnusedColumns(models.Payment{})
-	database.DropUnusedColumns(models.PaymentInstallment{})
-	database.DropUnusedColumns(models.OperatingActivityProduct{})
-	database.DropUnusedColumns(models.PurchaseOrder{})
-	database.DropUnusedColumns(models.Document{})
-	database.DropUnusedColumns(models.PurchaseOrderProduct{})
-	database.DropUnusedColumns(models.DeliveryOrder{})
-	database.DropUnusedColumns(models.Invoice{})
+	// database.DropUnusedColumns(masterModels.Company{})
+	// database.DropUnusedColumns(masterModels.Client{})
 
 	// foreign key queries
 	//database.GetDatabaseConnection().Exec("ALTER TABLE companies ADD CONSTRAINT fk_created_by_user FOREIGN KEY (created_by) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE")
