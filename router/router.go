@@ -11,6 +11,8 @@ import (
 	v1 "github.com/kalleriakronos24/booklap-be/controllers/v1"
 	v1Master "github.com/kalleriakronos24/booklap-be/controllers/v1/master"
 	"github.com/kalleriakronos24/booklap-be/utils"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func InitializeRouter() (router *gin.Engine) {
@@ -19,6 +21,11 @@ func InitializeRouter() (router *gin.Engine) {
 	commonRoute := router.Group("/")
 
 	v1route := router.Group("/api/v1")
+
+	if config.AppConfig.Environment == "DEVELOPMENT" {
+		v1route.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	}
+
 	v1route.Use(
 		middleware.CORSMiddleware,
 		middleware.AuthMiddleware,
@@ -29,27 +36,6 @@ func InitializeRouter() (router *gin.Engine) {
 			auth.POST("/signin", v1.POSTLogin)
 			auth.POST("/signup/sa", v1.POSTRegisterSuperAdmin)
 		}
-
-		// company := v1route.Group("/company")
-		// {
-		// 	company.GET("/", utils.AuthOnly, v1Master.GETAllCompany)
-		// 	company.GET("/:id", utils.AuthOnly, v1Master.GETCompany)
-		// 	company.POST("/", utils.AuthOnly, v1Master.POSTCompany)
-
-		// 	company.PUT("/:id", utils.AuthOnly, v1Master.PUTCompany)
-		// 	company.DELETE("/:id", utils.AuthOnly, v1Master.DELETECompany)
-		// }
-
-		// client := v1route.Group("/client")
-		// {
-		// 	client.GET("/list", utils.AuthOnly, v1Master.GETAllClients)
-		// 	client.GET("/", utils.AuthOnly, v1Master.GETAllClient)
-		// 	client.GET("/:id", utils.AuthOnly, v1Master.GETClient)
-		// 	client.POST("/", utils.AuthOnly, v1Master.POSTClient)
-
-		// 	client.PUT("/:id", utils.AuthOnly, v1Master.PUTClient)
-		// 	client.DELETE("/:id", utils.AuthOnly, v1Master.DELETEClient)
-		// }
 
 		user := v1route.Group("/user")
 		{

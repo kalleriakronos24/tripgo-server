@@ -11,6 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 	socketio "github.com/googollee/go-socket.io"
 	"github.com/kalleriakronos24/booklap-be/config"
+	"github.com/kalleriakronos24/booklap-be/docs"
 	"github.com/kalleriakronos24/booklap-be/migrations"
 	"github.com/kalleriakronos24/booklap-be/pkg/sockets"
 	"github.com/kalleriakronos24/booklap-be/router"
@@ -38,6 +39,15 @@ func runServer() {
 	}
 	time.Local = loc
 
+	// swagger configs
+	docs.SwaggerInfo.Title = "Swagger Example API"
+	docs.SwaggerInfo.Description = "This is a sample server Booklap server."
+	docs.SwaggerInfo.Version = "1.0"
+	docs.SwaggerInfo.Host = "booklap.io"
+	docs.SwaggerInfo.BasePath = "/v2"
+	docs.SwaggerInfo.Schemes = []string{"http", "https"}
+
+	// automatic database backup
 	if config.AppConfig.Environment == "PRODUCTION" {
 		go utils.DatabaseBackupCron()
 	}
