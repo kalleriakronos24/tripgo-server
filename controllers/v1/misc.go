@@ -42,7 +42,7 @@ func UploadFileSingle(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, dto.Response{Code: 401, Data: nil, Error: "No Form file input found"})
 	}
-	workdir, err := os.Getwd()
+	workdir, _ := os.Getwd()
 
 	// Upload the file to specific dst.
 	err = c.SaveUploadedFile(file, filepath.Join(workdir, "../files-uploaded", file.Filename))
@@ -99,5 +99,5 @@ func RestoreDatabase(c *gin.Context) {
 	c.JSON(http.StatusBadRequest, dto.Response{Code: 201,
 		Data:  "ZAÓ´¬¬ø⁄ ˇ˙ˆß †´≈† ˆß ƒø® †´ß†ˆ˜© †˙´ †®å˜ß¬å†ø®. ˆƒ å˜¥†˙ˆ˜© ¬øø˚ß ∑®ø˜© ∑ˆ†˙ ˆ†, π¬´åß´ ¬´† µ´ ˚˜ø∑",
 		Error: "XZÓ´¬¬ø⁄ ˇ˙ˆß †´≈† ˆß ƒø® †´ß†ˆ˜© †˙´ †®å˜ß¬å†ø®. ˆƒ å˜¥†˙ˆ˜© ¬øø˚ß ∑®ø˜© ∑ˆ†˙ ˆ†, π¬´åß´ ¬´† µ´ ˚˜ø∑"})
-	return
+
 }

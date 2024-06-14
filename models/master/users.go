@@ -17,20 +17,24 @@ type userOrm struct {
 }
 
 type User struct {
-	ID       uuid.UUID `gorm:"index:id,unique;type:uuid;default:gen_random_uuid();" json:"id"`
-	Name     string    `json:"name" gorm:"not null" binding:"required"`
-	Email    string    `gorm:"email:id,unique" json:",omitempty" binding:"required"`
-	Password string    `json:"password,omitempty" binding:"required" gorm:"not null"`
-	Role     string    `json:"role,omitempty" binding:"required" gorm:"not null;"`
-	Status   string    `json:"status,omitempty" binding:"required" gorm:"not null;default:active;"`
+	ID           uuid.UUID `gorm:"index:id,unique;type:uuid;default:gen_random_uuid();" json:"id"`
+	Name         string    `json:"name" gorm:"not null" binding:"required"`
+	Email        string    `gorm:"email:id,unique" json:",omitempty" binding:"required"`
+	Password     string    `json:"password,omitempty" binding:"required" gorm:"not null"`
+	Role         string    `json:"role,omitempty" binding:"required" gorm:"not null;"`
+	ProfileImage string    `json:"profileImage,omitempty" gorm:"default:NULL"`
+	Phone        string    `json:"phone,omitempty" gorm:"default:NULL"`
+	Status       string    `json:"status,omitempty" binding:"required" gorm:"not null;default:active;"`
 
-	CreatedBy           uuid.UUID `json:"createdBy,omitempty" gorm:"type:uuid;default:NULL"`
-	UpdatedBy           uuid.UUID `json:"updatedBy,omitempty" gorm:"type:uuid;default:NULL"`
-	CreatedBySuperAdmin *User     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:CreatedBy;references:ID" json:"createdBySuperAdmin"`
-	UpdatedBySuperAdmin *User     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:UpdatedBy;references:ID" json:"updatedBySuperAdmin"`
+	CreatedBy uuid.UUID `json:"createdBy,omitempty" gorm:"type:uuid;default:NULL"`
+	UpdatedBy uuid.UUID `json:"updatedBy,omitempty" gorm:"type:uuid;default:NULL"`
 
-	//CompanyID uuid.UUID `json:"companyId,omitempty" gorm:"type:uuid;default:NULL"`
-	//Company   *Company  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;foreignKey:CompanyID;references:ID" json:"company"`
+	// relation
+	CreatedBySuperAdmin *User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:CreatedBy;references:ID" json:"createdBySuperAdmin"`
+	UpdatedBySuperAdmin *User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:UpdatedBy;references:ID" json:"updatedBySuperAdmin"`
+
+	// populate relation
+	//UserAccess []*UserAccess `json:"userAccess,omitempty"`
 	types.DefaultModelProperty
 }
 
@@ -107,3 +111,5 @@ func (o *userOrm) DeleteUser(id uuid.UUID, tx *gorm.DB) (err error) {
 	result := tx.Model(&User{}).Delete(&User{}, id)
 	return result.Error
 }
+
+// === Bypass Import Cycle
