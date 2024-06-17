@@ -30,8 +30,8 @@ type User struct {
 	UpdatedBy uuid.UUID `json:"updatedBy,omitempty" gorm:"type:uuid;default:NULL"`
 
 	// relation
-	CreatedBySuperAdmin *User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:CreatedBy;references:ID" json:"createdBySuperAdmin"`
-	UpdatedBySuperAdmin *User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:UpdatedBy;references:ID" json:"updatedBySuperAdmin"`
+	CreatedByInternal *User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:CreatedBy;references:ID" json:"createdByInternal"`
+	UpdatedByInternal *User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:UpdatedBy;references:ID" json:"updatedByInternal"`
 
 	// populate relation
 	//UserAccess []*UserAccess `json:"userAccess,omitempty"`
@@ -112,4 +112,17 @@ func (o *userOrm) DeleteUser(id uuid.UUID, tx *gorm.DB) (err error) {
 	return result.Error
 }
 
-// === Bypass Import Cycle
+// TENTANTS
+func (o *userOrm) InsertUserOwner(p User) (err error) {
+	fmt.Printf("%v", p)
+	result := o.db.Model(&p).Create(&p)
+	return result.Error
+}
+
+func (o *userOrm) InsertUserAdmin(p User) (err error) {
+	fmt.Printf("%v", p)
+	result := o.db.Model(&p).Create(&p)
+	return result.Error
+}
+
+// INTERNALS

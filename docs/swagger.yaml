@@ -1,4 +1,146 @@
+definitions:
+  dto.InternalSignUp:
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+      profileImage:
+        type: string
+      username:
+        type: string
+    required:
+    - email
+    - name
+    - password
+    - username
+    type: object
+  dto.Response:
+    properties:
+      code:
+        type: integer
+      data: {}
+      error: {}
+      kind:
+        type: string
+      message:
+        type: string
+    type: object
+  dto.UserLogin:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  dto.UserSignup:
+    properties:
+      address:
+        type: string
+      createdBy:
+        type: string
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - email
+    - name
+    - password
+    - username
+    type: object
 info:
   contact: {}
-paths: {}
+paths:
+  /auth/i/signup:
+    post:
+      consumes:
+      - application/json
+      description: Internal Sign-Up
+      parameters:
+      - description: internal registration
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.InternalSignUp'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Internal Sign-Up
+      tags:
+      - Authentication
+  /auth/signin:
+    post:
+      consumes:
+      - application/json
+      description: A Global authentication sign-in method for all microservices
+      parameters:
+      - description: global login
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Global Sign-In
+      tags:
+      - Authentication
+  /auth/signup:
+    post:
+      consumes:
+      - application/json
+      description: User Sign-Up to store them into global database
+      parameters:
+      - description: user registration
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserSignup'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: User Sign-Up
+      tags:
+      - Authentication
 swagger: "2.0"

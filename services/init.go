@@ -12,17 +12,20 @@ import (
 var Handler HandlerFunc
 
 type HandlerFunc interface {
+	// AUTH
 	AuthenticateUser(p dto.UserLogin) (token string, err error)
-
 	CheckExistingUser(id string, param CheckExistingUserStruct) (err error)
 	RetrieveAllUserPaginated(c *gin.Context, id uuid.UUID) (pagination *database.Pagination, err error)
-	RegisterUser(p *dto.UserSignup) (err error)
-	RegisterUserSuperAdmin(p dto.UserSignupSuperAdmin) (err error)
 	RetrieveUser(id uuid.UUID) (m masterModels.User, err error)
 	DeleteUser(id uuid.UUID) (err error)
-
-	RetrieveCompany(id uuid.UUID) (m masterModels.Company, err error)
-	CheckExistingClient(id string, param CheckExistingClientStruct) (err error)
+	// AUTH - PUBLIC
+	RegisterUser(p *dto.UserSignup) (err error)
+	// AUTH - INTERNAL
+	RegisterInternal(p dto.InternalSignUp) (err error)
+	// AUTH - TENTANT
+	RegisterAdmin(credentials *dto.AdminSignup) (err error)
+	RegisterOwner(credentials *dto.OwnerSignup) (err error)
+	// OTHER
 }
 
 type module struct {
