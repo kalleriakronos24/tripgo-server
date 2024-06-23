@@ -4,12 +4,11 @@ import (
 	"github.com/google/uuid"
 	masterModels "github.com/kalleriakronos24/booklap-be/models/master"
 	"github.com/kalleriakronos24/booklap-be/types"
-	"gorm.io/gorm"
 )
 
-type userLogOrm struct {
-	db *gorm.DB
-}
+// type userLogOrm struct {
+// 	db *gorm.DB
+// }
 
 type UserLog struct {
 	ID          uint   `gorm:"primaryKey" json:"-"`

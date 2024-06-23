@@ -72,7 +72,7 @@ networks:
   internal:
     driver: bridge
 volumes:
-  odma-db:
+  booklap-db:
     driver: local
   files-uploaded:
     driver: local
