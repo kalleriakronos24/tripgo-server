@@ -45,7 +45,8 @@ func InitializeRouter() (router *gin.Engine) {
 
 		authTenant := v1route.Group("/auth/t")
 		{
-			authTenant.POST("/signin", v1.POSTLogin)
+			authTenant.POST("/signin/owner", v1.POSTLoginBusinessOwner)
+			authTenant.POST("/signin/admin", v1.POSTLoginBusinessAdmin)
 			authTenant.POST("/signup/owner", v1.POSTRegisterBusinessOwner)
 			authTenant.POST("/signup/admin", v1.POSTRegisterBusinessAdmin)
 		}

@@ -1,4 +1,24 @@
 definitions:
+  dto.AdminSignup:
+    properties:
+      address:
+        type: string
+      createdBy:
+        type: string
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - email
+    - name
+    - password
+    - username
+    type: object
   dto.InternalSignUp:
     properties:
       address:
@@ -12,6 +32,26 @@ definitions:
       phone:
         type: string
       profileImage:
+        type: string
+      username:
+        type: string
+    required:
+    - email
+    - name
+    - password
+    - username
+    type: object
+  dto.OwnerSignup:
+    properties:
+      address:
+        type: string
+      createdBy:
+        type: string
+      email:
+        type: string
+      name:
+        type: string
+      password:
         type: string
       username:
         type: string
@@ -90,7 +130,7 @@ paths:
             $ref: '#/definitions/dto.Response'
       summary: Internal Sign-Up
       tags:
-      - Authentication
+      - Authentication - Internal
   /auth/signin:
     post:
       consumes:
@@ -116,7 +156,7 @@ paths:
             $ref: '#/definitions/dto.Response'
       summary: Global Sign-In
       tags:
-      - Authentication
+      - Authentication - Global
   /auth/signup:
     post:
       consumes:
@@ -142,5 +182,109 @@ paths:
             $ref: '#/definitions/dto.Response'
       summary: User Sign-Up
       tags:
-      - Authentication
+      - Authentication - Global
+  /auth/t/signin/admin:
+    post:
+      consumes:
+      - application/json
+      description: Admin Sign-In
+      parameters:
+      - description: admin login
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Admin Sign-In
+      tags:
+      - Authentication - Tenant
+  /auth/t/signin/owner:
+    post:
+      consumes:
+      - application/json
+      description: Owner Sign-In
+      parameters:
+      - description: owner login
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Owner Sign-In
+      tags:
+      - Authentication - Tenant
+  /auth/t/signup:
+    post:
+      consumes:
+      - application/json
+      description: Owner Sign-Up to store them into global database
+      parameters:
+      - description: owner registration
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.OwnerSignup'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Owner Sign-Up
+      tags:
+      - Authentication - Tenant
+  /auth/t/signup/admin:
+    post:
+      consumes:
+      - application/json
+      description: Admin Sign-Up to store them into global database
+      parameters:
+      - description: admin registration
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AdminSignup'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Admin Sign-Up
+      tags:
+      - Authentication - Tenant
 swagger: "2.0"

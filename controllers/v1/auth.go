@@ -2,8 +2,10 @@ package v1
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/google/uuid"
+	"github.com/kalleriakronos24/booklap-be/config"
 	"github.com/kalleriakronos24/booklap-be/constants"
 	masterModels "github.com/kalleriakronos24/booklap-be/models/master"
 	"github.com/kalleriakronos24/booklap-be/utils"
@@ -16,7 +18,7 @@ import (
 // AuthLogin godoc
 // @Summary      Global Sign-In
 // @Description  A Global authentication sign-in method for all microservices
-// @Tags         Authentication
+// @Tags         Authentication - Global
 // @Accept       json
 // @Produce      json
 // @Success      200 {object}	dto.Response
@@ -42,13 +44,22 @@ func POSTLogin(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, dto.Response{Data: token})
+	c.SetSameSite(http.SameSiteNoneMode)
+	c.SetCookie("token", token, int(time.Now().Add(time.Hour*24).Unix()), "", "", true, false)
+	if config.AppConfig.Environment == "DEVELOPMENT" {
+		cookie, err := c.Cookie("token")
+		if err != nil {
+			c.String(http.StatusNotFound, "Cookie not found")
+			return
+		}
+		c.String(http.StatusOK, "Cookie value: %s", cookie)
+	}
 }
 
 // AuthSignup godoc
 // @Summary      User Sign-Up
 // @Description  User Sign-Up to store them into global database
-// @Tags         Authentication
+// @Tags         Authentication - Global
 // @Accept       json
 // @Produce      json
 // @Success      200 {object}	dto.Response
@@ -95,7 +106,7 @@ func POSTRegister(c *gin.Context) {
 // AuthSignUp godoc
 // @Summary      Internal Sign-Up
 // @Description  Internal Sign-Up
-// @Tags         Authentication
+// @Tags         Authentication - Internal
 // @Accept       json
 // @Produce      json
 // @Success      200 {object}	dto.Response
@@ -135,7 +146,7 @@ func POSTRegisterInternal(c *gin.Context) {
 // AuthSignup godoc
 // @Summary      Owner Sign-Up
 // @Description  Owner Sign-Up to store them into global database
-// @Tags         Authentication
+// @Tags         Authentication - Tenant
 // @Accept       json
 // @Produce      json
 // @Success      200 {object}	dto.Response
@@ -179,7 +190,7 @@ func POSTRegisterBusinessOwner(c *gin.Context) {
 // AuthSignup godoc
 // @Summary      Admin Sign-Up
 // @Description  Admin Sign-Up to store them into global database
-// @Tags         Authentication
+// @Tags         Authentication - Tenant
 // @Accept       json
 // @Produce      json
 // @Success      200 {object}	dto.Response
@@ -221,6 +232,17 @@ func POSTRegisterBusinessAdmin(c *gin.Context) {
 }
 
 // TENTANT SIGN-IN
+
+// AuthLogin godoc
+// @Summary      Owner Sign-In
+// @Description  Owner Sign-In
+// @Tags         Authentication - Tenant
+// @Accept       json
+// @Produce      json
+// @Success      200 {object}	dto.Response
+// @Failure      400 {object}	dto.Response
+// @Param 		 data body dto.UserLogin true "owner login"
+// @Router       /auth/t/signin/owner [post]
 func POSTLoginBusinessOwner(c *gin.Context) {
 	var err error
 	var p dto.UserLogin
@@ -240,8 +262,20 @@ func POSTLoginBusinessOwner(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, dto.Response{Data: token})
+	c.SetSameSite(http.SameSiteNoneMode)
+	c.SetCookie("token", token, int(time.Now().Add(time.Hour*24).Unix()), "", "", true, false)
 }
+
+// AuthLogin godoc
+// @Summary      Admin Sign-In
+// @Description  Admin Sign-In
+// @Tags         Authentication - Tenant
+// @Accept       json
+// @Produce      json
+// @Success      200 {object}	dto.Response
+// @Failure      400 {object}	dto.Response
+// @Param 		 data body dto.UserLogin true "admin login"
+// @Router       /auth/t/signin/admin [post]
 func POSTLoginBusinessAdmin(c *gin.Context) {
 	var err error
 	var p dto.UserLogin
@@ -261,5 +295,6 @@ func POSTLoginBusinessAdmin(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, dto.Response{Data: token})
+	c.SetSameSite(http.SameSiteNoneMode)
+	c.SetCookie("token", token, int(time.Now().Add(time.Hour*24).Unix()), "", "", true, false)
 }

@@ -18,7 +18,7 @@ FROM base AS go-builder-production
 #COPY . .
 RUN go mod tidy && go get ./
 RUN go build -buildvcs=false -o /server
-#RUN go build -ldflags="-s -w" -o ./bin/server ./main.go
+RUN go build -ldflags="-s -w" -o ./bin/server ./main.go
 
 FROM init AS go-builder-developement
 RUN go mod tidy && go get ./
