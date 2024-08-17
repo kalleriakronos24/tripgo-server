@@ -9,8 +9,8 @@ import (
 	"path/filepath"
 
 	"github.com/gin-gonic/gin"
-	"github.com/kalleriakronos24/booklap-be/config"
-	"github.com/kalleriakronos24/booklap-be/dto"
+	"github.com/kalleriakronos24/khaimal-group/config"
+	"github.com/kalleriakronos24/khaimal-group/dto"
 )
 
 func Pong(c *gin.Context) {

@@ -1,4 +1,4 @@
-module github.com/kalleriakronos24/booklap-be
+module github.com/kalleriakronos24/khaimal-group
 
 go 1.21.3
 

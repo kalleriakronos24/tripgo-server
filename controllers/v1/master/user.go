@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/kalleriakronos24/booklap-be/constants"
-	"github.com/kalleriakronos24/booklap-be/utils"
+	"github.com/kalleriakronos24/khaimal-group/constants"
+	"github.com/kalleriakronos24/khaimal-group/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"github.com/kalleriakronos24/booklap-be/dto"
-	masterModels "github.com/kalleriakronos24/booklap-be/models/master"
-	"github.com/kalleriakronos24/booklap-be/services"
+	"github.com/kalleriakronos24/khaimal-group/dto"
+	masterModels "github.com/kalleriakronos24/khaimal-group/models/master"
+	"github.com/kalleriakronos24/khaimal-group/services"
 )
 
 func GETUserByID(c *gin.Context) {

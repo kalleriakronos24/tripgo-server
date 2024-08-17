@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/kalleriakronos24/booklap-be/config"
+	"github.com/kalleriakronos24/khaimal-group/config"
 )
 
 func CORSMiddleware(c *gin.Context) {
@@ -10,7 +10,7 @@ func CORSMiddleware(c *gin.Context) {
 	var referer string
 
 	if config.AppConfig.Environment == "DEVELOPMENT" {
-		referer = "http://localhost:5173"
+		referer = "http://localhost:8000"
 	}
 
 	if config.AppConfig.Environment == "PRODUCTION" {

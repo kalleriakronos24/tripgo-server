@@ -3,14 +3,13 @@ package constants
 import (
 	"fmt"
 
-	"github.com/kalleriakronos24/booklap-be/dto"
+	"github.com/kalleriakronos24/khaimal-group/dto"
 )
 
 func GetErrorResponse(kind string, err error, message string) dto.Response {
 	var response dto.Response
 
 	switch kind {
-
 	// ==== url params or body ====
 	case "payload-error":
 		response = dto.Response{

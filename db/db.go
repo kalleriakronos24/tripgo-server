@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm/logger"
 
-	"github.com/kalleriakronos24/booklap-be/config"
+	"github.com/kalleriakronos24/khaimal-group/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )

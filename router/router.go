@@ -6,11 +6,11 @@ import (
 	"path/filepath"
 
 	"github.com/gin-gonic/gin"
-	"github.com/kalleriakronos24/booklap-be/config"
-	middleware "github.com/kalleriakronos24/booklap-be/controllers/middlewares"
-	v1 "github.com/kalleriakronos24/booklap-be/controllers/v1"
-	v1Master "github.com/kalleriakronos24/booklap-be/controllers/v1/master"
-	"github.com/kalleriakronos24/booklap-be/utils"
+	"github.com/kalleriakronos24/khaimal-group/config"
+	middleware "github.com/kalleriakronos24/khaimal-group/controllers/middlewares"
+	v1 "github.com/kalleriakronos24/khaimal-group/controllers/v1"
+	v1Master "github.com/kalleriakronos24/khaimal-group/controllers/v1/master"
+	"github.com/kalleriakronos24/khaimal-group/utils"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
@@ -43,14 +43,6 @@ func InitializeRouter() (router *gin.Engine) {
 			authInternal.POST("/signup", v1.POSTRegisterInternal)
 		}
 
-		authTenant := v1route.Group("/auth/t")
-		{
-			authTenant.POST("/signin/owner", v1.POSTLoginBusinessOwner)
-			authTenant.POST("/signin/admin", v1.POSTLoginBusinessAdmin)
-			authTenant.POST("/signup/owner", v1.POSTRegisterBusinessOwner)
-			authTenant.POST("/signup/admin", v1.POSTRegisterBusinessAdmin)
-		}
-
 		user := v1route.Group("/user")
 		{
 			user.GET("/", utils.AuthOnly, v1Master.GETAllUser)
@@ -60,6 +52,17 @@ func InitializeRouter() (router *gin.Engine) {
 			user.POST("/", utils.AuthOnly, v1.POSTRegister)
 			user.PUT("/:id", utils.AuthOnly, v1Master.PUTUser)
 			user.DELETE("/:id", utils.AuthOnly, v1Master.DELETEUser)
+		}
+
+		userDriver := v1route.Group("/user/d")
+		{
+			userDriver.GET("/", utils.AuthOnly, v1Master.GETAllUser)
+			userDriver.GET("/profile", utils.AuthOnly, v1Master.GETUser)
+			userDriver.GET("/:id", utils.AuthOnly, v1Master.GETUserByID)
+
+			userDriver.POST("/", utils.AuthOnly, v1.POSTRegister)
+			userDriver.PUT("/:id", utils.AuthOnly, v1Master.PUTUser)
+			userDriver.DELETE("/:id", utils.AuthOnly, v1Master.DELETEUser)
 		}
 
 		misc := v1route.Group("/misc")

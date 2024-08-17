@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
-	"github.com/kalleriakronos24/booklap-be/dto"
-	masterModels "github.com/kalleriakronos24/booklap-be/models/master"
+	"github.com/kalleriakronos24/khaimal-group/dto"
+	masterModels "github.com/kalleriakronos24/khaimal-group/models/master"
 )
 
 type CheckExistingClientStruct struct {

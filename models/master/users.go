@@ -6,8 +6,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	database "github.com/kalleriakronos24/booklap-be/db"
-	"github.com/kalleriakronos24/booklap-be/types"
+	database "github.com/kalleriakronos24/khaimal-group/db"
+	"github.com/kalleriakronos24/khaimal-group/types"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -28,10 +28,6 @@ type User struct {
 
 	CreatedBy uuid.UUID `json:"createdBy,omitempty" gorm:"type:uuid;default:NULL"`
 	UpdatedBy uuid.UUID `json:"updatedBy,omitempty" gorm:"type:uuid;default:NULL"`
-
-	// relation
-	CreatedByInternal *User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:CreatedBy;references:ID" json:"createdByInternal"`
-	UpdatedByInternal *User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:UpdatedBy;references:ID" json:"updatedByInternal"`
 
 	// populate relation
 	//UserAccess []*UserAccess `json:"userAccess,omitempty"`
@@ -56,10 +52,8 @@ func NewUserAction(db *gorm.DB) UserModelAction {
 }
 
 func (o *userOrm) GetAllUserPaginated(c *gin.Context, userId uuid.UUID) (*database.Pagination, error) {
-
 	var mArr []*User
 	var pagination database.Pagination
-
 	o.db.
 		Scopes(database.Paginator(c, &mArr, []string{"CreatedBy", "UpdatedBy", "Company"}, &pagination)).
 		Where("created_by", userId).
@@ -124,5 +118,3 @@ func (o *userOrm) InsertUserAdmin(p User) (err error) {
 	result := o.db.Model(&p).Create(&p)
 	return result.Error
 }
-
-// INTERNALS

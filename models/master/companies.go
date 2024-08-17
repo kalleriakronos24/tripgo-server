@@ -6,8 +6,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	database "github.com/kalleriakronos24/booklap-be/db"
-	"github.com/kalleriakronos24/booklap-be/types"
+	database "github.com/kalleriakronos24/khaimal-group/db"
+	"github.com/kalleriakronos24/khaimal-group/types"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )

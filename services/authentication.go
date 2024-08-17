@@ -8,10 +8,10 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/dgrijalva/jwt-go/v4"
-	"github.com/kalleriakronos24/booklap-be/config"
-	"github.com/kalleriakronos24/booklap-be/constants"
-	"github.com/kalleriakronos24/booklap-be/dto"
-	masterModels "github.com/kalleriakronos24/booklap-be/models/master"
+	"github.com/kalleriakronos24/khaimal-group/config"
+	"github.com/kalleriakronos24/khaimal-group/constants"
+	"github.com/kalleriakronos24/khaimal-group/dto"
+	masterModels "github.com/kalleriakronos24/khaimal-group/models/master"
 	"golang.org/x/crypto/bcrypt"
 )
 

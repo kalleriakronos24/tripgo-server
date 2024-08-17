@@ -11,8 +11,8 @@ import (
 	"path/filepath"
 
 	"github.com/gin-gonic/gin"
-	"github.com/kalleriakronos24/booklap-be/dto"
-	pdfGenerator "github.com/kalleriakronos24/booklap-be/pkg/pdf-generator"
+	"github.com/kalleriakronos24/khaimal-group/dto"
+	pdfGenerator "github.com/kalleriakronos24/khaimal-group/pkg/pdf-generator"
 )
 
 func ConvertMultipartFileToBase64(c *gin.Context, file *multipart.FileHeader, dst string) (base64 string, err error) {

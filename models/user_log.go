@@ -2,8 +2,8 @@ package models
 
 import (
 	"github.com/google/uuid"
-	masterModels "github.com/kalleriakronos24/booklap-be/models/master"
-	"github.com/kalleriakronos24/booklap-be/types"
+	masterModels "github.com/kalleriakronos24/khaimal-group/models/master"
+	"github.com/kalleriakronos24/khaimal-group/types"
 )
 
 // type userLogOrm struct {

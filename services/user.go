@@ -6,8 +6,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	database "github.com/kalleriakronos24/booklap-be/db"
-	masterModels "github.com/kalleriakronos24/booklap-be/models/master"
+	database "github.com/kalleriakronos24/khaimal-group/db"
+	masterModels "github.com/kalleriakronos24/khaimal-group/models/master"
 )
 
 type CheckExistingUserStruct struct {

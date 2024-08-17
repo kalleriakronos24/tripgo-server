@@ -3,8 +3,8 @@ package migrations
 import (
 	"fmt"
 
-	database "github.com/kalleriakronos24/booklap-be/db"
-	masterModels "github.com/kalleriakronos24/booklap-be/models/master"
+	database "github.com/kalleriakronos24/khaimal-group/db"
+	masterModels "github.com/kalleriakronos24/khaimal-group/models/master"
 )
 
 func Migrate() {

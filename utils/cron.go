@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/claudiu/gocron"
-	"github.com/kalleriakronos24/booklap-be/config"
+	"github.com/kalleriakronos24/khaimal-group/config"
 )
 
 func backupDatabase() {

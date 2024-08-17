@@ -3,9 +3,9 @@ package services
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	database "github.com/kalleriakronos24/booklap-be/db"
-	"github.com/kalleriakronos24/booklap-be/dto"
-	masterModels "github.com/kalleriakronos24/booklap-be/models/master"
+	database "github.com/kalleriakronos24/khaimal-group/db"
+	"github.com/kalleriakronos24/khaimal-group/dto"
+	masterModels "github.com/kalleriakronos24/khaimal-group/models/master"
 	"gorm.io/gorm"
 )
 

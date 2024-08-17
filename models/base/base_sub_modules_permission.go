@@ -2,8 +2,8 @@ package base
 
 import (
 	"github.com/google/uuid"
-	"github.com/kalleriakronos24/booklap-be/models/system"
-	"github.com/kalleriakronos24/booklap-be/types"
+	"github.com/kalleriakronos24/khaimal-group/models/system"
+	"github.com/kalleriakronos24/khaimal-group/types"
 )
 
 // type moduleOrm struct {

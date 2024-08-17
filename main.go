@@ -6,16 +6,16 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/kalleriakronos24/booklap-be/utils"
+	"github.com/kalleriakronos24/khaimal-group/utils"
 
 	"github.com/gin-gonic/gin"
 	socketio "github.com/googollee/go-socket.io"
-	"github.com/kalleriakronos24/booklap-be/config"
-	"github.com/kalleriakronos24/booklap-be/docs"
-	"github.com/kalleriakronos24/booklap-be/migrations"
-	"github.com/kalleriakronos24/booklap-be/pkg/sockets"
-	"github.com/kalleriakronos24/booklap-be/router"
-	"github.com/kalleriakronos24/booklap-be/services"
+	"github.com/kalleriakronos24/khaimal-group/config"
+	"github.com/kalleriakronos24/khaimal-group/docs"
+	"github.com/kalleriakronos24/khaimal-group/migrations"
+	"github.com/kalleriakronos24/khaimal-group/pkg/sockets"
+	"github.com/kalleriakronos24/khaimal-group/router"
+	"github.com/kalleriakronos24/khaimal-group/services"
 	"github.com/spf13/viper"
 )
 
@@ -43,7 +43,7 @@ func runServer() {
 	docs.SwaggerInfo.Title = "Swagger Example API"
 	docs.SwaggerInfo.Description = "This is a sample server Booklap server."
 	docs.SwaggerInfo.Version = "1.0"
-	docs.SwaggerInfo.Host = "localhost:8080"
+	docs.SwaggerInfo.Host = "localhost:8000"
 	docs.SwaggerInfo.BasePath = "/api/v1"
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 
@@ -66,6 +66,7 @@ func runServer() {
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
+	//log.Printf("address > %s", s)
 	if err := s.ListenAndServe(); err != nil {
 		log.Fatalln(err)
 	}
