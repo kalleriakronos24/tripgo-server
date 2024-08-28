@@ -20,11 +20,6 @@ type HandlerFunc interface {
 	DeleteUser(id uuid.UUID) (err error)
 	// AUTH - PUBLIC
 	RegisterUser(p *dto.UserSignup) (err error)
-	// AUTH - INTERNAL
-	RegisterInternal(p dto.InternalSignUp) (err error)
-	// AUTH - TENTANT
-	RegisterAdmin(credentials *dto.AdminSignup) (err error)
-	RegisterOwner(credentials *dto.OwnerSignup) (err error)
 	// OTHER
 }
 

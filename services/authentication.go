@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/google/uuid"
-
 	"github.com/dgrijalva/jwt-go/v4"
 	"github.com/kalleriakronos24/khaimal-group/config"
 	"github.com/kalleriakronos24/khaimal-group/constants"
@@ -41,64 +39,6 @@ func (module *module) RegisterUser(credentials *dto.UserSignup) (err error) {
 		CreatedBy: credentials.CreatedBy,
 		UpdatedBy: credentials.CreatedBy,
 		Role:      "user",
-	}); err != nil {
-		return fmt.Errorf("error inserting user. %v", err)
-	}
-	return
-}
-
-// TENTANT
-func (module *module) RegisterOwner(credentials *dto.OwnerSignup) (err error) {
-	var hashedPassword []byte
-	if hashedPassword, err = bcrypt.GenerateFromPassword([]byte(credentials.Password), bcrypt.DefaultCost); err != nil {
-		return errors.New("failed hashing password")
-	}
-
-	if err = module.db.userModel.InsertUser(masterModels.User{
-		Name:      credentials.Name,
-		Email:     credentials.Email,
-		Password:  string(hashedPassword),
-		CreatedBy: credentials.CreatedBy,
-		UpdatedBy: credentials.CreatedBy,
-		Role:      "owner",
-	}); err != nil {
-		return fmt.Errorf("error inserting user. %v", err)
-	}
-	return
-}
-
-func (module *module) RegisterAdmin(credentials *dto.AdminSignup) (err error) {
-	var hashedPassword []byte
-	if hashedPassword, err = bcrypt.GenerateFromPassword([]byte(credentials.Password), bcrypt.DefaultCost); err != nil {
-		return errors.New("failed hashing password")
-	}
-
-	if err = module.db.userModel.InsertUser(masterModels.User{
-		Name:      credentials.Name,
-		Email:     credentials.Email,
-		Password:  string(hashedPassword),
-		CreatedBy: credentials.CreatedBy,
-		UpdatedBy: credentials.CreatedBy,
-		Role:      "admin",
-	}); err != nil {
-		return fmt.Errorf("error inserting user. %v", err)
-	}
-	return
-}
-
-// INTERNAL
-func (module *module) RegisterInternal(credentials dto.InternalSignUp) (err error) {
-	var hashedPassword []byte
-	if hashedPassword, err = bcrypt.GenerateFromPassword([]byte(credentials.Password), bcrypt.DefaultCost); err != nil {
-		return errors.New("failed hashing password")
-	}
-	if err = module.db.userModel.InsertUser(masterModels.User{
-		Name:      credentials.Name,
-		Email:     credentials.Email,
-		Password:  string(hashedPassword),
-		Role:      "internal",
-		CreatedBy: uuid.Nil,
-		UpdatedBy: uuid.Nil,
 	}); err != nil {
 		return fmt.Errorf("error inserting user. %v", err)
 	}

@@ -11,7 +11,7 @@ import (
 )
 
 type CheckExistingUserStruct struct {
-	*masterModels.User
+	*masterModels.Credentials
 }
 
 func (module *module) RetrieveUser(id uuid.UUID) (m masterModels.User, err error) {
@@ -23,7 +23,7 @@ func (module *module) RetrieveUser(id uuid.UUID) (m masterModels.User, err error
 
 func (module *module) RetrieveAllUserPaginated(c *gin.Context, id uuid.UUID) (pagination *database.Pagination, err error) {
 	if pagination, err = module.db.userModel.GetAllUserPaginated(c, id); err != nil {
-		return pagination, fmt.Errorf(err.Error())
+		return pagination, fmt.Errorf("%s", err.Error())
 	}
 	return
 }

@@ -94,7 +94,7 @@ func PUTUser(c *gin.Context) {
 	if user, err := services.Handler.RetrieveUser(userId); err == nil {
 
 		if user.Email != p.Email {
-			if err := services.Handler.CheckExistingUser(id, struct{ *masterModels.User }{&masterModels.User{
+			if err := services.Handler.CheckExistingUser(id, struct{ *masterModels.Credentials }{&masterModels.Credentials{
 				Email: p.Email,
 			}}); err == nil {
 				c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-existing-email", err, p.Email))
@@ -124,7 +124,7 @@ func DELETEUser(c *gin.Context) {
 		return
 	}
 
-	if err := services.Handler.CheckExistingUser(userId.String(), struct{ *masterModels.User }{&masterModels.User{}}); err != nil {
+	if err := services.Handler.CheckExistingUser(userId.String(), struct{ *masterModels.Credentials }{&masterModels.Credentials{}}); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, fmt.Sprintf("user id %s is not found", userId)))
 		return
 	}

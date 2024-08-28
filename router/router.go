@@ -40,7 +40,6 @@ func InitializeRouter() (router *gin.Engine) {
 		authInternal := v1route.Group("/auth/i")
 		{
 			authInternal.POST("/signin", v1.POSTLogin)
-			authInternal.POST("/signup", v1.POSTRegisterInternal)
 		}
 
 		user := v1route.Group("/user")
