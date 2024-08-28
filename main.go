@@ -12,7 +12,6 @@ import (
 	socketio "github.com/googollee/go-socket.io"
 	"github.com/kalleriakronos24/khaimal-group/config"
 	"github.com/kalleriakronos24/khaimal-group/docs"
-	"github.com/kalleriakronos24/khaimal-group/migrations"
 	"github.com/kalleriakronos24/khaimal-group/pkg/sockets"
 	"github.com/kalleriakronos24/khaimal-group/router"
 	"github.com/kalleriakronos24/khaimal-group/services"
@@ -56,7 +55,7 @@ func runServer() {
 	if err := services.InitializeServices(); err != nil {
 		log.Fatalln(err)
 	}
-	migrations.Migrate()
+	//migrations.Migrate()
 
 	// serve all routes and routes configuration
 	s := &http.Server{

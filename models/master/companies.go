@@ -17,22 +17,19 @@ type companyOrm struct {
 }
 
 type Company struct {
-	ID                uuid.UUID `gorm:"index:id,unique;type:uuid;default:gen_random_uuid();" json:"id"`
-	Name              string    `json:"name" gorm:"not null"`
-	PhoneNumber       string    `json:"phoneNumber,omitempty" gorm:"not null"`
-	Email             string    `gorm:"index:email,unique;not null" json:"email,omitempty"`
-	Address           string    `json:"address,omitempty" gorm:"default:NULL"`
-	PICName           string    `json:"picName,omitempty" gorm:"not null"`
-	PICDesignation    string    `json:"picDesignation,omitempty" gorm:"not null"`
-	BankAccountName   string    `json:"bankAccountName,omitempty" gorm:"not null"`
-	BankAccountNumber int       `json:"bankAccountNumber,omitempty" gorm:"not null;default:0"`
+	ID            uuid.UUID `gorm:"index:id,unique;type:uuid;default:gen_random_uuid();" json:"id"`
+	Name          string    `json:"name" gorm:"not null"`
+	PhoneNumber   string    `json:"phoneNumber,omitempty" gorm:"default:NULL"`
+	Email         string    `gorm:"index:email,unique;default:NULL" json:"email,omitempty"`
+	Address       string    `json:"address,omitempty" gorm:"default:NULL"`
+	CompanyPhoto  string    `json:"companyPhoto,omitempty" gorm:"default:NULL"`
+	CompanyNumber string    `json:"companyNumber,omitempty" gorm:"default:NULL"`
 
-	Client           []*Client `json:"client,omitempty"`
-	User             []*User   `json:"user,omitempty"`
-	CompanyCreatedBy uuid.UUID `json:"createdBy" gorm:"type:uuid;not null;default:NULL;"`
+	CompanyCreatedBy uuid.UUID `json:"createdBy" gorm:"type:uuid;default:NULL;"`
 	CompanyUpdatedBy uuid.UUID `json:"updatedBy" gorm:"type:uuid;default:NULL;"`
-	CreatedByUser    *User     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:CompanyCreatedBy;references:ID" json:"createdByUser"`
-	UpdatedByUser    *User     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:CompanyUpdatedBy;references:ID" json:"updatedByUser"`
+
+	Driver   []*Driver   `json:"drivers,omitempty"`
+	Internal []*Internal `json:"internals,omitempty"`
 
 	types.DefaultModelProperty
 }
