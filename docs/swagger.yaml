@@ -1,4 +1,39 @@
 definitions:
+  dto.CustomerSignup:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+    required:
+    - email
+    - name
+    - password
+    - phone
+    type: object
+  dto.DriverSignup:
+    properties:
+      driverType:
+        type: string
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+    required:
+    - driverType
+    - email
+    - name
+    - password
+    - phone
+    type: object
   dto.Response:
     properties:
       code:
@@ -43,6 +78,84 @@ definitions:
 info:
   contact: {}
 paths:
+  /auth/c/signup:
+    post:
+      consumes:
+      - application/json
+      description: Customer Sign-Up
+      parameters:
+      - description: customer registration
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CustomerSignup'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Customer Sign-Up
+      tags:
+      - Authentication - Customer
+  /auth/d/signup:
+    post:
+      consumes:
+      - application/json
+      description: Driver Sign-Up
+      parameters:
+      - description: driver registration
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.DriverSignup'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Driver Sign-Up
+      tags:
+      - Authentication - Driver
+  /auth/i/signup:
+    post:
+      consumes:
+      - application/json
+      description: Internal Sign-Up
+      parameters:
+      - description: internal registration
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserSignup'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Internal Sign-Up
+      tags:
+      - Authentication - Internal
   /auth/signin:
     post:
       consumes:
@@ -67,32 +180,6 @@ paths:
           schema:
             $ref: '#/definitions/dto.Response'
       summary: Global Sign-In
-      tags:
-      - Authentication - Global
-  /auth/signup:
-    post:
-      consumes:
-      - application/json
-      description: User Sign-Up to store them into global database
-      parameters:
-      - description: user registration
-        in: body
-        name: data
-        required: true
-        schema:
-          $ref: '#/definitions/dto.UserSignup'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dto.Response'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/dto.Response'
-      summary: User Sign-Up
       tags:
       - Authentication - Global
 swagger: "2.0"

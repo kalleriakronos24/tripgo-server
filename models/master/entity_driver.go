@@ -2,7 +2,6 @@ package master
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -19,13 +18,14 @@ type DriverOrm struct {
 type Driver struct {
 	ID           uuid.UUID `gorm:"index:id,unique;type:uuid;default:gen_random_uuid();" json:"id"`
 	Name         string    `json:"name" gorm:"not null" binding:"required"`
+	Phone        string    `json:"phone" gorm:"default:NULL" binding:"required"`
 	PlateNumber  string    `json:"plateNumber,omitempty" gorm:"default:NULL"`
 	LicensePhoto string    `json:"licensePhoto,omitempty" gorm:"default:NULL"`
-	CarModel     string    `json:"carModel,omitempty" gorm:"default:external"`
+	DriverType   string    `json:"driverType,omitempty" gorm:"default:external"`
 	Status       string    `json:"status,omitempty" binding:"required" gorm:"not null;default:active;"`
 
 	CredentialsID uuid.UUID `json:"credentialsId" gorm:"type:uuid;not null"`
-	CompanyID     uuid.UUID `json:"companyId" gorm:"type:uuid;not null"`
+	CompanyID     uuid.UUID `json:"companyId" gorm:"type:uuid;default:NULL"`
 	CreatedBy     uuid.UUID `json:"createdBy,omitempty" gorm:"type:uuid;default:NULL"`
 	UpdatedBy     uuid.UUID `json:"updatedBy,omitempty" gorm:"type:uuid;default:NULL"`
 
@@ -42,7 +42,7 @@ type DriverModelAction interface {
 	GetOneByEmail(email string) (m Driver, err error)
 	GetAllDriverPaginated(c *gin.Context, DriverId uuid.UUID) (*database.Pagination, error)
 
-	InsertDriver(p Driver) (err error)
+	InsertDriver(p Driver, tx *gorm.DB) (err error)
 
 	UpdateDriverToInactive(id uuid.UUID, tx *gorm.DB) (err error)
 	RemoveDriverFromCompany(id uuid.UUID, tx *gorm.DB) (err error)
@@ -97,9 +97,8 @@ func (o *DriverOrm) RemoveDriverFromCompany(id uuid.UUID, tx *gorm.DB) (err erro
 	return result.Error
 }
 
-func (o *DriverOrm) InsertDriver(p Driver) (err error) {
-	fmt.Printf("%v", p)
-	result := o.db.Model(&p).Create(&p)
+func (o *DriverOrm) InsertDriver(p Driver, tx *gorm.DB) (err error) {
+	result := tx.Model(&p).Create(&p)
 	return result.Error
 }
 

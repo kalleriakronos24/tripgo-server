@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/kalleriakronos24/khaimal-group/migrations"
 	"github.com/kalleriakronos24/khaimal-group/utils"
 
 	"github.com/gin-gonic/gin"
@@ -55,7 +56,7 @@ func runServer() {
 	if err := services.InitializeServices(); err != nil {
 		log.Fatalln(err)
 	}
-	//migrations.Migrate()
+	migrations.Migrate()
 
 	// serve all routes and routes configuration
 	s := &http.Server{

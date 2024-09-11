@@ -44,7 +44,7 @@ func (module *module) DeleteUser(id uuid.UUID) (err error) {
 func (module *module) CheckExistingUser(id string, param CheckExistingUserStruct) (err error) {
 
 	if param.Email != "" {
-		if _, dbErr := module.db.userModel.GetOneByEmail(param.Email); dbErr != nil {
+		if _, dbErr := module.db.credentialModel.GetOneByEmail(param.Email); dbErr != nil {
 			return errors.New(dbErr.Error())
 		}
 		return
@@ -52,7 +52,7 @@ func (module *module) CheckExistingUser(id string, param CheckExistingUserStruct
 
 	if id != "" {
 		uid, _ := uuid.Parse(id)
-		if _, dbErr := module.db.userModel.GetOneByID(uid); dbErr != nil {
+		if _, dbErr := module.db.credentialModel.GetOneByID(uid); dbErr != nil {
 			return errors.New(dbErr.Error())
 		}
 	}

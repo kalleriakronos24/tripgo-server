@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/kalleriakronos24/khaimal-group/config"
 	middleware "github.com/kalleriakronos24/khaimal-group/controllers/middlewares"
@@ -17,72 +18,81 @@ import (
 
 func InitializeRouter() (router *gin.Engine) {
 	router = gin.Default()
+	str := []string{config.AppConfig.APPUrlClientSide}
+
+	configCors := cors.DefaultConfig()
+	configCors.AddAllowHeaders("Authorization")
+	configCors.AllowCredentials = true
+	configCors.AllowOrigins = str
+	router.Use(cors.New(configCors), middleware.AuthMiddleware)
 
 	commonRoute := router.Group("/")
-
 	v1route := router.Group("/api/v1")
 
 	if config.AppConfig.Environment == "DEVELOPMENT" {
 		v1route.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	}
 
-	v1route.Use(
-		middleware.CORSMiddleware,
-		middleware.AuthMiddleware,
-	)
+	auth := v1route.Group("/auth")
 	{
-		auth := v1route.Group("/auth")
-		{
-			auth.POST("/signin", v1.POSTLogin)
-			auth.POST("/signup", v1.POSTRegister)
-		}
+		auth.POST("/signin", v1.POSTLogin)
+	}
 
-		authInternal := v1route.Group("/auth/i")
-		{
-			authInternal.POST("/signin", v1.POSTLogin)
-		}
+	authInternal := v1route.Group("/auth/i")
+	{
+		authInternal.POST("/signup", v1.POSTLogin)
+	}
 
-		user := v1route.Group("/user")
-		{
-			user.GET("/", utils.AuthOnly, v1Master.GETAllUser)
-			user.GET("/profile", utils.AuthOnly, v1Master.GETUser)
-			user.GET("/:id", utils.AuthOnly, v1Master.GETUserByID)
+	authCustomer := v1route.Group("/auth/c")
+	{
+		authCustomer.POST("/signup", middleware.CORSMiddleware(), v1.POSTRegisterCustomer)
+	}
 
-			user.POST("/", utils.AuthOnly, v1.POSTRegister)
-			user.PUT("/:id", utils.AuthOnly, v1Master.PUTUser)
-			user.DELETE("/:id", utils.AuthOnly, v1Master.DELETEUser)
-		}
+	authDriver := v1route.Group("/auth/d")
+	{
+		authDriver.POST("/signup", v1.POSTRegisterDriver)
+	}
 
-		userDriver := v1route.Group("/user/d")
-		{
-			userDriver.GET("/", utils.AuthOnly, v1Master.GETAllUser)
-			userDriver.GET("/profile", utils.AuthOnly, v1Master.GETUser)
-			userDriver.GET("/:id", utils.AuthOnly, v1Master.GETUserByID)
+	user := v1route.Group("/user")
+	{
+		user.GET("/", utils.AuthOnly, v1Master.GETAllUser)
+		user.GET("/profile", utils.AuthOnly, v1Master.GETUser)
+		user.GET("/:id", utils.AuthOnly, v1Master.GETUserByID)
 
-			userDriver.POST("/", utils.AuthOnly, v1.POSTRegister)
-			userDriver.PUT("/:id", utils.AuthOnly, v1Master.PUTUser)
-			userDriver.DELETE("/:id", utils.AuthOnly, v1Master.DELETEUser)
-		}
+		user.POST("/", utils.AuthOnly, v1.POSTRegisterCustomer)
+		user.PUT("/:id", utils.AuthOnly, v1Master.PUTUser)
+		user.DELETE("/:id", utils.AuthOnly, v1Master.DELETEUser)
+	}
 
-		misc := v1route.Group("/misc")
-		{
-			misc.GET("/ping", v1.Pong)
-			misc.POST("/upload", v1.UploadFileSingle)
-			misc.POST("/upload-multiple", v1.UploadFileMultiple)
-			if config.AppConfig.Environment == "PRODUCTION" {
-				misc.POST("/restore/:fileName", utils.AuthOnly, v1.RestoreDatabase)
-			}
-		}
+	userDriver := v1route.Group("/user/d")
+	{
+		userDriver.GET("/", utils.AuthOnly, v1Master.GETAllUser)
+		userDriver.GET("/profile", utils.AuthOnly, v1Master.GETUser)
+		userDriver.GET("/:id", utils.AuthOnly, v1Master.GETUserByID)
 
-		fileServingGroupRoute := config.AppConfig.APPUrlStaticFileGroupRoute
-		fileServingMainRoute := config.AppConfig.AppUrlStaticFileMainRoute
-		fileServing := commonRoute.Group(fileServingGroupRoute)
-		{
-			//todo improve static file serving security
-			workdir, _ := os.Getwd()
-			path := filepath.Join(workdir, "../files-uploaded")
-			fileServing.StaticFS(fileServingMainRoute, http.Dir(path))
+		userDriver.POST("/", utils.AuthOnly, v1.POSTRegisterDriver)
+		userDriver.PUT("/:id", utils.AuthOnly, v1Master.PUTUser)
+		userDriver.DELETE("/:id", utils.AuthOnly, v1Master.DELETEUser)
+	}
+
+	misc := v1route.Group("/misc")
+	{
+		misc.GET("/ping", v1.Pong)
+		misc.POST("/upload", v1.UploadFileSingle)
+		misc.POST("/upload-multiple", v1.UploadFileMultiple)
+		if config.AppConfig.Environment == "PRODUCTION" {
+			misc.POST("/restore/:fileName", utils.AuthOnly, v1.RestoreDatabase)
 		}
 	}
-	return
+
+	fileServingGroupRoute := config.AppConfig.APPUrlStaticFileGroupRoute
+	fileServingMainRoute := config.AppConfig.AppUrlStaticFileMainRoute
+	fileServing := commonRoute.Group(fileServingGroupRoute)
+	{
+		//todo improve static file serving security
+		workdir, _ := os.Getwd()
+		path := filepath.Join(workdir, "../files-uploaded")
+		fileServing.StaticFS(fileServingMainRoute, http.Dir(path))
+	}
+	return router
 }

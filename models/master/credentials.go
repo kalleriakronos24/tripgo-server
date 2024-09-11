@@ -1,8 +1,6 @@
 package master
 
 import (
-	"fmt"
-
 	"github.com/google/uuid"
 	"github.com/kalleriakronos24/khaimal-group/types"
 	"gorm.io/gorm"
@@ -31,7 +29,7 @@ type CredentialsModelAction interface {
 	GetOneByID(id uuid.UUID) (m Credentials, err error)
 	GetOneByEmail(email string) (m Credentials, err error)
 
-	InsertCredentials(p Credentials) (err error)
+	InsertCredentials(p Credentials, tx *gorm.DB) (cred *Credentials, perr error)
 	DeleteCredentials(id uuid.UUID, tx *gorm.DB) (err error)
 }
 
@@ -52,10 +50,9 @@ func (o *CredentialsOrm) GetOneByEmail(email string) (m Credentials, err error) 
 	return m, result.Error
 }
 
-func (o *CredentialsOrm) InsertCredentials(p Credentials) (err error) {
-	fmt.Printf("%v", p)
-	result := o.db.Model(&p).Create(&p)
-	return result.Error
+func (o *CredentialsOrm) InsertCredentials(p Credentials, tx *gorm.DB) (cred *Credentials, err error) {
+	result := tx.Model(&p).Create(&p)
+	return &p, result.Error
 }
 
 func (o *CredentialsOrm) DeleteCredentials(id uuid.UUID, tx *gorm.DB) (err error) {

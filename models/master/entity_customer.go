@@ -2,7 +2,6 @@ package master
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -35,7 +34,7 @@ type CustomerModelAction interface {
 	GetOneByCustomerName(Customername string) (m Customer, err error)
 	GetAllCustomerPaginated(c *gin.Context, CustomerId uuid.UUID) (*database.Pagination, error)
 
-	InsertCustomer(p Customer) (err error)
+	InsertCustomer(p Customer, tx *gorm.DB) (err error)
 	DeleteCustomer(id uuid.UUID, tx *gorm.DB) (err error)
 }
 
@@ -63,7 +62,7 @@ func (o *CustomerOrm) GetOneByID(id uuid.UUID) (Customer Customer, err error) {
 }
 
 func (o *CustomerOrm) GetOneByCustomerName(Customername string) (m Customer, err error) {
-	result := o.db.Model(&m).Where("Customername = ?", Customername).First(&m)
+	result := o.db.Model(&m).Where("name = ?", Customername).First(&m)
 
 	if m.Status == "inactive" {
 		return m, errors.New("Customer has no company related. please ask your admin for verification")
@@ -72,9 +71,8 @@ func (o *CustomerOrm) GetOneByCustomerName(Customername string) (m Customer, err
 	return m, result.Error
 }
 
-func (o *CustomerOrm) InsertCustomer(p Customer) (err error) {
-	fmt.Printf("%v", p)
-	result := o.db.Model(&p).Create(&p)
+func (o *CustomerOrm) InsertCustomer(p Customer, tx *gorm.DB) (err error) {
+	result := tx.Model(&p).Create(&p)
 	return result.Error
 }
 
