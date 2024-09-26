@@ -55,7 +55,7 @@ func (o *CustomerOrm) GetAllCustomerPaginated(c *gin.Context, CustomerId uuid.UU
 
 func (o *CustomerOrm) GetOneByID(id uuid.UUID) (Customer Customer, err error) {
 	result := o.db.Model(&Customer).
-		Where("id = ?", id).
+		Where("credentials_id = ?", id).
 		Preload(clause.Associations).
 		First(&Customer)
 	return Customer, result.Error

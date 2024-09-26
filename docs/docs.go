@@ -174,6 +174,46 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/booking/transfer": {
+            "post": {
+                "description": "A POST Request to create a new record for costumer to make a new Transfer booking to the driver",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking - Transfer"
+                ],
+                "summary": "Booking - Transfer",
+                "parameters": [
+                    {
+                        "description": "insert booking transfer",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.InsertBookingTransfer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -182,8 +222,7 @@ const docTemplate = `{
             "required": [
                 "email",
                 "name",
-                "password",
-                "phone"
+                "password"
             ],
             "properties": {
                 "email": {
@@ -223,6 +262,63 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "phone": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.InsertBookingTransfer": {
+            "type": "object",
+            "required": [
+                "adultSeater",
+                "childSeater",
+                "fromLatCoordinate",
+                "fromLngCoordinate",
+                "fromLocation",
+                "passengerNotes",
+                "pickUpDate",
+                "price",
+                "toLatCoordinate",
+                "toLngCoordinate",
+                "toLocation"
+            ],
+            "properties": {
+                "adultSeater": {
+                    "type": "integer"
+                },
+                "carModelId": {
+                    "type": "string"
+                },
+                "childSeater": {
+                    "type": "integer"
+                },
+                "fromLatCoordinate": {
+                    "type": "number"
+                },
+                "fromLngCoordinate": {
+                    "type": "number"
+                },
+                "fromLocation": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "passengerNotes": {
+                    "type": "string"
+                },
+                "pickUpDate": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "toLatCoordinate": {
+                    "type": "number"
+                },
+                "toLngCoordinate": {
+                    "type": "number"
+                },
+                "toLocation": {
                     "type": "string"
                 }
             }

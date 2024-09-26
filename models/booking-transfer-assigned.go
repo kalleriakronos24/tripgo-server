@@ -1,8 +1,6 @@
 package models
 
 import (
-	"fmt"
-
 	"github.com/google/uuid"
 	"github.com/kalleriakronos24/khaimal-group/models/master"
 	"github.com/kalleriakronos24/khaimal-group/types"
@@ -15,16 +13,16 @@ type BookingTransferAssignedOrm struct {
 }
 
 type BookingTransferAssigned struct {
-	ID    uuid.UUID `gorm:"index:id,unique;type:uuid;default:gen_random_uuid();" json:"id"`
-	Price string    `gorm:"not null" json:"price,omitempty" binding:"required"`
+	ID uuid.UUID `gorm:"index:id,unique;type:uuid;default:gen_random_uuid();" json:"id"`
 
 	BookingTransferID uuid.UUID `json:"bookingTransferid,omitempty" gorm:"type:uuid;default:NULL"`
-	DriverID          uuid.UUID `json:"driverid,omitempty" gorm:"type:uuid;default:NULL"`
+	CarManagementID   uuid.UUID `json:"carManagementId,omitempty" gorm:"type:uuid;default:NULL"`
+	IsAccepted        bool      `json:"isAccepted,omitempty" gorm:"type:boolean;default:false"`
 	CreatedBy         uuid.UUID `json:"createdBy,omitempty" gorm:"type:uuid;default:NULL"`
 	UpdatedBy         uuid.UUID `json:"updatedBy,omitempty" gorm:"type:uuid;default:NULL"`
 
-	BookingTransfer *BookingTransfer `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;foreignKey:BookingTransferID;references:ID" json:"bookingTransfer,omitempty"`
-	Driver          *master.Driver   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;foreignKey:DriverID;references:ID" json:"driverId,omitempty"`
+	BookingTransfer *BookingTransfer      `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;foreignKey:BookingTransferID;references:ID" json:"bookingTransfer,omitempty"`
+	CarManagement   *master.CarManagement `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;foreignKey:CarManagementID;references:ID" json:"carManagement,omitempty"`
 
 	types.DefaultModelProperty
 }
@@ -32,8 +30,7 @@ type BookingTransferAssigned struct {
 type BookingTransferAssignedModelAction interface {
 	GetOneByID(id uuid.UUID) (m BookingTransferAssigned, err error)
 	GetOneByEmail(email string) (m BookingTransferAssigned, err error)
-
-	InsertBookingTransferAssigned(p BookingTransferAssigned) (err error)
+	InsertBookingTransferAssigned(p BookingTransferAssigned, tx *gorm.DB) (err error)
 	DeleteBookingTransferAssigned(id uuid.UUID, tx *gorm.DB) (err error)
 }
 
@@ -54,9 +51,8 @@ func (o *BookingTransferAssignedOrm) GetOneByEmail(email string) (m BookingTrans
 	return m, result.Error
 }
 
-func (o *BookingTransferAssignedOrm) InsertBookingTransferAssigned(p BookingTransferAssigned) (err error) {
-	fmt.Printf("%v", p)
-	result := o.db.Model(&p).Create(&p)
+func (o *BookingTransferAssignedOrm) InsertBookingTransferAssigned(p BookingTransferAssigned, tx *gorm.DB) (err error) {
+	result := tx.Model(&p).Create(&p)
 	return result.Error
 }
 

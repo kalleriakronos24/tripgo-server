@@ -16,20 +16,15 @@ type CarModelOrm struct {
 }
 
 type CarModel struct {
-	ID           uuid.UUID `gorm:"index:id,unique;type:uuid;default:gen_random_uuid();" json:"id"`
-	Name         string    `json:"name" gorm:"not null" binding:"required"`
-	BasePrice    int       `json:"basePrice,omitempty" gorm:"not null" binding:"required"`
-	LuggageCount int       `json:"luggageCount,omitempty" gorm:"not null" binding:"required"`
-	PersonCount  int       `json:"personCount,omitempty" gorm:"not null" binding:"required"`
-	Price        int       `json:"price,omitempty" gorm:"not null" binding:"required"`
-	PriceType    string    `json:"priceType,omitempty" gorm:"not null" binding:"required"`
-	ImagePath    string    `json:"imagePath,omitempty" gorm:"not null" binding:"required"`
-	Status       string    `json:"status,omitempty" binding:"required" gorm:"not null;default:active;"`
-
+	ID            uuid.UUID        `gorm:"index:id,unique;type:uuid;default:gen_random_uuid();" json:"id"`
+	Name          string           `json:"name" gorm:"not null" binding:"required"`
+	LuggageCount  int              `json:"luggageCount,omitempty" gorm:"not null" binding:"required"`
+	PersonCount   int              `json:"personCount,omitempty" gorm:"not null" binding:"required"`
+	ImagePath     string           `json:"imagePath,omitempty" gorm:"not null" binding:"required"`
+	Status        string           `json:"status,omitempty" binding:"required" gorm:"not null;default:active;"`
 	CreatedBy     uuid.UUID        `json:"createdBy,omitempty" gorm:"type:uuid;default:NULL"`
 	UpdatedBy     uuid.UUID        `json:"updatedBy,omitempty" gorm:"type:uuid;default:NULL"`
 	CarManagement []*CarManagement `json:"carManagement,omitempty"`
-
 	types.DefaultModelProperty
 }
 

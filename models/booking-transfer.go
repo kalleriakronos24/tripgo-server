@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -16,33 +15,41 @@ type BookingTransferOrm struct {
 }
 
 type BookingTransfer struct {
-	ID                    uuid.UUID `gorm:"index:id,unique;type:uuid;default:gen_random_uuid();" json:"id"`
-	FromAddress           string    `gorm:"not null" json:"fromAddress,omitempty" binding:"required"`
-	DestinationAddress    string    `json:"destinationAdress,omitempty" binding:"required" gorm:"not null"`
-	FromCoordinate        string    `gorm:"not null" json:"fromCoordinate,omitempty" binding:"required"`
-	DestinationCoordinate string    `gorm:"not null" json:"destinationCoordinate,omitempty" binding:"required"`
-	PickUpDatetime        time.Time `gorm:"not null" json:"pickUpDatetime,omitempty" binding:"required"`
-	AdultSeater           int       `gorm:"not null" json:"adultSeater,omitempty" binding:"required"`
-	ChildSeater           int       `gorm:"not null" json:"childSeater,omitempty" binding:"required"`
-	SuggestedPrice        int       `gorm:"not null" json:"suggestedPrice,omitempty" binding:"required"`
-	IsAcceptAgreement     bool      `gorm:"not null;default:FALSE;" json:"isAcceptAgreement,omitempty" binding:"required"`
+	ID uuid.UUID `gorm:"index:id,unique;type:uuid;default:gen_random_uuid();" json:"id"`
 
-	CarModelID uuid.UUID `json:"carModelId,omitempty" gorm:"type:uuid;default:NULL"`
-	CustomerID uuid.UUID `json:"customerId,omitempty" gorm:"type:uuid;default:NULL"`
+	AdultSeater       int       `json:"adultSeater,omitempty" gorm:"not null"`
+	ChildSeater       int       `json:"childSeater,omitempty" gorm:"not null"`
+	FromLatCoordinate float32   `json:"fromLatCoordinate,omitempty" gorm:"not null"`
+	FromLngCoordinate float32   `json:"fromLngCoordinate,omitempty" gorm:"not null"`
+	ToLatCoordinate   float32   `json:"toLatCoordinate,omitempty" gorm:"not null"`
+	ToLngCoordinate   float32   `json:"toLngCoordinate,omitempty" gorm:"not null"`
+	FromLocation      string    `json:"fromLocation,omitempty" gorm:"not null"`
+	ToLocation        string    `json:"toLocation,omitempty" gorm:"not null"`
+	PassengerNotes    string    `json:"passengerNotes,omitempty" gorm:"default:NULL"`
+	PickUpDate        time.Time `json:"pickUpDate,omitempty" gorm:"not null"`
+	Price             float32   `json:"price,omitempty" gorm:"not null"`
+	Status            string    `json:"status,omitempty" gorm:"not null;default:waiting for driver accept"`
+
+	CustomerID uuid.UUID `json:"customerId,omitempty" gorm:"type:uuid;not null"`
+	CarModelID uuid.UUID `json:"carModelId,omitempty" gorm:"type:uuid;not null"`
 	CreatedBy  uuid.UUID `json:"createdBy,omitempty" gorm:"type:uuid;default:NULL"`
 	UpdatedBy  uuid.UUID `json:"updatedBy,omitempty" gorm:"type:uuid;default:NULL"`
 
-	Customer *master.Customer `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;foreignKey:CustomerID;references:ID" json:"customer,omitempty"`
 	CarModel *master.CarModel `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;foreignKey:CarModelID;references:ID" json:"carModel,omitempty"`
+	Customer *master.Customer `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;foreignKey:CustomerID;references:ID" json:"customer,omitempty"`
 
+	BookingTransferAssigned *BookingTransferAssigned `json:"driverAssigned,omitempty"`
 	types.DefaultModelProperty
 }
 
 type BookingTransferModelAction interface {
 	GetOneByID(id uuid.UUID) (m BookingTransfer, err error)
 	GetOneByEmail(email string) (m BookingTransfer, err error)
+	GetAllByCustomerID(id uuid.UUID) (BookingTransfer []*BookingTransfer, err error)
+	GetCountByCustomerID(id uuid.UUID) (ctx int64, err error)
 
-	InsertBookingTransfer(p BookingTransfer) (err error)
+	InsertBookingTransfer(p BookingTransfer, tx *gorm.DB) (bookingTransfer BookingTransfer, err error)
+	UpdateBookingTransfer(id uuid.UUID, p BookingTransfer, tx *gorm.DB) (err error)
 	DeleteBookingTransfer(id uuid.UUID, tx *gorm.DB) (err error)
 }
 
@@ -58,14 +65,37 @@ func (o *BookingTransferOrm) GetOneByID(id uuid.UUID) (BookingTransfer BookingTr
 	return BookingTransfer, result.Error
 }
 
+func (o *BookingTransferOrm) GetAllByCustomerID(id uuid.UUID) (BookingTransfer []*BookingTransfer, err error) {
+	result := o.db.Model(&BookingTransfer).
+		Where("customer_id = ?", id).
+		Preload("CarModel").
+		Preload("Customer").
+		Preload("BookingTransferAssigned", func(db *gorm.DB) *gorm.DB {
+			return db.Preload("CarManagement", func(dbx *gorm.DB) *gorm.DB {
+				return dbx.Preload("Driver")
+			})
+		}).
+		Find(&BookingTransfer)
+	return BookingTransfer, result.Error
+}
+
+func (o *BookingTransferOrm) GetCountByCustomerID(id uuid.UUID) (ctx int64, err error) {
+	result := o.db.Model(&BookingTransfer{}).Where("customer_id = ?", id).Count(&ctx)
+	return ctx, result.Error
+}
+
 func (o *BookingTransferOrm) GetOneByEmail(email string) (m BookingTransfer, err error) {
 	result := o.db.Model(&m).Where("email = ?", email).First(&m)
 	return m, result.Error
 }
 
-func (o *BookingTransferOrm) InsertBookingTransfer(p BookingTransfer) (err error) {
-	fmt.Printf("%v", p)
-	result := o.db.Model(&p).Create(&p)
+func (o *BookingTransferOrm) InsertBookingTransfer(p BookingTransfer, tx *gorm.DB) (bookingTransfer BookingTransfer, err error) {
+	result := tx.Model(&p).Create(&p)
+	return p, result.Error
+}
+
+func (o *BookingTransferOrm) UpdateBookingTransfer(id uuid.UUID, p BookingTransfer, tx *gorm.DB) (err error) {
+	result := tx.Model(&p).Where("id = ?", id).Updates(&p)
 	return result.Error
 }
 

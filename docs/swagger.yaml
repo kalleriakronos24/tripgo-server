@@ -13,7 +13,6 @@ definitions:
     - email
     - name
     - password
-    - phone
     type: object
   dto.DriverSignup:
     properties:
@@ -33,6 +32,47 @@ definitions:
     - name
     - password
     - phone
+    type: object
+  dto.InsertBookingTransfer:
+    properties:
+      adultSeater:
+        type: integer
+      carModelId:
+        type: string
+      childSeater:
+        type: integer
+      fromLatCoordinate:
+        type: number
+      fromLngCoordinate:
+        type: number
+      fromLocation:
+        type: string
+      id:
+        type: string
+      passengerNotes:
+        type: string
+      pickUpDate:
+        type: string
+      price:
+        type: number
+      toLatCoordinate:
+        type: number
+      toLngCoordinate:
+        type: number
+      toLocation:
+        type: string
+    required:
+    - adultSeater
+    - childSeater
+    - fromLatCoordinate
+    - fromLngCoordinate
+    - fromLocation
+    - passengerNotes
+    - pickUpDate
+    - price
+    - toLatCoordinate
+    - toLngCoordinate
+    - toLocation
     type: object
   dto.Response:
     properties:
@@ -182,4 +222,31 @@ paths:
       summary: Global Sign-In
       tags:
       - Authentication - Global
+  /booking/transfer:
+    post:
+      consumes:
+      - application/json
+      description: A POST Request to create a new record for costumer to make a new
+        Transfer booking to the driver
+      parameters:
+      - description: insert booking transfer
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.InsertBookingTransfer'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Booking - Transfer
+      tags:
+      - Booking - Transfer
 swagger: "2.0"

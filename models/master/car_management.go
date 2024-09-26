@@ -22,7 +22,7 @@ type CarManagement struct {
 	FrontCarPhoto     string    `json:"frontCarPhoto,omitempty" gorm:"default:NULL"`
 	Luggage           int       `json:"luggage,omitempty" gorm:"default:NULL"`
 	LicensePhoto      string    `json:"licensePhoto,omitempty" gorm:"default:NULL"`
-	CarManagementType string    `json:"CarManagementType,omitempty" gorm:"default:external"`
+	CarManagementType string    `json:"carType,omitempty" gorm:"default:external"`
 	Status            string    `json:"status,omitempty" binding:"required" gorm:"not null;default:active;"`
 
 	CarModelID uuid.UUID `json:"carModelId" gorm:"type:uuid;not null"`
@@ -41,9 +41,9 @@ type CarManagementModelAction interface {
 	GetOneByCarManagementName(CarManagementname string) (m CarManagement, err error)
 	GetOneByEmail(email string) (m CarManagement, err error)
 	GetAllCarManagementPaginated(c *gin.Context, CarManagementId uuid.UUID) (*database.Pagination, error)
+	GetOneByCarModelIDAndAvailable(id uuid.UUID, driverId uuid.UUID) (CarManagement CarManagement, err error)
 
 	InsertCarManagement(p CarManagement) (err error)
-
 	UpdateCarManagementToInactive(id uuid.UUID, tx *gorm.DB) (err error)
 	RemoveCarManagementFromCompany(id uuid.UUID, tx *gorm.DB) (err error)
 	DeleteCarManagement(id uuid.UUID, tx *gorm.DB) (err error)
@@ -72,6 +72,14 @@ func (o *CarManagementOrm) GetOneByID(id uuid.UUID) (CarManagement CarManagement
 	return CarManagement, result.Error
 }
 
+func (o *CarManagementOrm) GetOneByCarModelIDAndAvailable(id uuid.UUID, driverId uuid.UUID) (CarManagement CarManagement, err error) {
+	result := o.db.Model(&CarManagement).
+		Where("car_model_id = ? AND status = ?", id, "active").
+		Preload(clause.Associations).
+		First(&CarManagement)
+	return CarManagement, result.Error
+}
+
 func (o *CarManagementOrm) GetOneByEmail(email string) (m CarManagement, err error) {
 	result := o.db.Model(&m).Where("email = ?", email).First(&m)
 	return m, result.Error
@@ -83,7 +91,6 @@ func (o *CarManagementOrm) GetOneByCarManagementName(name string) (m CarManageme
 	if m.Status == "inactive" {
 		return m, errors.New("CarManagement status is inactive. please ask your administartor for further information")
 	}
-
 	return m, result.Error
 }
 

@@ -14,6 +14,6 @@ type DriverSignup struct {
 	Email      string `json:"email" validate:"required,email"`
 	Password   string `json:"password" validate:"required"`
 	Name       string `json:"name" validate:"required"`
-	Phone      string `json:"phone" validate:"required,e164"`
-	DriverType string `json:"driverType" validate:"required"`
+	Phone      string `json:"phone"`
+	DriverType string `json:"driverType"`
 }

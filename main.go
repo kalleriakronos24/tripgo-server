@@ -47,7 +47,7 @@ func runServer() {
 	docs.SwaggerInfo.BasePath = "/api/v1"
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 
-	// automatic database backup
+	//automatic database backup
 	if config.AppConfig.Environment == "PRODUCTION" {
 		go utils.DatabaseBackupCron()
 	}

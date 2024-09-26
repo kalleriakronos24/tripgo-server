@@ -20,71 +20,93 @@ func InitializeRouter() (router *gin.Engine) {
 	router = gin.Default()
 	str := []string{config.AppConfig.APPUrlClientSide}
 
+	if config.AppConfig.Environment == "PRODUCTION" {
+		str = []string{config.AppConfig.APPUrlClientSideProd}
+	}
+
 	configCors := cors.DefaultConfig()
 	configCors.AddAllowHeaders("Authorization")
-	configCors.AllowCredentials = true
 	configCors.AllowOrigins = str
 	router.Use(cors.New(configCors), middleware.AuthMiddleware)
 
 	commonRoute := router.Group("/")
 	v1route := router.Group("/api/v1")
 
-	if config.AppConfig.Environment == "DEVELOPMENT" {
-		v1route.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	}
-
-	auth := v1route.Group("/auth")
+	v1route.Use()
 	{
-		auth.POST("/signin", v1.POSTLogin)
-	}
 
-	authInternal := v1route.Group("/auth/i")
-	{
-		authInternal.POST("/signup", v1.POSTLogin)
-	}
+		if config.AppConfig.Environment == "DEVELOPMENT" {
+			v1route.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+		}
 
-	authCustomer := v1route.Group("/auth/c")
-	{
-		authCustomer.POST("/signup", middleware.CORSMiddleware(), v1.POSTRegisterCustomer)
-	}
+		auth := v1route.Group("/auth")
+		{
+			auth.POST("/signin", v1.POSTLogin)
+		}
 
-	authDriver := v1route.Group("/auth/d")
-	{
-		authDriver.POST("/signup", v1.POSTRegisterDriver)
-	}
+		authInternal := v1route.Group("/auth/i")
+		{
+			authInternal.POST("/signup", v1.POSTLogin)
+		}
 
-	user := v1route.Group("/user")
-	{
-		user.GET("/", utils.AuthOnly, v1Master.GETAllUser)
-		user.GET("/profile", utils.AuthOnly, v1Master.GETUser)
-		user.GET("/:id", utils.AuthOnly, v1Master.GETUserByID)
+		authCustomer := v1route.Group("/auth/c")
+		{
+			authCustomer.POST("/signup", v1.POSTRegisterCustomer)
+		}
 
-		user.POST("/", utils.AuthOnly, v1.POSTRegisterCustomer)
-		user.PUT("/:id", utils.AuthOnly, v1Master.PUTUser)
-		user.DELETE("/:id", utils.AuthOnly, v1Master.DELETEUser)
-	}
+		authDriver := v1route.Group("/auth/d")
+		{
+			authDriver.POST("/signup", v1.POSTRegisterDriver)
+		}
 
-	userDriver := v1route.Group("/user/d")
-	{
-		userDriver.GET("/", utils.AuthOnly, v1Master.GETAllUser)
-		userDriver.GET("/profile", utils.AuthOnly, v1Master.GETUser)
-		userDriver.GET("/:id", utils.AuthOnly, v1Master.GETUserByID)
+		user := v1route.Group("/user")
+		{
+			user.GET("/", utils.AuthOnly, v1Master.GETAllUser)
+			user.GET("/profile", utils.AuthOnly, v1Master.GETUser)
+			user.GET("/:id", utils.AuthOnly, v1Master.GETUserByID)
 
-		userDriver.POST("/", utils.AuthOnly, v1.POSTRegisterDriver)
-		userDriver.PUT("/:id", utils.AuthOnly, v1Master.PUTUser)
-		userDriver.DELETE("/:id", utils.AuthOnly, v1Master.DELETEUser)
-	}
+			user.POST("/", utils.AuthOnly, v1.POSTRegisterCustomer)
+			user.PUT("/:id", utils.AuthOnly, v1Master.PUTUser)
+			user.DELETE("/:id", utils.AuthOnly, v1Master.DELETEUser)
+		}
 
-	misc := v1route.Group("/misc")
-	{
-		misc.GET("/ping", v1.Pong)
-		misc.POST("/upload", v1.UploadFileSingle)
-		misc.POST("/upload-multiple", v1.UploadFileMultiple)
-		if config.AppConfig.Environment == "PRODUCTION" {
-			misc.POST("/restore/:fileName", utils.AuthOnly, v1.RestoreDatabase)
+		userDriver := v1route.Group("/user/d")
+		{
+			userDriver.GET("", utils.AuthOnly, v1Master.GETAllUser)
+			userDriver.GET("/profile", utils.AuthOnly, v1Master.GETUser)
+			userDriver.GET("/:id", utils.AuthOnly, v1Master.GETUserByID)
+
+			userDriver.POST("/", utils.AuthOnly, v1.POSTRegisterDriver)
+			userDriver.PUT("/:id", utils.AuthOnly, v1Master.PUTUser)
+			userDriver.DELETE("/:id", utils.AuthOnly, v1Master.DELETEUser)
+		}
+
+		bookingTransfer := v1route.Group("/booking/transfer")
+		{
+			bookingTransfer.GET("/all", utils.AuthOnly, v1.GETAllBookingTransferByCustomer)
+			bookingTransfer.POST("", utils.AuthOnly, v1.POSTBookingTransfer)
+		}
+
+		webStatistic := v1route.Group("/web/statistic/customer")
+		{
+			webStatistic.GET("/booking-count", utils.AuthOnly, v1.GETCountBookingTransferByCustomer)
+		}
+
+		websockets := v1route.Group("/ws")
+		{
+			websockets.GET("/ping/:id", v1.GETWSConn)
+		}
+
+		misc := v1route.Group("/misc")
+		{
+			misc.GET("/ping", v1.Pong)
+			misc.POST("/upload", v1.UploadFileSingle)
+			misc.POST("/upload-multiple", v1.UploadFileMultiple)
+			if config.AppConfig.Environment == "PRODUCTION" {
+				misc.POST("/restore/:fileName", utils.AuthOnly, v1.RestoreDatabase)
+			}
 		}
 	}
-
 	fileServingGroupRoute := config.AppConfig.APPUrlStaticFileGroupRoute
 	fileServingMainRoute := config.AppConfig.AppUrlStaticFileMainRoute
 	fileServing := commonRoute.Group(fileServingGroupRoute)

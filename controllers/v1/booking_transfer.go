@@ -1,0 +1,117 @@
+package v1
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+	"github.com/kalleriakronos24/khaimal-group/constants"
+	"github.com/kalleriakronos24/khaimal-group/dto"
+	"github.com/kalleriakronos24/khaimal-group/models/master"
+	"github.com/kalleriakronos24/khaimal-group/services"
+	"github.com/kalleriakronos24/khaimal-group/utils"
+)
+
+// AuthLogin godoc
+// @Summary      Booking - Transfer
+// @Description  A POST Request to create a new record for costumer to make a new Transfer booking to the driver
+// @Tags         Booking - Transfer
+// @Accept       json
+// @Produce      json
+// @Success      200 {object}	dto.Response
+// @Failure      400 {object}	dto.Response
+// @Param 		 data body dto.InsertBookingTransfer true "insert booking transfer"
+// @Router       /booking/transfer [post]
+func POSTBookingTransfer(c *gin.Context) {
+	var err error
+	userLoggedInId := c.GetString("user_id")
+	userId, _ := uuid.Parse(userLoggedInId)
+
+	pValidator := &dto.InsertBookingTransfer{}
+	if err = c.Bind(&pValidator); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
+		return
+	}
+	if err := utils.ValidateHTTPPayload(pValidator); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
+		return
+	}
+
+	var cred master.Credentials
+	if cred, err = services.Handler.RetrieveEntityCredentialsByUserID(userId); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("retrieve-failed", err, "customer"))
+		return
+	}
+
+	p := &dto.InsertBookingTransfer{
+		AdultSeater:       pValidator.AdultSeater,
+		ChildSeater:       pValidator.ChildSeater,
+		FromLatCoordinate: pValidator.FromLatCoordinate,
+		FromLngCoordinate: pValidator.FromLngCoordinate,
+		ToLatCoordinate:   pValidator.ToLatCoordinate,
+		ToLngCoordinate:   pValidator.ToLngCoordinate,
+		FromLocation:      pValidator.FromLocation,
+		ToLocation:        pValidator.ToLocation,
+		PassengerNotes:    pValidator.PassengerNotes,
+		PickUpDate:        pValidator.PickUpDate,
+		CarModelID:        pValidator.CarModelID,
+		Price:             pValidator.Price,
+		CustomerID:        cred.CredentialCustomer.ID,
+	}
+
+	if err = services.Handler.InsertBookingTransfer(p); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("insert-failed", err, "booking transfer"))
+		return
+	}
+	c.JSON(http.StatusCreated, dto.Response{Message: "success"})
+}
+
+func GETAllBookingTransferByCustomer(c *gin.Context) {
+	var err error
+
+	userLoggedInId := c.GetString("user_id")
+	userId, err := uuid.Parse(userLoggedInId)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("uuid-error", err, ""))
+		return
+	}
+
+	var cred master.Customer
+	if cred, err = services.Handler.RetrieveEntityCustomerByUserID(userId); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("retrieve-failed", err, "customer"))
+		return
+	}
+
+	if bookingTransfer, err := services.Handler.RetrieveAllBookingTransferByCustomer(cred.ID); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "booking transfer"))
+		return
+	} else {
+		c.JSON(http.StatusOK, dto.Response{Data: &bookingTransfer, Message: "success"})
+	}
+}
+
+func GETCountBookingTransferByCustomer(c *gin.Context) {
+	var err error
+
+	userLoggedInId := c.GetString("user_id")
+	userId, err := uuid.Parse(userLoggedInId)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("uuid-error", err, ""))
+		return
+	}
+
+	var cred master.Customer
+	if cred, err = services.Handler.RetrieveEntityCustomerByUserID(userId); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("retrieve-failed", err, "customer"))
+		return
+	}
+
+	if bookingTransfer, err := services.Handler.RetrieveCustomerWebStatisticByUserID(cred.ID); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "booking transfer"))
+		return
+	} else {
+		c.JSON(http.StatusOK, dto.Response{Data: &bookingTransfer, Message: "success"})
+	}
+}

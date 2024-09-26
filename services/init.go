@@ -5,6 +5,7 @@ import (
 	"github.com/google/uuid"
 	database "github.com/kalleriakronos24/khaimal-group/db"
 	"github.com/kalleriakronos24/khaimal-group/dto"
+	"github.com/kalleriakronos24/khaimal-group/models"
 	masterModels "github.com/kalleriakronos24/khaimal-group/models/master"
 	"gorm.io/gorm"
 )
@@ -18,13 +19,23 @@ type HandlerFunc interface {
 	RetrieveAllUserPaginated(c *gin.Context, id uuid.UUID) (pagination *database.Pagination, err error)
 	RetrieveUser(id uuid.UUID) (m masterModels.User, err error)
 	DeleteUser(id uuid.UUID) (err error)
+	// Credentials
+	RetrieveEntityCredentialsByUserID(userId uuid.UUID) (m masterModels.Credentials, err error)
+
+	// Booking - Transfer
+	InsertBookingTransfer(p *dto.InsertBookingTransfer) (err error)
+	UpdateBookingTransfer(id uuid.UUID, p *dto.UpdateBookingTransfer) (err error)
+	RetrieveAllBookingTransferByCustomer(id uuid.UUID) (m []*models.BookingTransfer, err error)
 	// AUTH - CUSTOMER
 	RegisterCustomer(credentials *dto.CustomerSignup) (err error)
+	RetrieveEntityCustomerByUserID(userId uuid.UUID) (m masterModels.Customer, err error)
+
 	// AUTH - DRIVER
 	RegisterDriver(credentials *dto.DriverSignup) (err error)
 	// AUTH - PUBLIC
 	RegisterUser(p *dto.UserSignup) (err error)
-	// OTHER
+	// WEB STATISTIC - CUSTOMER
+	RetrieveCustomerWebStatisticByUserID(userId uuid.UUID) (ctx int64, err error)
 }
 
 type module struct {
@@ -32,15 +43,19 @@ type module struct {
 }
 
 type dbEntity struct {
-	conn               *gorm.DB
-	userModel          masterModels.UserModelAction
-	credentialModel    masterModels.CredentialsModelAction
-	companyModel       masterModels.CompanyModelAction
-	userCustomerModel  masterModels.CustomerModelAction
-	userDriverModel    masterModels.DriverModelAction
-	userInternalModel  masterModels.InternalModelAction
-	carManagementModel masterModels.CarManagementModelAction
-	carModel           masterModels.CarModelModelAction
+	conn                    *gorm.DB
+	userModel               masterModels.UserModelAction
+	credentialModel         masterModels.CredentialsModelAction
+	driverModel             masterModels.DriverModelAction
+	balanceDriver           models.BalanceDriverModelAction
+	companyModel            masterModels.CompanyModelAction
+	userCustomerModel       masterModels.CustomerModelAction
+	userDriverModel         masterModels.DriverModelAction
+	userInternalModel       masterModels.InternalModelAction
+	carManagementModel      masterModels.CarManagementModelAction
+	carModel                masterModels.CarModelModelAction
+	bookingTransfer         models.BookingTransferModelAction
+	bookingTransferAssigned models.BookingTransferAssignedModelAction
 }
 
 type GenerateDocumentOutput struct {
@@ -54,15 +69,19 @@ func InitializeServices() (err error) {
 
 	Handler = &module{
 		db: &dbEntity{
-			conn:               db,
-			userModel:          masterModels.NewUserAction(db),
-			credentialModel:    masterModels.NewCredentialsAction(db),
-			companyModel:       masterModels.NewCompanyAction(db),
-			userCustomerModel:  masterModels.NewCustomerAction(db),
-			userDriverModel:    masterModels.NewDriverAction(db),
-			userInternalModel:  masterModels.NewInternalAction(db),
-			carManagementModel: masterModels.NewCarManagementAction(db),
-			carModel:           masterModels.NewCarModelAction(db),
+			conn:                    db,
+			userModel:               masterModels.NewUserAction(db),
+			credentialModel:         masterModels.NewCredentialsAction(db),
+			driverModel:             masterModels.NewDriverAction(db),
+			companyModel:            masterModels.NewCompanyAction(db),
+			userCustomerModel:       masterModels.NewCustomerAction(db),
+			userDriverModel:         masterModels.NewDriverAction(db),
+			userInternalModel:       masterModels.NewInternalAction(db),
+			carManagementModel:      masterModels.NewCarManagementAction(db),
+			carModel:                masterModels.NewCarModelAction(db),
+			bookingTransfer:         models.NewBookingTransferAction(db),
+			balanceDriver:           models.NewBalanceDriverAction(db),
+			bookingTransferAssigned: models.NewBookingTransferAssignedAction(db),
 		},
 	}
 	return

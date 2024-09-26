@@ -22,7 +22,7 @@ type BalanceDriver struct {
 	CreatedBy uuid.UUID `json:"createdBy,omitempty" gorm:"type:uuid;default:NULL"`
 	UpdatedBy uuid.UUID `json:"updatedBy,omitempty" gorm:"type:uuid;default:NULL"`
 
-	Driver *master.Customer `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;foreignKey:DriverID;references:ID" json:"driver,omitempty"`
+	Driver *master.Driver `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;foreignKey:DriverID;references:ID" json:"driver,omitempty"`
 
 	types.DefaultModelProperty
 }
@@ -30,6 +30,7 @@ type BalanceDriver struct {
 type BalanceDriverModelAction interface {
 	GetOneByID(id uuid.UUID) (m BalanceDriver, err error)
 	GetOneByEmail(email string) (m BalanceDriver, err error)
+	GetAllDriverHasEnoughBalance(price float64, carModelId uuid.UUID) (balanceDriver *BalanceDriver, err error)
 
 	InsertBalanceDriver(p BalanceDriver) (err error)
 	DeleteBalanceDriver(id uuid.UUID, tx *gorm.DB) (err error)
@@ -45,6 +46,25 @@ func (o *BalanceDriverOrm) GetOneByID(id uuid.UUID) (BalanceDriver BalanceDriver
 		Preload(clause.Associations).
 		First(&BalanceDriver)
 	return BalanceDriver, result.Error
+}
+
+func (o *BalanceDriverOrm) GetAllDriverHasEnoughBalance(price float64, carModelId uuid.UUID) (balanceDriver *BalanceDriver, err error) {
+	result := o.db.Model(&balanceDriver).
+		Where("amount >= ? OR amount <= ?", price, price).
+		Preload("Driver", func(db *gorm.DB) *gorm.DB {
+			return db.Raw(`WITH CTE AS (
+    				SELECT random() * (SELECT SUM(prob) FROM drivers) R
+					)
+					SELECT *
+						FROM (
+    						SELECT id, status, booking_status, SUM(prob) OVER (ORDER BY id) S, R
+    				FROM drivers CROSS JOIN CTE
+					) Q
+					WHERE S >= R AND status = 'active' AND booking_status = 'ready'
+					ORDER BY id
+					LIMIT 1;`).First(&master.Driver{})
+		}).First(&balanceDriver)
+	return balanceDriver, result.Error
 }
 
 func (o *BalanceDriverOrm) GetOneByEmail(email string) (m BalanceDriver, err error) {

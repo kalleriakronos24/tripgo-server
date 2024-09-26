@@ -1,13 +1,14 @@
 package v1
 
 import (
+	"log"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/kalleriakronos24/khaimal-group/config"
 	"github.com/kalleriakronos24/khaimal-group/constants"
+	middleware "github.com/kalleriakronos24/khaimal-group/controllers/middlewares"
 	"github.com/kalleriakronos24/khaimal-group/dto"
 	masterModels "github.com/kalleriakronos24/khaimal-group/models/master"
 	"github.com/kalleriakronos24/khaimal-group/services"
@@ -43,24 +44,38 @@ func POSTLogin(c *gin.Context) {
 		return
 	}
 
-	clientSideUrl := config.AppConfig.APPUrlClientSide
-
-	if config.AppConfig.Environment == "DEVELOPMENT" {
-		clientSideUrl = "localhost"
+	var customer masterModels.Credentials
+	claims, err := middleware.ParseToken(token, config.AppConfig.JWTSecret)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, dto.Response{Message: "Unauthorized. Please Login Again"})
+		return
 	}
 
-	c.SetSameSite(http.SameSiteNoneMode)
-	c.SetCookie("token", token, int(time.Now().Add(time.Hour*24).Unix()), "/", clientSideUrl, true, false)
+	if customer, err = services.Handler.RetrieveEntityCredentialsByUserID(claims.ID); err != nil {
+		c.JSON(http.StatusNotFound, constants.GetErrorResponse("logical", err, "Passenger data not found."))
+		return
+	}
 
-	c.JSON(http.StatusCreated, dto.Response{Message: "success"})
+	responseData := struct {
+		Token    string `json:"token,omitempty"`
+		FullName string `json:"fullName,omitempty"`
+	}{
+		Token:    token,
+		FullName: customer.CredentialCustomer.Name,
+	}
+
+	// TODO
+	// CHANGE TO COOKIE LATER
+	// clientSideUrl := config.AppConfig.APPUrlClientSide
+
 	// if config.AppConfig.Environment == "DEVELOPMENT" {
-	// 	cookie, err := c.Cookie("token")
-	// 	if err != nil {
-	// 		c.String(http.StatusNotFound, "Cookie not found")
-	// 		return
-	// 	}
-	// 	c.String(http.StatusOK, "Cookie value: %s", cookie)
+	// 	clientSideUrl = "https://khaimal-webprofile.vercel.app"
 	// }
+
+	// c.SetSameSite(http.SameSiteNoneMode)
+	// c.SetCookie("token", token, int(time.Now().Add(time.Hour*24).Unix()), "", clientSideUrl, true, false)
+
+	c.JSON(http.StatusCreated, dto.Response{Message: "success", Data: responseData})
 }
 
 // AuthSignup godoc
@@ -163,17 +178,15 @@ func POSTRegisterCustomer(c *gin.Context) {
 		return
 	}
 
-	clientSideUrl := config.AppConfig.APPUrlClientSide
-
-	if config.AppConfig.Environment == "DEVELOPMENT" {
-		clientSideUrl = "localhost"
+	responseData := struct {
+		Token    string `json:"token,omitempty"`
+		FullName string `json:"fullName,omitempty"`
+	}{
+		Token:    token,
+		FullName: p.Name,
 	}
 
-	c.SetSameSite(http.SameSiteNoneMode)
-	c.SetCookie("token", token, int(time.Now().Add(time.Hour*24).Unix()), "/", clientSideUrl, true, false)
-	c.SetCookie("name", p.Name, int(time.Now().Add(time.Hour*24).Unix()), "/", clientSideUrl, true, false)
-
-	c.JSON(http.StatusCreated, dto.Response{Message: "success"})
+	c.JSON(http.StatusCreated, dto.Response{Message: "success", Data: responseData})
 }
 
 // AuthSignup godoc
@@ -196,13 +209,10 @@ func POSTRegisterDriver(c *gin.Context) {
 		return
 	}
 
+	log.Printf("%v", p)
+
 	if err := utils.ValidateHTTPPayload(p); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
-		return
-	}
-
-	if err := utils.EmailFormatValidation(p.Email); err != nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, "Invalid email format"))
 		return
 	}
 
@@ -218,5 +228,24 @@ func POSTRegisterDriver(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, dto.Response{Data: "success"})
+	var pLoginObject = dto.CredentialSignInDto{
+		Email:    p.Email,
+		Password: p.Password,
+	}
+
+	var token string
+	if token, err = services.Handler.AuthenticateUser(pLoginObject); err != nil {
+		c.JSON(http.StatusNotFound, constants.GetErrorResponse("logical", err, "Incorrect email or password. Please try again"))
+		return
+	}
+
+	responseData := struct {
+		Token    string `json:"token,omitempty"`
+		FullName string `json:"fullName,omitempty"`
+	}{
+		Token:    token,
+		FullName: p.Name,
+	}
+
+	c.JSON(http.StatusCreated, dto.Response{Message: "success", Data: responseData})
 }

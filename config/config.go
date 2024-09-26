@@ -15,6 +15,7 @@ type Config struct {
 	APPUrlStaticFileGroupRoute string
 	AppUrlStaticFileMainRoute  string
 	APPUrlClientSide           string
+	APPUrlClientSideProd       string
 
 	DBHost                 string
 	DBPort                 int

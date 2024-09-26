@@ -16,13 +16,15 @@ type DriverOrm struct {
 }
 
 type Driver struct {
-	ID           uuid.UUID `gorm:"index:id,unique;type:uuid;default:gen_random_uuid();" json:"id"`
-	Name         string    `json:"name" gorm:"not null" binding:"required"`
-	Phone        string    `json:"phone" gorm:"default:NULL" binding:"required"`
-	PlateNumber  string    `json:"plateNumber,omitempty" gorm:"default:NULL"`
-	LicensePhoto string    `json:"licensePhoto,omitempty" gorm:"default:NULL"`
-	DriverType   string    `json:"driverType,omitempty" gorm:"default:external"`
-	Status       string    `json:"status,omitempty" binding:"required" gorm:"not null;default:active;"`
+	ID            uuid.UUID `gorm:"index:id,unique;type:uuid;default:gen_random_uuid();" json:"id"`
+	Name          string    `json:"name" gorm:"not null" binding:"required"`
+	Phone         string    `json:"phone" gorm:"default:NULL" binding:"required"`
+	PlateNumber   string    `json:"plateNumber,omitempty" gorm:"default:NULL"`
+	LicensePhoto  string    `json:"licensePhoto,omitempty" gorm:"default:NULL"`
+	DriverType    string    `json:"driverType,omitempty" gorm:"default:external"`
+	Status        string    `json:"status,omitempty" binding:"required" gorm:"not null;default:active;"`
+	BookingStatus string    `json:"bookingStatus,omitempty" binding:"required" gorm:"not null;default:ready;"`
+	Prob          int       `json:"prob,omitempty" binding:"required" gorm:"not null;default:20;"`
 
 	CredentialsID uuid.UUID `json:"credentialsId" gorm:"type:uuid;not null"`
 	CompanyID     uuid.UUID `json:"companyId" gorm:"type:uuid;default:NULL"`
@@ -41,9 +43,7 @@ type DriverModelAction interface {
 	GetOneByDriverName(Drivername string) (m Driver, err error)
 	GetOneByEmail(email string) (m Driver, err error)
 	GetAllDriverPaginated(c *gin.Context, DriverId uuid.UUID) (*database.Pagination, error)
-
 	InsertDriver(p Driver, tx *gorm.DB) (err error)
-
 	UpdateDriverToInactive(id uuid.UUID, tx *gorm.DB) (err error)
 	RemoveDriverFromCompany(id uuid.UUID, tx *gorm.DB) (err error)
 	DeleteDriver(id uuid.UUID, tx *gorm.DB) (err error)
@@ -66,7 +66,15 @@ func (o *DriverOrm) GetAllDriverPaginated(c *gin.Context, DriverId uuid.UUID) (*
 
 func (o *DriverOrm) GetOneByID(id uuid.UUID) (Driver Driver, err error) {
 	result := o.db.Model(&Driver).
-		Where("id = ?", id).
+		Where("credentials_id = ?", id).
+		Preload(clause.Associations).
+		First(&Driver)
+	return Driver, result.Error
+}
+
+func (o *DriverOrm) GetAllAvailable(id uuid.UUID) (Driver []*Driver, err error) {
+	result := o.db.Model(&Driver).
+		Where("status = ? AND booking_status", "active", "ready").
 		Preload(clause.Associations).
 		First(&Driver)
 	return Driver, result.Error
