@@ -58,6 +58,7 @@ func InitializeAppConfig() Config {
 	AppConfig.APPUrlStaticFileGroupRoute = viper.GetString("APP_STATIC_FILE_GROUP_ROUTE")
 	AppConfig.AppUrlStaticFileMainRoute = viper.GetString("APP_STATIC_FILE_MAIN_ROUTE")
 	AppConfig.APPUrlClientSide = viper.GetString("APP_URL_CLIENT_SIDE")
+	AppConfig.APPUrlClientSide = viper.GetString("APP_URL_CLIENT_SIDE_PROD")
 
 	AppConfig.DBHost = viper.GetString("DB_HOST")
 	AppConfig.DBPort = viper.GetInt("DB_PORT")
