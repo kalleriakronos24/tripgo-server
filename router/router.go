@@ -21,7 +21,7 @@ func InitializeRouter() (router *gin.Engine) {
 	str := []string{config.AppConfig.APPUrlClientSide}
 
 	if config.AppConfig.Environment == "PRODUCTION" {
-		str = []string{config.AppConfig.APPUrlClientSideProd}
+		str = []string{"https://wadahgo.com"}
 	}
 
 	configCors := cors.DefaultConfig()
