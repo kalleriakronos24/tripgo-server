@@ -12,9 +12,10 @@ type CredentialsOrm struct {
 }
 
 type Credentials struct {
-	ID       uuid.UUID `gorm:"index:id,unique;type:uuid;default:gen_random_uuid();" json:"id"`
-	Email    string    `gorm:"email:id,unique" json:",omitempty" binding:"required"`
-	Password string    `json:"password,omitempty" binding:"required" gorm:"not null"`
+	ID          uuid.UUID `gorm:"index:id,unique;type:uuid;default:gen_random_uuid();" json:"id"`
+	Email       string    `gorm:"email:id,unique" json:",omitempty" binding:"required"`
+	Password    string    `json:"password,omitempty" binding:"required" gorm:"not null"`
+	DeviceToken string    `json:"deviceToken,omitempty" binding:"required" gorm:"default:NULL;"`
 
 	CreatedBy uuid.UUID `json:"createdBy,omitempty" gorm:"type:uuid;default:NULL"`
 	UpdatedBy uuid.UUID `json:"updatedBy,omitempty" gorm:"type:uuid;default:NULL"`
@@ -28,6 +29,7 @@ type Credentials struct {
 type CredentialsModelAction interface {
 	GetOneByID(id uuid.UUID) (m Credentials, err error)
 	GetOneByEmail(email string) (m Credentials, err error)
+	UpdateDeviceToken(id uuid.UUID, p Credentials) (err error)
 
 	InsertCredentials(p Credentials, tx *gorm.DB) (cred *Credentials, perr error)
 	DeleteCredentials(id uuid.UUID, tx *gorm.DB) (err error)
@@ -53,6 +55,11 @@ func (o *CredentialsOrm) GetOneByEmail(email string) (m Credentials, err error) 
 func (o *CredentialsOrm) InsertCredentials(p Credentials, tx *gorm.DB) (cred *Credentials, err error) {
 	result := tx.Model(&p).Create(&p)
 	return &p, result.Error
+}
+
+func (o *CredentialsOrm) UpdateDeviceToken(id uuid.UUID, p Credentials) (err error) {
+	result := o.db.Model(&p).Where("id = ?", id).Updates(&p)
+	return result.Error
 }
 
 func (o *CredentialsOrm) DeleteCredentials(id uuid.UUID, tx *gorm.DB) (err error) {

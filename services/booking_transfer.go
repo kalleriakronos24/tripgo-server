@@ -3,7 +3,6 @@ package services
 import (
 	"errors"
 	"fmt"
-	"log"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -50,7 +49,6 @@ func (module *module) InsertBookingTransfer(p *dto.InsertBookingTransfer) (err e
 
 	var carManagement master.CarManagement
 	if carManagement, err = module.db.carManagementModel.GetOneByCarModelIDAndAvailable(p.CarModelID, driverBalance.DriverID); err != nil {
-		log.Printf("val >>>> %v", carManagement)
 		tx.Rollback()
 		return errors.New(err.Error())
 	}

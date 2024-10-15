@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go/v4"
+	"github.com/google/uuid"
 	"github.com/kalleriakronos24/khaimal-group/config"
 	"github.com/kalleriakronos24/khaimal-group/constants"
 	database "github.com/kalleriakronos24/khaimal-group/db"
@@ -23,11 +24,20 @@ func (module *module) AuthenticateUser(credentials dto.CredentialSignInDto) (tok
 	if err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(credentials.Password)); err != nil {
 		return "", errors.New("incorrect credentials")
 	}
-
 	return generateToken(user)
 }
 
-// PUBLIC
+func (module *module) UpdateDeviceToken(token string, credentialId uuid.UUID) (err error) {
+	if token != "" {
+		if err = module.db.credentialModel.UpdateDeviceToken(credentialId, masterModels.Credentials{
+			DeviceToken: token,
+		}); err != nil {
+			return fmt.Errorf("failed update device token. %v", err)
+		}
+	}
+	return err
+}
+
 func (module *module) RegisterUser(credentials *dto.UserSignup) (err error) {
 	var hashedPassword []byte
 	if hashedPassword, err = bcrypt.GenerateFromPassword([]byte(credentials.Password), bcrypt.DefaultCost); err != nil {

@@ -78,6 +78,74 @@ func POSTLogin(c *gin.Context) {
 	c.JSON(http.StatusCreated, dto.Response{Message: "success", Data: responseData})
 }
 
+// AuthLogin godoc
+// @Summary      Global Sign-In
+// @Description  A Global authentication sign-in method for all microservices
+// @Tags         Authentication - Global
+// @Accept       json
+// @Produce      json
+// @Success      200 {object}	dto.Response
+// @Failure      400 {object}	dto.Response
+// @Param 		 data body dto.UserLogin true "global login"
+// @Router       /auth/signin [post]
+func POSTLoginDriver(c *gin.Context) {
+	var err error
+	var p dto.CredentialSignInDto
+	if err = c.ShouldBindJSON(&p); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
+		return
+	}
+
+	if err := utils.ValidateHTTPPayload(p); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
+		return
+	}
+
+	var token string
+	if token, err = services.Handler.AuthenticateUser(p); err != nil {
+		c.JSON(http.StatusNotFound, constants.GetErrorResponse("logical", err, "Incorrect email or password. Please try again"))
+		return
+	}
+
+	var driver masterModels.Credentials
+	claims, err := middleware.ParseToken(token, config.AppConfig.JWTSecret)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, dto.Response{Message: "Unauthorized. Please Login Again"})
+		return
+	}
+
+	if driver, err = services.Handler.RetrieveEntityCredentialsByUserID(claims.ID); err != nil {
+		c.JSON(http.StatusNotFound, constants.GetErrorResponse("logical", err, "Passenger data not found."))
+		return
+	}
+
+	if err = services.Handler.UpdateDeviceToken(p.DeviceToken, claims.ID); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, "Failed to update device token."))
+		return
+	}
+
+	responseData := struct {
+		Token    string `json:"token,omitempty"`
+		FullName string `json:"fullName,omitempty"`
+	}{
+		Token:    token,
+		FullName: driver.CredentialDriver.Name,
+	}
+
+	// TODO
+	// CHANGE TO COOKIE LATER
+	// clientSideUrl := config.AppConfig.APPUrlClientSide
+
+	// if config.AppConfig.Environment == "DEVELOPMENT" {
+	// 	clientSideUrl = "https://khaimal-webprofile.vercel.app"
+	// }
+
+	// c.SetSameSite(http.SameSiteNoneMode)
+	// c.SetCookie("token", token, int(time.Now().Add(time.Hour*24).Unix()), "", clientSideUrl, true, false)
+
+	c.JSON(http.StatusCreated, dto.Response{Message: "success", Data: responseData})
+}
+
 // AuthSignup godoc
 // @Summary      Internal Sign-Up
 // @Description  Internal Sign-Up

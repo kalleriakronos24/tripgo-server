@@ -19,9 +19,10 @@ type HandlerFunc interface {
 	RetrieveAllUserPaginated(c *gin.Context, id uuid.UUID) (pagination *database.Pagination, err error)
 	RetrieveUser(id uuid.UUID) (m masterModels.User, err error)
 	DeleteUser(id uuid.UUID) (err error)
+	UpdateDeviceToken(token string, credentialId uuid.UUID) (err error)
+
 	// Credentials
 	RetrieveEntityCredentialsByUserID(userId uuid.UUID) (m masterModels.Credentials, err error)
-
 	// Booking - Transfer
 	InsertBookingTransfer(p *dto.InsertBookingTransfer) (err error)
 	UpdateBookingTransfer(id uuid.UUID, p *dto.UpdateBookingTransfer) (err error)
@@ -29,7 +30,6 @@ type HandlerFunc interface {
 	// AUTH - CUSTOMER
 	RegisterCustomer(credentials *dto.CustomerSignup) (err error)
 	RetrieveEntityCustomerByUserID(userId uuid.UUID) (m masterModels.Customer, err error)
-
 	// AUTH - DRIVER
 	RegisterDriver(credentials *dto.DriverSignup) (err error)
 	// AUTH - PUBLIC

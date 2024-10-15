@@ -20,7 +20,6 @@ type CarManagement struct {
 	ID                uuid.UUID `gorm:"index:id,unique;type:uuid;default:gen_random_uuid();" json:"id"`
 	Name              string    `json:"name" gorm:"not null" binding:"required"`
 	FrontCarPhoto     string    `json:"frontCarPhoto,omitempty" gorm:"default:NULL"`
-	Luggage           int       `json:"luggage,omitempty" gorm:"default:NULL"`
 	LicensePhoto      string    `json:"licensePhoto,omitempty" gorm:"default:NULL"`
 	CarManagementType string    `json:"carType,omitempty" gorm:"default:external"`
 	Status            string    `json:"status,omitempty" binding:"required" gorm:"not null;default:active;"`
