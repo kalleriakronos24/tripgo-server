@@ -17,7 +17,8 @@ type BookingTransferAssigned struct {
 
 	BookingTransferID uuid.UUID `json:"bookingTransferid,omitempty" gorm:"type:uuid;default:NULL"`
 	CarManagementID   uuid.UUID `json:"carManagementId,omitempty" gorm:"type:uuid;default:NULL"`
-	IsAccepted        bool      `json:"isAccepted,omitempty" gorm:"type:boolean;default:false"`
+	IsAccepted        bool      `json:"isAccepted" gorm:"type:boolean;default:false"`
+	IsCancelled       bool      `json:"isCancelled" gorm:"type:boolean;default:false"`
 	CreatedBy         uuid.UUID `json:"createdBy,omitempty" gorm:"type:uuid;default:NULL"`
 	UpdatedBy         uuid.UUID `json:"updatedBy,omitempty" gorm:"type:uuid;default:NULL"`
 
@@ -30,7 +31,9 @@ type BookingTransferAssigned struct {
 type BookingTransferAssignedModelAction interface {
 	GetOneByID(id uuid.UUID) (m BookingTransferAssigned, err error)
 	GetOneByEmail(email string) (m BookingTransferAssigned, err error)
+	GetBookingAssignedNotAcceptedByDriverID(id uuid.UUID) (m []BookingTransferAssigned, err error)
 	InsertBookingTransferAssigned(p BookingTransferAssigned, tx *gorm.DB) (err error)
+	UpdateBookingTransferAssigned(id uuid.UUID, p BookingTransferAssigned, tx *gorm.DB) (err error)
 	DeleteBookingTransferAssigned(id uuid.UUID, tx *gorm.DB) (err error)
 }
 
@@ -51,8 +54,24 @@ func (o *BookingTransferAssignedOrm) GetOneByEmail(email string) (m BookingTrans
 	return m, result.Error
 }
 
+func (o *BookingTransferAssignedOrm) GetBookingAssignedNotAcceptedByDriverID(id uuid.UUID) (m []BookingTransferAssigned, err error) {
+	result := o.db.Model(&m).Where("is_accepted = ?", false).
+		Preload("CarManagement", func(db *gorm.DB) *gorm.DB {
+			return db.Where("driver_id", id).First(&master.CarManagement{}).Preload("CarModel", func(dbx *gorm.DB) *gorm.DB {
+				return dbx.First(&master.CarModel{})
+			})
+		}).
+		Preload("BookingTransfer").
+		Find(&m)
+	return m, result.Error
+}
+
 func (o *BookingTransferAssignedOrm) InsertBookingTransferAssigned(p BookingTransferAssigned, tx *gorm.DB) (err error) {
 	result := tx.Model(&p).Create(&p)
+	return result.Error
+}
+func (o *BookingTransferAssignedOrm) UpdateBookingTransferAssigned(id uuid.UUID, p BookingTransferAssigned, tx *gorm.DB) (err error) {
+	result := tx.Model(&p).Where("id = ?", id).Updates(&p)
 	return result.Error
 }
 

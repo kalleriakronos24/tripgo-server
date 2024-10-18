@@ -18,11 +18,11 @@ import (
 
 func InitializeRouter() (router *gin.Engine) {
 	router = gin.Default()
-	str := []string{config.AppConfig.APPUrlClientSide}
+	str := []string{"http://localhost:4321"}
 
-	if config.AppConfig.Environment == "PRODUCTION" {
-		str = []string{"https://wadahgo.com"}
-	}
+	// if config.AppConfig.Environment == "PRODUCTION" {
+	// 	str = []string{"https://wadahgo.com"}
+	// }
 
 	configCors := cors.DefaultConfig()
 	configCors.AddAllowHeaders("Authorization")
@@ -42,7 +42,7 @@ func InitializeRouter() (router *gin.Engine) {
 		auth := v1route.Group("/auth")
 		{
 			auth.POST("/signin", v1.POSTLogin)
-			auth.POST("/signin/d", v1.POSTLoginDriver)
+
 		}
 
 		authInternal := v1route.Group("/auth/i")
@@ -53,11 +53,13 @@ func InitializeRouter() (router *gin.Engine) {
 		authCustomer := v1route.Group("/auth/c")
 		{
 			authCustomer.POST("/signup", v1.POSTRegisterCustomer)
+			authCustomer.POST("/signin", v1.POSTLogin)
 		}
 
 		authDriver := v1route.Group("/auth/d")
 		{
 			authDriver.POST("/signup", v1.POSTRegisterDriver)
+			authDriver.POST("/signin", v1.POSTLoginDriver)
 		}
 
 		user := v1route.Group("/user")
@@ -86,6 +88,13 @@ func InitializeRouter() (router *gin.Engine) {
 		{
 			bookingTransfer.GET("/all", utils.AuthOnly, v1.GETAllBookingTransferByCustomer)
 			bookingTransfer.POST("", utils.AuthOnly, v1.POSTBookingTransfer)
+		}
+
+		bookingTransferAssigned := v1route.Group("/booking-assigned/transfer")
+		{
+			bookingTransferAssigned.GET("", utils.AuthOnly, v1.GETAllBookingTransferAssignedByDriverID)
+			bookingTransferAssigned.POST("/accept", utils.AuthOnly, v1.POSTAcceptBookingTransfer)
+			bookingTransferAssigned.POST("/cancel", utils.AuthOnly, v1.POSTCancelBookingTransfer)
 		}
 
 		webStatistic := v1route.Group("/web/statistic/customer")

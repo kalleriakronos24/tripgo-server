@@ -15,6 +15,46 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/auth/c/signin": {
+            "post": {
+                "description": "A Customer authentication sign-in method",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authentication - Customer"
+                ],
+                "summary": "Customer Sign-In",
+                "parameters": [
+                    {
+                        "description": "customer login",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UserLogin"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/auth/c/signup": {
             "post": {
                 "description": "Customer Sign-Up",
@@ -36,6 +76,46 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/dto.CustomerSignup"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/d/signin": {
+            "post": {
+                "description": "A Driver authentication sign-in method for mobile apps",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authentication - Driver"
+                ],
+                "summary": "Driver Sign-In",
+                "parameters": [
+                    {
+                        "description": "driver login",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UserLogin"
                         }
                     }
                 ],
@@ -135,9 +215,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/auth/signin": {
-            "post": {
-                "description": "A Global authentication sign-in method for all microservices",
+        "/booking-assigned/transfer": {
+            "get": {
+                "description": "A GET Request to fetch a all records for driver to view booking transfer that assigned and whose are not accepted by the driver",
                 "consumes": [
                     "application/json"
                 ],
@@ -145,18 +225,95 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Authentication - Global"
+                    "Booking Assgined - Transfer"
                 ],
-                "summary": "Global Sign-In",
+                "summary": "List Booking Transfer Assigned",
                 "parameters": [
                     {
-                        "description": "global login",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
+                        "type": "string",
+                        "default": "Bearer \u003cAdd access token here\u003e",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.UserLogin"
+                            "$ref": "#/definitions/dto.Response"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/booking-assigned/transfer/accept": {
+            "get": {
+                "description": "A GET Request to fetch a all records for driver to view booking transfer that assigned and whose are not accepted by the driver",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking Assgined - Transfer"
+                ],
+                "summary": "Method to accept booking transfer request",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer \u003cAdd access token here\u003e",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/booking-assigned/transfer/cancel": {
+            "get": {
+                "description": "A GET Request to fetch a all records for driver to view booking transfer that assigned and whose are not accepted by the driver",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking Assgined - Transfer"
+                ],
+                "summary": "Method to cancel booking transfer request",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer \u003cAdd access token here\u003e",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -242,11 +399,9 @@ const docTemplate = `{
         "dto.DriverSignup": {
             "type": "object",
             "required": [
-                "driverType",
                 "email",
                 "name",
-                "password",
-                "phone"
+                "password"
             ],
             "properties": {
                 "driverType": {
@@ -268,19 +423,6 @@ const docTemplate = `{
         },
         "dto.InsertBookingTransfer": {
             "type": "object",
-            "required": [
-                "adultSeater",
-                "childSeater",
-                "fromLatCoordinate",
-                "fromLngCoordinate",
-                "fromLocation",
-                "passengerNotes",
-                "pickUpDate",
-                "price",
-                "toLatCoordinate",
-                "toLngCoordinate",
-                "toLocation"
-            ],
             "properties": {
                 "adultSeater": {
                     "type": "integer"

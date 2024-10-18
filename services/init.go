@@ -20,13 +20,16 @@ type HandlerFunc interface {
 	RetrieveUser(id uuid.UUID) (m masterModels.User, err error)
 	DeleteUser(id uuid.UUID) (err error)
 	UpdateDeviceToken(token string, credentialId uuid.UUID) (err error)
-
 	// Credentials
 	RetrieveEntityCredentialsByUserID(userId uuid.UUID) (m masterModels.Credentials, err error)
 	// Booking - Transfer
 	InsertBookingTransfer(p *dto.InsertBookingTransfer) (err error)
 	UpdateBookingTransfer(id uuid.UUID, p *dto.UpdateBookingTransfer) (err error)
 	RetrieveAllBookingTransferByCustomer(id uuid.UUID) (m []*models.BookingTransfer, err error)
+	// Booking Assigned - Transfer
+	RetrieveBookingTransferAssignedByDriverID(userId uuid.UUID) (m []models.BookingTransferAssigned, err error)
+	AcceptBookingTransfer(id uuid.UUID) (err error)
+	CancelBookingTransfer(id uuid.UUID) (err error)
 	// AUTH - CUSTOMER
 	RegisterCustomer(credentials *dto.CustomerSignup) (err error)
 	RetrieveEntityCustomerByUserID(userId uuid.UUID) (m masterModels.Customer, err error)

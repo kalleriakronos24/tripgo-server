@@ -13,6 +13,7 @@ import (
 	database "github.com/kalleriakronos24/khaimal-group/db"
 	"github.com/kalleriakronos24/khaimal-group/dto"
 	masterModels "github.com/kalleriakronos24/khaimal-group/models/master"
+	"github.com/kalleriakronos24/khaimal-group/pkg/mail-service"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -54,6 +55,18 @@ func (module *module) RegisterUser(credentials *dto.UserSignup) (err error) {
 	}); err != nil {
 		return fmt.Errorf("error inserting user. %v", err)
 	}
+
+	// mailPayload := &mail.TSendMail{}
+	if err = mail.SendMailV3(&mail.TSendMail{
+		From:    "notification@wadahgo.com",
+		MailTo:  "credentials.Email",
+		Subject: "WadahGo - Registration Success",
+		Body: `<html><body>
+		<p>Thank You for registrering</p>
+		</body></html>`,
+	}); err != nil {
+		return errors.New(err.Error())
+	}
 	return
 }
 
@@ -80,6 +93,17 @@ func (module *module) RegisterCustomer(credentials *dto.CustomerSignup) (err err
 	}, tx); err != nil {
 		tx.Rollback()
 		return fmt.Errorf("error inserting customer. %v", err)
+	}
+
+	if err = mail.SendMailV3(&mail.TSendMail{
+		From:    "notification@wadahgo.com",
+		MailTo:  cred.Email,
+		Subject: "WadahGo - Registration Success",
+		Body: `<html><body>
+		<p>Thank You for registrering</p>
+		</body></html>`,
+	}); err != nil {
+		return errors.New(err.Error())
 	}
 	tx.Commit()
 	return
@@ -112,7 +136,16 @@ func (module *module) RegisterDriver(credentials *dto.DriverSignup) (err error) 
 		tx.Rollback()
 		return fmt.Errorf("error inserting driver. %v", err)
 	}
-
+	if err = mail.SendMailV3(&mail.TSendMail{
+		From:    "notification@wadahgo.com",
+		MailTo:  cred.Email,
+		Subject: "WadahGo - Registration Success",
+		Body: `<html><body>
+		<p>Thank You for registrering</p>
+		</body></html>`,
+	}); err != nil {
+		return errors.New(err.Error())
+	}
 	tx.Commit()
 	return
 }

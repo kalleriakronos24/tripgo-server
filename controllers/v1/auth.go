@@ -16,15 +16,15 @@ import (
 )
 
 // AuthLogin godoc
-// @Summary      Global Sign-In
-// @Description  A Global authentication sign-in method for all microservices
-// @Tags         Authentication - Global
+// @Summary      Customer Sign-In
+// @Description  A Customer authentication sign-in method
+// @Tags         Authentication - Customer
 // @Accept       json
 // @Produce      json
 // @Success      200 {object}	dto.Response
 // @Failure      400 {object}	dto.Response
-// @Param 		 data body dto.UserLogin true "global login"
-// @Router       /auth/signin [post]
+// @Param 		 data body dto.UserLogin true "customer login"
+// @Router       /auth/c/signin [post]
 func POSTLogin(c *gin.Context) {
 	var err error
 	var p dto.CredentialSignInDto
@@ -79,15 +79,15 @@ func POSTLogin(c *gin.Context) {
 }
 
 // AuthLogin godoc
-// @Summary      Global Sign-In
-// @Description  A Global authentication sign-in method for all microservices
-// @Tags         Authentication - Global
+// @Summary      Driver Sign-In
+// @Description  A Driver authentication sign-in method for mobile apps
+// @Tags         Authentication - Driver
 // @Accept       json
 // @Produce      json
 // @Success      200 {object}	dto.Response
 // @Failure      400 {object}	dto.Response
-// @Param 		 data body dto.UserLogin true "global login"
-// @Router       /auth/signin [post]
+// @Param 		 data body dto.UserLogin true "driver login"
+// @Router       /auth/d/signin [post]
 func POSTLoginDriver(c *gin.Context) {
 	var err error
 	var p dto.CredentialSignInDto
@@ -116,11 +116,6 @@ func POSTLoginDriver(c *gin.Context) {
 
 	if driver, err = services.Handler.RetrieveEntityCredentialsByUserID(claims.ID); err != nil {
 		c.JSON(http.StatusNotFound, constants.GetErrorResponse("logical", err, "Passenger data not found."))
-		return
-	}
-
-	if err = services.Handler.UpdateDeviceToken(p.DeviceToken, claims.ID); err != nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, "Failed to update device token."))
 		return
 	}
 

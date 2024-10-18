@@ -18,7 +18,5 @@ type Business struct {
 	CreatedBy uuid.UUID `json:"createdBy,omitempty" gorm:"type:uuid;default:NULL"`
 	UpdatedBy uuid.UUID `json:"updatedBy,omitempty" gorm:"type:uuid;default:NULL"`
 
-	// populate relation
-	//UserAccess []*UserAccess `json:"userAccess,omitempty"`
 	types.DefaultModelProperty
 }

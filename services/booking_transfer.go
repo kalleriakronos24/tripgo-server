@@ -10,6 +10,7 @@ import (
 	"github.com/kalleriakronos24/khaimal-group/dto"
 	"github.com/kalleriakronos24/khaimal-group/models"
 	"github.com/kalleriakronos24/khaimal-group/models/master"
+	"github.com/kalleriakronos24/khaimal-group/onesignal"
 )
 
 type CheckExistingBookingTransferStruct struct {
@@ -82,6 +83,9 @@ func (module *module) InsertBookingTransfer(p *dto.InsertBookingTransfer) (err e
 		tx.Rollback()
 		return errors.New(err.Error())
 	}
+
+	// send notification to the selected driver
+	onesignal.PushNotificationSingleExternalId(driverBalance.Driver.Credentials.Email)
 
 	tx.Commit()
 	return
