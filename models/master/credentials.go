@@ -13,7 +13,7 @@ type CredentialsOrm struct {
 
 type Credentials struct {
 	ID          uuid.UUID `gorm:"index:id,unique;type:uuid;default:gen_random_uuid();" json:"id"`
-	Email       string    `gorm:"email:id,unique" json:",omitempty" binding:"required"`
+	Email       string    `gorm:"email:id,unique" json:"email,omitempty" binding:"required"`
 	Password    string    `json:"password,omitempty" binding:"required" gorm:"not null"`
 	DeviceToken string    `json:"deviceToken,omitempty" binding:"required" gorm:"default:NULL;"`
 

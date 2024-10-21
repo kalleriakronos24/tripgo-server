@@ -344,7 +344,7 @@ const docTemplate = `{
                 "tags": [
                     "Booking - Transfer"
                 ],
-                "summary": "Booking - Transfer",
+                "summary": "Method to create booking transfer request by customer",
                 "parameters": [
                     {
                         "description": "insert booking transfer",
@@ -354,6 +354,164 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.InsertBookingTransfer"
                         }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/booking/transfer/all": {
+            "get": {
+                "description": "A GET Request to fetch a all records for customer to view booking transfer that already created",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking - Transfer"
+                ],
+                "summary": "Method to get all booking transfer made by customer",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer \u003cAdd access token here\u003e",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/car-management/create": {
+            "post": {
+                "description": "A POST Request to create a car and assigned to the driver whose creating it",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Car Management"
+                ],
+                "summary": "Method to create or assign a car to the driver",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer \u003cAdd access token here\u003e",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "carManagementType",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "carModelId",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "driverID",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "name": "licensePhoto",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "name": "name",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "plateNumber",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "front car photo upload",
+                        "name": "frontCarPhoto",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/web/statistic/customer": {
+            "get": {
+                "description": "A GET Request to fetch count how many bookings are made by customer either transfer, tour or delivery",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking - Transfer"
+                ],
+                "summary": "Method to count booking transfer by customer",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer \u003cAdd access token here\u003e",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -462,6 +620,9 @@ const docTemplate = `{
                 },
                 "toLocation": {
                     "type": "string"
+                },
+                "totalDistance": {
+                    "type": "number"
                 }
             }
         },

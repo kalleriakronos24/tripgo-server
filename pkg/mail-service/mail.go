@@ -25,7 +25,7 @@ type TSendMail struct {
 	Attachments string         `json:"attachment,omitempty"`
 }
 
-func SendEmail(t *TSendMail) *gomail.Message {
+func SendEmail(t *TSendMail) (result *gomail.Message, err error) {
 
 	mail := gomail.NewMessage()
 	mail.SetHeader("From", t.From)
@@ -43,10 +43,10 @@ func SendEmail(t *TSendMail) *gomail.Message {
 	d := gomail.NewDialer(viper.GetString("MAIL_HOST"), viper.GetInt("MAIL_PORT"), viper.GetString("MAIL_USERNAME"), viper.GetString("MAIL_PASSWORD"))
 
 	if err := d.DialAndSend(mail); err != nil {
-		panic(err)
+		return nil, err
 	}
 
-	return mail
+	return result, nil
 }
 
 func SendMailV2(w http.ResponseWriter, r *http.Request) {
@@ -79,7 +79,6 @@ func SendMailV3(p *TSendMail) (err error) {
 
 	dialer := gomail.NewDialer("live.smtp.mailtrap.io", 587, "api", "eeb698e014595388ad1d80ed7e9ffb54")
 	if err := dialer.DialAndSend(message); err != nil {
-		fmt.Println("Error:", err)
 		return err
 	} else {
 		fmt.Println("HTML Email sent successfully")

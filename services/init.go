@@ -28,8 +28,14 @@ type HandlerFunc interface {
 	RetrieveAllBookingTransferByCustomer(id uuid.UUID) (m []*models.BookingTransfer, err error)
 	// Booking Assigned - Transfer
 	RetrieveBookingTransferAssignedByDriverID(userId uuid.UUID) (m []models.BookingTransferAssigned, err error)
+	RetrieveBookingTransferAcceptedByDriverID(userId uuid.UUID) (m []models.BookingTransferAssigned, err error)
+	RetrieveBookingTransferCancelledByDriverID(userId uuid.UUID) (m []models.BookingTransferAssigned, err error)
+	RetrieveBookingTransferOngoingByDriverID(userId uuid.UUID) (m []models.BookingTransferAssigned, err error)
 	AcceptBookingTransfer(id uuid.UUID) (err error)
 	CancelBookingTransfer(id uuid.UUID) (err error)
+	OngoingBookingTransfer(id uuid.UUID) (err error)
+	// CAR MANAGEMENT
+	InsertCarManagement(c *gin.Context, p *dto.InsertCarManagement) (err error)
 	// AUTH - CUSTOMER
 	RegisterCustomer(credentials *dto.CustomerSignup) (err error)
 	RetrieveEntityCustomerByUserID(userId uuid.UUID) (m masterModels.Customer, err error)

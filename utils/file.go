@@ -12,7 +12,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/kalleriakronos24/khaimal-group/dto"
-	pdfGenerator "github.com/kalleriakronos24/khaimal-group/pkg/pdf-generator"
 )
 
 func ConvertMultipartFileToBase64(c *gin.Context, file *multipart.FileHeader, dst string) (base64 string, err error) {
@@ -50,12 +49,12 @@ func ConvertMultipartFileToBase64(c *gin.Context, file *multipart.FileHeader, ds
 	return base64Encoding, err
 }
 
-func SaveFileToDockerVolume(c *gin.Context, ownerType string, documentType string, file *multipart.FileHeader, data interface{}) (outputPath string, err error) {
+func SaveFileToDockerVolume(c *gin.Context, folderName string, documentType string, file *multipart.FileHeader) (outputPath string, err error) {
 
 	workdir, err := os.Getwd()
 
-	filePath := fmt.Sprintf("../files-uploaded/%s/%s", ownerType, documentType)
-	if file != nil && data == nil {
+	filePath := fmt.Sprintf("../files-uploaded/%s/%s", folderName, documentType)
+	if file != nil {
 		err = c.SaveUploadedFile(file, filepath.Join(workdir, filePath, file.Filename))
 		if err != nil {
 			return "", err
@@ -63,40 +62,8 @@ func SaveFileToDockerVolume(c *gin.Context, ownerType string, documentType strin
 	}
 
 	document := documentType
-	if document == "quotation" {
+	if document == "car-management" {
 		outputPath := fmt.Sprintf("storage/po-%s.pdf", RandStringBytes())
-		err = pdfGenerator.WriteHTMLToPDF(outputPath, "templates/html/sph-document.html", data)
-		if err != nil {
-			return "", err
-		}
-		return outputPath, nil
-	}
-
-	if document == "po-out" {
-		outputPath := fmt.Sprintf("storage/po-%s.pdf", RandStringBytes())
-		err = pdfGenerator.WriteHTMLToPDF(outputPath, "templates/html/po-out-document.html", data)
-		if err != nil {
-			return "", err
-		}
-		return outputPath, nil
-	}
-
-	if document == "invoice" {
-		outputPath := fmt.Sprintf("storage/inv-%s.pdf", RandStringBytes())
-		err = pdfGenerator.WriteHTMLToPDF(outputPath, "templates/html/invoice-document.html", data)
-		if err != nil {
-			return "", err
-		}
-		return outputPath, nil
-	}
-
-	if document == "delivery-order" {
-		outputPath := fmt.Sprintf("storage/do-%s.pdf", RandStringBytes())
-		err = pdfGenerator.WriteHTMLToPDF(outputPath, "templates/html/do-document.html", data)
-		if err != nil {
-			return "", err
-		}
-
 		return outputPath, nil
 	}
 

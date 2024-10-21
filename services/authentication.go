@@ -96,9 +96,9 @@ func (module *module) RegisterCustomer(credentials *dto.CustomerSignup) (err err
 	}
 
 	if err = mail.SendMailV3(&mail.TSendMail{
-		From:    "notification@wadahgo.com",
+		From:    "WadahGo <notification@wadahgo.com>",
 		MailTo:  cred.Email,
-		Subject: "WadahGo - Registration Success",
+		Subject: "Registration Success",
 		Body: `<html><body>
 		<p>Thank You for registrering</p>
 		</body></html>`,
@@ -137,9 +137,9 @@ func (module *module) RegisterDriver(credentials *dto.DriverSignup) (err error) 
 		return fmt.Errorf("error inserting driver. %v", err)
 	}
 	if err = mail.SendMailV3(&mail.TSendMail{
-		From:    "notification@wadahgo.com",
+		From:    "WadahGo <notification@wadahgo.com>",
 		MailTo:  cred.Email,
-		Subject: "WadahGo - Registration Success",
+		Subject: "Registration Success",
 		Body: `<html><body>
 		<p>Thank You for registrering</p>
 		</body></html>`,

@@ -36,6 +36,9 @@ type Config struct {
 	MAILUsername string
 	MAILPassword string
 	MAILFrom     string
+
+	OneSignalAppID      string
+	OneSignalRestApiKey string
 }
 
 var AppConfig Config
@@ -77,6 +80,9 @@ func InitializeAppConfig() Config {
 	AppConfig.MAILPort = viper.GetInt("MAIL_PORT")
 	AppConfig.MAILUsername = viper.GetString("MAIL_PASSWORD")
 	AppConfig.MAILFrom = viper.GetString("MAIL_FROM")
+
+	AppConfig.OneSignalAppID = viper.GetString("ONESIGNAL_APP_ID")
+	AppConfig.OneSignalRestApiKey = viper.GetString("ONESIGNAL_REST_API_KEY")
 
 	log.Printf("[INIT] configuration loaded")
 	return AppConfig

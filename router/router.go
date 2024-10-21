@@ -93,8 +93,17 @@ func InitializeRouter() (router *gin.Engine) {
 		bookingTransferAssigned := v1route.Group("/booking-assigned/transfer")
 		{
 			bookingTransferAssigned.GET("", utils.AuthOnly, v1.GETAllBookingTransferAssignedByDriverID)
-			bookingTransferAssigned.POST("/accept", utils.AuthOnly, v1.POSTAcceptBookingTransfer)
-			bookingTransferAssigned.POST("/cancel", utils.AuthOnly, v1.POSTCancelBookingTransfer)
+			bookingTransferAssigned.GET("/accepted", utils.AuthOnly, v1.GETAllBookingTransferAccepteddByDriverID)
+			bookingTransferAssigned.GET("/cancelled", utils.AuthOnly, v1.GETAllBookingTransferCancelledByDriverID)
+			bookingTransferAssigned.GET("/ongoing", utils.AuthOnly, v1.GETAllBookingTransferOngoingByDriverID)
+			bookingTransferAssigned.POST("/accept/:id", utils.AuthOnly, v1.POSTAcceptBookingTransfer)
+			bookingTransferAssigned.POST("/cancel/:id", utils.AuthOnly, v1.POSTCancelBookingTransfer)
+			bookingTransferAssigned.POST("/ongoing/:id", utils.AuthOnly, v1.POSTOngoingBookingTransfer)
+		}
+
+		carManagement := v1route.Group("/car-management")
+		{
+			carManagement.POST("/create", utils.AuthOnly, v1.POSTCreateCarManagement)
 		}
 
 		webStatistic := v1route.Group("/web/statistic/customer")

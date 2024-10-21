@@ -62,7 +62,7 @@ func (o *BalanceDriverOrm) GetAllDriverHasEnoughBalance(price float64, carModelI
 					) Q
 					WHERE S >= R AND status = 'active' AND booking_status = 'ready'
 					ORDER BY id
-					LIMIT 1;`).First(&master.Driver{})
+					LIMIT 1;`).First(&master.Driver{}).Preload("Credentials")
 		}).First(&balanceDriver)
 	return balanceDriver, result.Error
 }

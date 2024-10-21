@@ -11,6 +11,7 @@ import (
 	"github.com/kalleriakronos24/khaimal-group/models"
 	"github.com/kalleriakronos24/khaimal-group/models/master"
 	"github.com/kalleriakronos24/khaimal-group/onesignal"
+	"github.com/kalleriakronos24/khaimal-group/utils"
 )
 
 type CheckExistingBookingTransferStruct struct {
@@ -40,7 +41,7 @@ func (module *module) InsertBookingTransfer(p *dto.InsertBookingTransfer) (err e
 	// 1. enough balance
 	// 2. driver is active and not on ride/active booking
 	// 3. has the request car from the customer
-	// 4. internal driver has 80% chance to get order
+	// 4. internal driver has 90% chance to get order
 	// 5. external driver has 20% chance to get order
 	var driverBalance *models.BalanceDriver
 	if driverBalance, err = module.db.balanceDriver.GetAllDriverHasEnoughBalance(float64(p.Price), p.CarModelID); err != nil {
@@ -64,6 +65,7 @@ func (module *module) InsertBookingTransfer(p *dto.InsertBookingTransfer) (err e
 		ToLocation:        p.ToLocation,
 		ToLatCoordinate:   p.ToLatCoordinate,
 		ToLngCoordinate:   p.ToLngCoordinate,
+		Distance:          p.TotalDistance,
 		PassengerNotes:    p.PassengerNotes,
 		PickUpDate:        p.PickUpDate,
 		Price:             p.Price,
@@ -78,14 +80,16 @@ func (module *module) InsertBookingTransfer(p *dto.InsertBookingTransfer) (err e
 	if err = module.db.bookingTransferAssigned.InsertBookingTransferAssigned(models.BookingTransferAssigned{
 		CarManagementID:   carManagement.ID,
 		BookingTransferID: bookingTransfer.ID,
-		IsAccepted:        false,
+		IsAccepted:        utils.NewFalse(),
 	}, tx); err != nil {
 		tx.Rollback()
 		return errors.New(err.Error())
 	}
 
+	formattedNotificationMessage := fmt.Sprintf("Booking Transfer Request \n %v \n %v Person Pax x %v Luggagge \n Pickup Date %v \n Notes: %v \n Price: %v", carManagement.Name, carManagement.CarModel.PersonCount, carManagement.CarModel.LuggageCount, utils.ConvertEnToIDDateTime(bookingTransfer.PickUpDate), bookingTransfer.PassengerNotes, bookingTransfer.Price)
+
 	// send notification to the selected driver
-	onesignal.PushNotificationSingleExternalId(driverBalance.Driver.Credentials.Email)
+	onesignal.PushNotificationSingleExternalId(driverBalance.Driver.Credentials.Email, formattedNotificationMessage)
 
 	tx.Commit()
 	return

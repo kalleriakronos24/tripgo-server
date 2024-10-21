@@ -30,7 +30,7 @@ type BookingTransfer struct {
 	Price             float32   `json:"price,omitempty" gorm:"not null"`
 	AddPickupPoint    int       `json:"addPickupPoint,omitempty" gorm:"0"`
 	AddDropPoint      int       `json:"addDropPoint,omitempty" gorm:"0"`
-	Distance          float32   `json:"distance,omitempty" gorm:"0"`
+	Distance          float32   `json:"distance,omitempty" gorm:"default:0"`
 	Status            string    `json:"status,omitempty" gorm:"not null;default:waiting for driver accept"`
 
 	CustomerID uuid.UUID `json:"customerId,omitempty" gorm:"type:uuid;not null"`

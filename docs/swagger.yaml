@@ -59,6 +59,8 @@ definitions:
         type: number
       toLocation:
         type: string
+      totalDistance:
+        type: number
     type: object
   dto.Response:
     properties:
@@ -339,7 +341,115 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/dto.Response'
-      summary: Booking - Transfer
+      summary: Method to create booking transfer request by customer
+      tags:
+      - Booking - Transfer
+  /booking/transfer/all:
+    get:
+      consumes:
+      - application/json
+      description: A GET Request to fetch a all records for customer to view booking
+        transfer that already created
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Method to get all booking transfer made by customer
+      tags:
+      - Booking - Transfer
+  /car-management/create:
+    post:
+      consumes:
+      - application/json
+      description: A POST Request to create a car and assigned to the driver whose
+        creating it
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - in: formData
+        name: carManagementType
+        required: true
+        type: string
+      - in: formData
+        name: carModelId
+        required: true
+        type: string
+      - in: formData
+        name: driverID
+        type: string
+      - in: formData
+        name: licensePhoto
+        type: string
+      - in: formData
+        name: name
+        required: true
+        type: string
+      - in: formData
+        name: plateNumber
+        required: true
+        type: string
+      - description: front car photo upload
+        in: formData
+        name: frontCarPhoto
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Method to create or assign a car to the driver
+      tags:
+      - Car Management
+  /web/statistic/customer:
+    get:
+      consumes:
+      - application/json
+      description: A GET Request to fetch count how many bookings are made by customer
+        either transfer, tour or delivery
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Method to count booking transfer by customer
       tags:
       - Booking - Transfer
 swagger: "2.0"

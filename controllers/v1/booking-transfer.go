@@ -13,7 +13,7 @@ import (
 )
 
 // AuthLogin godoc
-// @Summary      Booking - Transfer
+// @Summary      Method to create booking transfer request by customer
 // @Description  A POST Request to create a new record for costumer to make a new Transfer booking to the driver
 // @Tags         Booking - Transfer
 // @Accept       json
@@ -57,6 +57,7 @@ func POSTBookingTransfer(c *gin.Context) {
 		CarModelID:        pValidator.CarModelID,
 		Price:             pValidator.Price,
 		CustomerID:        cred.CredentialCustomer.ID,
+		TotalDistance:     pValidator.TotalDistance,
 	}
 
 	if err = services.Handler.InsertBookingTransfer(p); err != nil {
@@ -66,6 +67,16 @@ func POSTBookingTransfer(c *gin.Context) {
 	c.JSON(http.StatusCreated, dto.Response{Message: "success"})
 }
 
+// AuthLogin godoc
+// @Summary      Method to get all booking transfer made by customer
+// @Description  A GET Request to fetch a all records for customer to view booking transfer that already created
+// @Tags         Booking - Transfer
+// @Accept       json
+// @Produce      json
+// @Success      200 {object}	dto.Response
+// @Failure      400 {object}	dto.Response
+// @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
+// @Router       /booking/transfer/all [get]
 func GETAllBookingTransferByCustomer(c *gin.Context) {
 	var err error
 
@@ -91,6 +102,16 @@ func GETAllBookingTransferByCustomer(c *gin.Context) {
 	}
 }
 
+// AuthLogin godoc
+// @Summary      Method to count booking transfer by customer
+// @Description  A GET Request to fetch count how many bookings are made by customer either transfer, tour or delivery
+// @Tags         Booking - Transfer
+// @Accept       json
+// @Produce      json
+// @Success      200 {object}	dto.Response
+// @Failure      400 {object}	dto.Response
+// @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
+// @Router       /web/statistic/customer [get]
 func GETCountBookingTransferByCustomer(c *gin.Context) {
 	var err error
 

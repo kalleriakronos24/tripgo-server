@@ -16,6 +16,7 @@ type InsertBookingTransfer struct {
 	ToLngCoordinate   float32   `json:"toLngCoordinate,omitempty"`
 	FromLocation      string    `json:"fromLocation,omitempty"`
 	ToLocation        string    `json:"toLocation,omitempty"`
+	TotalDistance     float32   `json:"totalDistance,omitempty"`
 	PassengerNotes    string    `json:"passengerNotes,omitempty"`
 	PickUpDate        time.Time `json:"pickUpDate,omitempty"`
 	CarModelID        uuid.UUID `json:"carModelId"`
@@ -32,6 +33,7 @@ type UpdateBookingTransfer struct {
 	ToLngCoordinate   float32   `json:"toLngCoordinate,omitempty" validate:"required"`
 	FromLocation      string    `json:"fromLocation,omitempty" validate:"required"`
 	ToLocation        string    `json:"toLocation,omitempty" validate:"required"`
+	TotalDistance     float32   `json:"totalDistance,omitempty"`
 	PassengerNotes    string    `json:"passengerNotes,omitempty" validate:"required"`
 	PickUpDate        time.Time `json:"pickUpDate,omitempty" validate:"required"`
 	CarModelID        uuid.UUID `json:"carModelId"`

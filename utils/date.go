@@ -2,7 +2,6 @@ package utils
 
 import (
 	"fmt"
-	"strings"
 	"time"
 )
 
@@ -21,21 +20,6 @@ func ConvertStrToDateTime(date string) time.Time {
 }
 
 func ConvertEnToIDDateTime(date time.Time) string {
-	locale := strings.NewReplacer(
-		"January", "Januari",
-		"February", "Febuari",
-		"March", "Maret",
-		"April", "April",
-		"May", "Mei",
-		"June", "Juni",
-		"July", "Juli",
-		"August", "Agustus",
-		"September", "September",
-		"October", "Oktober",
-		"November", "November",
-		"December", "Desember")
-
-	currentDate := date.Format("2 January 2006")
-	outputString := locale.Replace(currentDate)
-	return outputString
+	currentDate := date.Format("2 January 2006 09:00 AM")
+	return currentDate
 }

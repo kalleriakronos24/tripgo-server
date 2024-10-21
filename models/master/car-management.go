@@ -2,7 +2,6 @@ package master
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -19,6 +18,7 @@ type CarManagementOrm struct {
 type CarManagement struct {
 	ID                uuid.UUID `gorm:"index:id,unique;type:uuid;default:gen_random_uuid();" json:"id"`
 	Name              string    `json:"name" gorm:"not null" binding:"required"`
+	PlateNumber       string    `json:"plateNumber,omitempty" gorm:"default:NULL"`
 	FrontCarPhoto     string    `json:"frontCarPhoto,omitempty" gorm:"default:NULL"`
 	LicensePhoto      string    `json:"licensePhoto,omitempty" gorm:"default:NULL"`
 	CarManagementType string    `json:"carType,omitempty" gorm:"default:external"`
@@ -104,7 +104,6 @@ func (o *CarManagementOrm) RemoveCarManagementFromCompany(id uuid.UUID, tx *gorm
 }
 
 func (o *CarManagementOrm) InsertCarManagement(p CarManagement) (err error) {
-	fmt.Printf("%v", p)
 	result := o.db.Model(&p).Create(&p)
 	return result.Error
 }

@@ -6,14 +6,15 @@ import (
 	"os"
 
 	"github.com/OneSignal/onesignal-go-api"
+	"github.com/kalleriakronos24/khaimal-group/config"
 )
 
 var configuration = onesignal.NewConfiguration()
 var apiClient = onesignal.NewAPIClient(configuration)
 
-func PushNotificationSingleExternalId(deviceId string) {
-	appId := os.Getenv("ONESIGNAL_APP_ID")
-	restApiKey := os.Getenv("ONESIGNAL_REST_API_KEY")
+func PushNotificationSingleExternalId(deviceId string, msgParam string) {
+	appId := config.AppConfig.OneSignalAppID
+	restApiKey := config.AppConfig.OneSignalRestApiKey
 	osAuthCtx := context.WithValue(
 		context.Background(),
 		onesignal.AppAuth,
@@ -22,8 +23,10 @@ func PushNotificationSingleExternalId(deviceId string) {
 
 	notification := *onesignal.NewNotification(appId)
 	notification.IncludeExternalUserIds = []string{deviceId}
-	notification.SetIsIos(false)
-	message := "Go Test Notification"
+	notification.SetIsAndroid(true)
+	notification.SetIsIos(true)
+	notification.SetPriority(10)
+	message := msgParam
 	stringMap := onesignal.StringMap{En: &message}
 	notification.Contents = *onesignal.NewNullableStringMap(&stringMap)
 

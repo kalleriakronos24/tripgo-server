@@ -33,7 +33,6 @@ type CustomerModelAction interface {
 	GetOneByID(id uuid.UUID) (m Customer, err error)
 	GetOneByCustomerName(Customername string) (m Customer, err error)
 	GetAllCustomerPaginated(c *gin.Context, CustomerId uuid.UUID) (*database.Pagination, error)
-
 	InsertCustomer(p Customer, tx *gorm.DB) (err error)
 	DeleteCustomer(id uuid.UUID, tx *gorm.DB) (err error)
 }
