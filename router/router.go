@@ -113,7 +113,8 @@ func InitializeRouter() (router *gin.Engine) {
 
 		websockets := v1route.Group("/ws")
 		{
-			websockets.GET("/ping/:id", v1.GETWSConn)
+			websockets.GET("/loc/track/:id", v1.LocationTrackingV2)
+			websockets.GET("/loc/track/v2/:id", v1.ListenLocationTracking)
 		}
 
 		misc := v1route.Group("/misc")
