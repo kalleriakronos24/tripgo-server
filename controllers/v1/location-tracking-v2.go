@@ -12,6 +12,13 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"github.com/kalleriakronos24/khaimal-group/pkg/location"
+
+	socketio "github.com/googollee/go-socket.io"
+	"github.com/googollee/go-socket.io/engineio"
+	"github.com/googollee/go-socket.io/engineio/transport"
+	"github.com/googollee/go-socket.io/engineio/transport/polling"
+	ws "github.com/googollee/go-socket.io/engineio/transport/websocket"
 )
 
 var upgrader = websocket.Upgrader{
@@ -150,6 +157,35 @@ func LocationTrackingV2(ctx *gin.Context) {
 			}
 		}
 	}
+}
+
+func LocationTrackingV3(ctx *gin.Context) {
+	// done := make(chan struct{})
+	w, r := ctx.Writer, ctx.Request
+	_, err := upgrader.Upgrade(w, r, nil)
+
+	if err != nil {
+		log.Printf("upgrader err: %v", err)
+		// c.Close()
+	}
+
+	server := socketio.NewServer(&engineio.Options{
+		Transports: []transport.Transport{
+			&polling.Transport{
+				CheckOrigin: func(req *http.Request) bool {
+					return true
+				},
+			},
+			&ws.Transport{
+				CheckOrigin: func(req *http.Request) bool {
+					return true
+				},
+			},
+		},
+	})
+	location.InitChatEndpoints(server)
+	go server.Serve()
+	defer server.Close()
 }
 
 var addr = flag.String("addr", "192.168.176.61:3009", "http service address")

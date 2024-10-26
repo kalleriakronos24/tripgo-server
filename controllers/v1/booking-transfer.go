@@ -136,3 +136,32 @@ func GETCountBookingTransferByCustomer(c *gin.Context) {
 		c.JSON(http.StatusOK, dto.Response{Data: &bookingTransfer, Message: "success"})
 	}
 }
+
+// AuthLogin godoc
+// @Summary      Method to cancel booking transfer by customer
+// @Description  A POST Request to cancel the selected booking transfer and notify the assigned driver
+// @Tags         Booking - Transfer
+// @Accept       json
+// @Produce      json
+// @Success      200 {object}	dto.Response
+// @Failure      400 {object}	dto.Response
+// @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
+// @Router       /booking/transfer/cancel [post]
+func POSTCancelBookingTransferByCustomer(c *gin.Context) {
+	var err error
+
+	bookingTransferAssignedIdParam, _ := c.Params.Get("id")
+	bookingTransferAssignedId, err := uuid.Parse(bookingTransferAssignedIdParam)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("uuid-error", err, ""))
+		return
+	}
+
+	if err := services.Handler.CustomerCancelBooking(bookingTransferAssignedId); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "booking transfer"))
+		return
+	}
+
+	c.JSON(http.StatusOK, dto.Response{Data: false, Message: "success"})
+}

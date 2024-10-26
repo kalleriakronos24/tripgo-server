@@ -89,6 +89,7 @@ func (module *module) RegisterCustomer(credentials *dto.CustomerSignup) (err err
 
 	if err = module.db.userCustomerModel.InsertCustomer(masterModels.Customer{
 		Name:          credentials.Name,
+		Phone:         credentials.Phone,
 		CredentialsID: cred.ID,
 	}, tx); err != nil {
 		tx.Rollback()
@@ -132,6 +133,7 @@ func (module *module) RegisterDriver(credentials *dto.DriverSignup) (err error) 
 		Name:          credentials.Name,
 		CredentialsID: cred.ID,
 		DriverType:    credentials.DriverType,
+		Phone:         credentials.Phone,
 	}, tx); err != nil {
 		tx.Rollback()
 		return fmt.Errorf("error inserting driver. %v", err)

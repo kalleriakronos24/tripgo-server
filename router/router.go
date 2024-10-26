@@ -1,23 +1,42 @@
 package router
 
 import (
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	socketio "github.com/googollee/go-socket.io"
 	"github.com/kalleriakronos24/khaimal-group/config"
 	middleware "github.com/kalleriakronos24/khaimal-group/controllers/middlewares"
 	v1 "github.com/kalleriakronos24/khaimal-group/controllers/v1"
 	v1Master "github.com/kalleriakronos24/khaimal-group/controllers/v1/master"
+	"github.com/kalleriakronos24/khaimal-group/pkg/location"
 	"github.com/kalleriakronos24/khaimal-group/utils"
+	"github.com/spf13/viper"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
+// func corsMiddleware(next http.Handler) http.Handler {
+// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+// 		allowHeaders := "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization"
+
+// 		w.Header().Set("Content-Type", "application/json")
+// 		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:4321")
+// 		w.Header().Set("Access-Control-Allow-Methods", "POST, PUT, PATCH, GET, DELETE")
+// 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+// 		w.Header().Set("Access-Control-Allow-Credentials", "true")
+// 		w.Header().Set("Access-Control-Allow-Headers", allowHeaders)
+
+// 		next.ServeHTTP(w, r)
+// 	})
+// }
+
 func InitializeRouter() (router *gin.Engine) {
-	router = gin.Default()
+	router = gin.New()
 	str := []string{"http://localhost:4321"}
 
 	// if config.AppConfig.Environment == "PRODUCTION" {
@@ -31,7 +50,6 @@ func InitializeRouter() (router *gin.Engine) {
 
 	commonRoute := router.Group("/")
 	v1route := router.Group("/api/v1")
-
 	v1route.Use()
 	{
 
@@ -87,6 +105,7 @@ func InitializeRouter() (router *gin.Engine) {
 		bookingTransfer := v1route.Group("/booking/transfer")
 		{
 			bookingTransfer.GET("/all", utils.AuthOnly, v1.GETAllBookingTransferByCustomer)
+			bookingTransfer.POST("/cancel/:id", utils.AuthOnly, v1.POSTCancelBookingTransferByCustomer)
 			bookingTransfer.POST("", utils.AuthOnly, v1.POSTBookingTransfer)
 		}
 
@@ -96,9 +115,12 @@ func InitializeRouter() (router *gin.Engine) {
 			bookingTransferAssigned.GET("/accepted", utils.AuthOnly, v1.GETAllBookingTransferAccepteddByDriverID)
 			bookingTransferAssigned.GET("/cancelled", utils.AuthOnly, v1.GETAllBookingTransferCancelledByDriverID)
 			bookingTransferAssigned.GET("/ongoing", utils.AuthOnly, v1.GETAllBookingTransferOngoingByDriverID)
+			bookingTransferAssigned.GET("/completed", utils.AuthOnly, v1.GETAllBookingTransferCompletedByDriverID)
 			bookingTransferAssigned.POST("/accept/:id", utils.AuthOnly, v1.POSTAcceptBookingTransfer)
 			bookingTransferAssigned.POST("/cancel/:id", utils.AuthOnly, v1.POSTCancelBookingTransfer)
 			bookingTransferAssigned.POST("/ongoing/:id", utils.AuthOnly, v1.POSTOngoingBookingTransfer)
+			bookingTransferAssigned.POST("/pickup/:id", utils.AuthOnly, v1.POSTPickupBookingTransfer)
+			bookingTransferAssigned.POST("/complete/:id", utils.AuthOnly, v1.POSTCompleteBookingTransfer)
 		}
 
 		carManagement := v1route.Group("/car-management")
@@ -114,6 +136,7 @@ func InitializeRouter() (router *gin.Engine) {
 		websockets := v1route.Group("/ws")
 		{
 			websockets.GET("/loc/track/:id", v1.LocationTrackingV2)
+			websockets.GET("/loc/track/v3/*any", v1.LocationTrackingV3)
 			websockets.GET("/loc/track/v2/:id", v1.ListenLocationTracking)
 		}
 
@@ -135,6 +158,52 @@ func InitializeRouter() (router *gin.Engine) {
 		workdir, _ := os.Getwd()
 		path := filepath.Join(workdir, "../files-uploaded")
 		fileServing.StaticFS(fileServingMainRoute, http.Dir(path))
+	}
+
+	if viper.GetBool("SOCKET_ENABLED") {
+
+		log.Print("socket activated")
+		// wt := websocket.Default
+		// wt.ReadBufferSize = 4096
+		// wt.WriteBufferSize = 4096
+		// // wt.HandshakeTimeout = 10
+		// wt.CheckOrigin = func(req *http.Request) bool {
+		// 	return true
+		// }
+
+		// server := socketio.NewServer(&engineio.Options{
+		// 	Transports: []transport.Transport{
+		// 		&polling.Transport{
+		// 			CheckOrigin: func(req *http.Request) bool {
+		// 				return true
+		// 			},
+		// 		},
+		// 		&websocket.Transport{
+		// 			CheckOrigin: func(req *http.Request) bool {
+		// 				return true
+		// 			},
+		// 		},
+		// 	},
+		// })
+		server := socketio.NewServer(nil)
+
+		if err := server.Serve(); err != nil {
+			log.Fatalf("socketio listen error: %s\n", err)
+		}
+
+		location.InitChatEndpoints(server)
+		go func() {
+			if err := server.Serve(); err != nil {
+				log.Fatalf("socketio listen error: %s\n", err)
+			}
+		}()
+		defer server.Close()
+		router.GET("/socket.io/*any", gin.WrapH(server))
+		router.POST("/socket.io/*any", gin.WrapH(server))
+
+		http.Handle("/socket.io/", server)
+
+		log.Fatal(http.ListenAndServe(":5001", nil))
 	}
 	return router
 }

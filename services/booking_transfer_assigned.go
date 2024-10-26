@@ -43,6 +43,13 @@ func (module *module) RetrieveBookingTransferOngoingByDriverID(userId uuid.UUID)
 	return
 }
 
+func (module *module) RetrieveBookingTransferCompletedByDriverID(userId uuid.UUID) (m []models.BookingTransferAssigned, err error) {
+	if m, err = module.db.bookingTransferAssigned.GetBookingAssignedCompletedByDriverID(userId); err != nil {
+		return m, fmt.Errorf("%s", err.Error())
+	}
+	return
+}
+
 func (module *module) AcceptBookingTransfer(id uuid.UUID) (err error) {
 
 	tx := database.GetDatabaseConnection().Begin()
@@ -53,7 +60,7 @@ func (module *module) AcceptBookingTransfer(id uuid.UUID) (err error) {
 	}
 
 	if err := module.db.bookingTransfer.UpdateBookingTransfer(bookingTransferAssigned.BookingTransferID, models.BookingTransfer{
-		Status: "driver accepted your booking",
+		Status: "driver accepted, please wait for pickup",
 	}, tx); err != nil {
 		tx.Rollback()
 		return errors.New(err.Error())
@@ -162,6 +169,7 @@ func (module *module) OngoingBookingTransfer(id uuid.UUID) (err error) {
 	}); err != nil {
 		return errors.New(err.Error())
 	}
+
 	tx.Commit()
 	return
 }
@@ -196,6 +204,46 @@ func (module *module) CompleteBookingTransfer(id uuid.UUID) (err error) {
 		From:    "WadahGo <notification@wadahgo.com>",
 		MailTo:  bookingTransferAssigned.BookingTransfer.Customer.Credentials.Email,
 		Subject: "Rides Completed, have a great day :)",
+		Body: `<html><body>
+		<p>Thank you for using our service</p>
+		</body></html>`,
+	}); err != nil {
+		return errors.New(err.Error())
+	}
+	tx.Commit()
+	return
+}
+
+func (module *module) CompletePickupBooking(id uuid.UUID) (err error) {
+	tx := database.GetDatabaseConnection().Begin()
+
+	var bookingTransferAssigned models.BookingTransferAssigned
+	if bookingTransferAssigned, err = module.db.bookingTransferAssigned.GetOneByID(id); err != nil {
+		return errors.New(err.Error())
+	}
+
+	if err := module.db.bookingTransfer.UpdateBookingTransfer(bookingTransferAssigned.BookingTransferID, models.BookingTransfer{
+		Status: "pickup complete, heading to destination",
+	}, tx); err != nil {
+		tx.Rollback()
+		return errors.New(err.Error())
+	}
+
+	if err := module.db.bookingTransferAssigned.UpdateBookingTransferAssigned(id, models.BookingTransferAssigned{
+		IsAccepted:  utils.NewFalse(),
+		IsCancelled: utils.NewFalse(),
+		IsOnGoing:   utils.NewFalse(),
+		IsCompleted: utils.NewFalse(),
+		IsPickedUp:  utils.NewTrue(),
+	}, tx); err != nil {
+		tx.Rollback()
+		return errors.New(err.Error())
+	}
+
+	if err = mail.SendMailV3(&mail.TSendMail{
+		From:    "WadahGo <notification@wadahgo.com>",
+		MailTo:  bookingTransferAssigned.BookingTransfer.Customer.Credentials.Email,
+		Subject: "Pickup Completed, Heading to your Destination",
 		Body: `<html><body>
 		<p>Thank you for using our service</p>
 		</body></html>`,

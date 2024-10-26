@@ -10,13 +10,10 @@ import (
 	"github.com/kalleriakronos24/khaimal-group/utils"
 
 	"github.com/gin-gonic/gin"
-	socketio "github.com/googollee/go-socket.io"
 	"github.com/kalleriakronos24/khaimal-group/config"
 	"github.com/kalleriakronos24/khaimal-group/docs"
-	"github.com/kalleriakronos24/khaimal-group/pkg/sockets"
 	"github.com/kalleriakronos24/khaimal-group/router"
 	"github.com/kalleriakronos24/khaimal-group/services"
-	"github.com/spf13/viper"
 )
 
 func init() {
@@ -25,9 +22,7 @@ func init() {
 		gin.SetMode(gin.ReleaseMode)
 	}
 }
-
 func runServer() {
-
 	/*
 	* set server timezone to Jakarta, Indonesia
 	* so is any request from client will converted to our TimeZone
@@ -38,7 +33,6 @@ func runServer() {
 		return
 	}
 	time.Local = loc
-
 	// swagger configs
 	docs.SwaggerInfo.Title = "Swagger Example API"
 	docs.SwaggerInfo.Description = "This is a sample server Booklap server."
@@ -46,18 +40,15 @@ func runServer() {
 	docs.SwaggerInfo.Host = "localhost:3009"
 	docs.SwaggerInfo.BasePath = "/api/v1"
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
-
 	//automatic database backup
 	if config.AppConfig.Environment == "PRODUCTION" {
 		go utils.DatabaseBackupCron()
 	}
-
 	// initialize db and migrations
 	if err := services.InitializeServices(); err != nil {
 		log.Fatalln(err)
 	}
 	migrations.Migrate()
-
 	// serve all routes and routes configuration
 	s := &http.Server{
 		Addr:           fmt.Sprintf(":%d", config.AppConfig.Port),
@@ -71,12 +62,6 @@ func runServer() {
 		log.Fatalln(err)
 	}
 }
-
 func main() {
-	if viper.GetBool("SOCKET_ENABLED") {
-		server := socketio.NewServer(nil)
-		var serv = sockets.RunSocketConnection(server)
-		http.Handle("/socket.io/", serv)
-	}
 	runServer()
 }

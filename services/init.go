@@ -26,14 +26,18 @@ type HandlerFunc interface {
 	InsertBookingTransfer(p *dto.InsertBookingTransfer) (err error)
 	UpdateBookingTransfer(id uuid.UUID, p *dto.UpdateBookingTransfer) (err error)
 	RetrieveAllBookingTransferByCustomer(id uuid.UUID) (m []*models.BookingTransfer, err error)
+	CustomerCancelBooking(id uuid.UUID) (err error)
 	// Booking Assigned - Transfer
 	RetrieveBookingTransferAssignedByDriverID(userId uuid.UUID) (m []models.BookingTransferAssigned, err error)
 	RetrieveBookingTransferAcceptedByDriverID(userId uuid.UUID) (m []models.BookingTransferAssigned, err error)
 	RetrieveBookingTransferCancelledByDriverID(userId uuid.UUID) (m []models.BookingTransferAssigned, err error)
 	RetrieveBookingTransferOngoingByDriverID(userId uuid.UUID) (m []models.BookingTransferAssigned, err error)
+	RetrieveBookingTransferCompletedByDriverID(userId uuid.UUID) (m []models.BookingTransferAssigned, err error)
 	AcceptBookingTransfer(id uuid.UUID) (err error)
 	CancelBookingTransfer(id uuid.UUID) (err error)
 	OngoingBookingTransfer(id uuid.UUID) (err error)
+	CompleteBookingTransfer(id uuid.UUID) (err error)
+	CompletePickupBooking(id uuid.UUID) (err error)
 	// CAR MANAGEMENT
 	InsertCarManagement(c *gin.Context, p *dto.InsertCarManagement) (err error)
 	// AUTH - CUSTOMER

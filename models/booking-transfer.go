@@ -32,6 +32,7 @@ type BookingTransfer struct {
 	AddDropPoint      int       `json:"addDropPoint,omitempty" gorm:"0"`
 	Distance          float32   `json:"distance,omitempty" gorm:"default:0"`
 	Status            string    `json:"status,omitempty" gorm:"not null;default:waiting for driver accept"`
+	Uid               string    `json:"uid,omitempty" gorm:"default:NULL"`
 
 	CustomerID uuid.UUID `json:"customerId,omitempty" gorm:"type:uuid;not null"`
 	CarModelID uuid.UUID `json:"carModelId,omitempty" gorm:"type:uuid;not null"`
@@ -78,6 +79,7 @@ func (o *BookingTransferOrm) GetAllByCustomerID(id uuid.UUID) (BookingTransfer [
 				return dbx.Preload("Driver")
 			})
 		}).
+		Order("created_at DESC").
 		Find(&BookingTransfer)
 	return BookingTransfer, result.Error
 }

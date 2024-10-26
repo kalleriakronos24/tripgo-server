@@ -3,6 +3,7 @@ package services
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -11,6 +12,7 @@ import (
 	"github.com/kalleriakronos24/khaimal-group/models"
 	"github.com/kalleriakronos24/khaimal-group/models/master"
 	"github.com/kalleriakronos24/khaimal-group/onesignal"
+	"github.com/kalleriakronos24/khaimal-group/pkg/mail-service"
 	"github.com/kalleriakronos24/khaimal-group/utils"
 )
 
@@ -55,6 +57,11 @@ func (module *module) InsertBookingTransfer(p *dto.InsertBookingTransfer) (err e
 		return errors.New(err.Error())
 	}
 
+	now := time.Now()
+	currentYear, currentMonth, _ := now.Date()
+	month := int(currentMonth)
+	randomUid, _ := utils.GenerateNumber(10)
+
 	var bookingTransfer models.BookingTransfer
 	if bookingTransfer, err = module.db.bookingTransfer.InsertBookingTransfer(models.BookingTransfer{
 		AdultSeater:       p.AdultSeater,
@@ -71,6 +78,7 @@ func (module *module) InsertBookingTransfer(p *dto.InsertBookingTransfer) (err e
 		Price:             p.Price,
 		CarModelID:        p.CarModelID,
 		CustomerID:        p.CustomerID,
+		Uid:               fmt.Sprintf("TRF/%v%v/%v", utils.IntegerToRoman(currentYear), utils.IntegerToRoman(month), randomUid),
 	}, tx); err != nil {
 		tx.Rollback()
 		return errors.New(err.Error())
@@ -124,5 +132,50 @@ func (module *module) RetrieveAllBookingTransferPaginated(c *gin.Context, id uui
 }
 
 func (module *module) RetrieveBookingTransfer(id uuid.UUID) (m models.BookingTransfer, err error) {
+	return
+}
+
+func (module *module) CustomerCancelBooking(id uuid.UUID) (err error) {
+	tx := database.GetDatabaseConnection().Begin()
+
+	var bookingTransferAssigned models.BookingTransferAssigned
+	if bookingTransferAssigned, err = module.db.bookingTransferAssigned.GetOneByID(id); err != nil {
+		return errors.New(err.Error())
+	}
+
+	if err := module.db.bookingTransfer.UpdateBookingTransfer(bookingTransferAssigned.BookingTransferID, models.BookingTransfer{
+		Status: "passenger cancelled the booking",
+	}, tx); err != nil {
+		tx.Rollback()
+		return errors.New(err.Error())
+	}
+
+	if err := module.db.bookingTransferAssigned.UpdateBookingTransferAssigned(id, models.BookingTransferAssigned{
+		IsAccepted:  utils.NewFalse(),
+		IsCancelled: utils.NewTrue(),
+		IsOnGoing:   utils.NewFalse(),
+		IsPickedUp:  utils.NewFalse(),
+		IsCompleted: utils.NewFalse(),
+	}, tx); err != nil {
+		tx.Rollback()
+		return errors.New(err.Error())
+	}
+
+	if err = mail.SendMailV3(&mail.TSendMail{
+		From:    "WadahGo <notification@wadahgo.com>",
+		MailTo:  bookingTransferAssigned.CarManagement.Driver.Credentials.Email,
+		Subject: "Booking Transfer Cancelled",
+		Body: `<html><body>
+		<p>Oops.. Customer cancelled your booking due to some reason :(, please keep an eye for another booking request</p>
+		</body></html>`,
+	}); err != nil {
+		return errors.New(err.Error())
+	}
+
+	formattedNotificationMessage := fmt.Sprintf("Booking Transfer Cancelled \n We are sorry that your Booking was cancelled by the Passenger %v", bookingTransferAssigned.BookingTransfer.Customer.Name)
+
+	// send notification to the selected driver
+	onesignal.PushNotificationSingleExternalId(bookingTransferAssigned.CarManagement.Driver.Credentials.Email, formattedNotificationMessage)
+	tx.Commit()
 	return
 }

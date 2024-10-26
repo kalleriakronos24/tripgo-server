@@ -36,6 +36,7 @@ type BookingTransferAssignedModelAction interface {
 	GetBookingAssignedAcceptedByDriverID(id uuid.UUID) (m []BookingTransferAssigned, err error)
 	GetBookingAssignedCancelledByDriverID(id uuid.UUID) (m []BookingTransferAssigned, err error)
 	GetBookingAssignedOnGoingByDriverID(id uuid.UUID) (m []BookingTransferAssigned, err error)
+	GetBookingAssignedCompletedByDriverID(id uuid.UUID) (m []BookingTransferAssigned, err error)
 	InsertBookingTransferAssigned(p BookingTransferAssigned, tx *gorm.DB) (err error)
 	UpdateBookingTransferAssigned(id uuid.UUID, p BookingTransferAssigned, tx *gorm.DB) (err error)
 	DeleteBookingTransferAssigned(id uuid.UUID, tx *gorm.DB) (err error)
@@ -51,6 +52,11 @@ func (o *BookingTransferAssignedOrm) GetOneByID(id uuid.UUID) (BookingTransferAs
 		Preload("BookingTransfer", func(db *gorm.DB) *gorm.DB {
 			return db.Preload("Customer", func(dbx *gorm.DB) *gorm.DB {
 				return dbx.Preload("Credentials")
+			})
+		}).
+		Preload("CarManagement", func(dbx *gorm.DB) *gorm.DB {
+			return dbx.Preload("Driver", func(dbxx *gorm.DB) *gorm.DB {
+				return dbxx.Preload("Credentials")
 			})
 		}).
 		First(&BookingTransferAssigned)
@@ -72,6 +78,7 @@ func (o *BookingTransferAssignedOrm) GetBookingAssignedNotAcceptedByDriverID(id 
 				return dbx.Preload("Credentials")
 			})
 		}).
+		Order("created_at DESC").
 		Find(&m)
 	return m, result.Error
 }
@@ -86,6 +93,7 @@ func (o *BookingTransferAssignedOrm) GetBookingAssignedAcceptedByDriverID(id uui
 				return dbx.Preload("Credentials")
 			})
 		}).
+		Order("created_at DESC").
 		Find(&m)
 	return m, result.Error
 }
@@ -100,12 +108,13 @@ func (o *BookingTransferAssignedOrm) GetBookingAssignedCancelledByDriverID(id uu
 				return dbx.Preload("Credentials")
 			})
 		}).
+		Order("created_at DESC").
 		Find(&m)
 	return m, result.Error
 }
 
 func (o *BookingTransferAssignedOrm) GetBookingAssignedOnGoingByDriverID(id uuid.UUID) (m []BookingTransferAssigned, err error) {
-	result := o.db.Model(&m).Where("is_accepted = ? AND is_cancelled = ? AND is_on_going = ? AND is_picked_up = ? AND is_completed = ?", false, false, true, false, false).
+	result := o.db.Model(&m).Where("is_accepted = ? AND is_cancelled = ? AND (is_on_going = ? OR is_picked_up = ?) AND is_completed = ?", false, false, true, true, false).
 		Preload("CarManagement", func(db *gorm.DB) *gorm.DB {
 			return db.Where("driver_id", id).Preload("CarModel").Find(&master.CarManagement{})
 		}).
@@ -114,6 +123,22 @@ func (o *BookingTransferAssignedOrm) GetBookingAssignedOnGoingByDriverID(id uuid
 				return dbx.Preload("Credentials")
 			})
 		}).
+		Order("created_at DESC").
+		Find(&m)
+	return m, result.Error
+}
+
+func (o *BookingTransferAssignedOrm) GetBookingAssignedCompletedByDriverID(id uuid.UUID) (m []BookingTransferAssigned, err error) {
+	result := o.db.Model(&m).Where("is_accepted = ? AND is_cancelled = ? AND is_on_going = ? AND is_picked_up = ? AND is_completed = ?", false, false, false, false, true).
+		Preload("CarManagement", func(db *gorm.DB) *gorm.DB {
+			return db.Where("driver_id", id).Preload("CarModel").Find(&master.CarManagement{})
+		}).
+		Preload("BookingTransfer", func(db *gorm.DB) *gorm.DB {
+			return db.Preload("Customer", func(dbx *gorm.DB) *gorm.DB {
+				return dbx.Preload("Credentials")
+			})
+		}).
+		Order("created_at DESC").
 		Find(&m)
 	return m, result.Error
 }

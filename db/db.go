@@ -8,11 +8,11 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm/logger"
 
 	"github.com/kalleriakronos24/khaimal-group/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 type Pagination struct {
@@ -68,7 +68,7 @@ func DropUnusedColumns(dst interface{}) {
 		return
 	}
 	fields := stmt.Schema.Fields
-	columns, _ := db.Debug().Migrator().ColumnTypes(dst)
+	columns, _ := db.Migrator().ColumnTypes(dst)
 
 	for i := range columns {
 		found := false

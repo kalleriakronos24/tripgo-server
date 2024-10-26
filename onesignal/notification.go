@@ -24,7 +24,7 @@ func PushNotificationSingleExternalId(deviceId string, msgParam string) {
 	notification := *onesignal.NewNotification(appId)
 	notification.IncludeExternalUserIds = []string{deviceId}
 	notification.SetIsAndroid(true)
-	notification.SetIsIos(true)
+	// notification.SetIsIos(true)
 	notification.SetPriority(10)
 	message := msgParam
 	stringMap := onesignal.StringMap{En: &message}
@@ -55,7 +55,7 @@ func PushNotificationMultipleExternalId(deviceId []string) {
 	notification := *onesignal.NewNotification(appId)
 	notification.IncludeExternalUserIds = deviceId
 	notification.SetIncludedSegments([]string{"Subscribed Users"})
-	notification.SetIsIos(false)
+	// notification.SetIsIos(false)
 	message := "Go Test Notification"
 	stringMap := onesignal.StringMap{En: &message}
 	notification.Contents = *onesignal.NewNullableStringMap(&stringMap)

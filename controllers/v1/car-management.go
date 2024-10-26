@@ -71,7 +71,6 @@ func POSTCreateCarManagement(c *gin.Context) {
 	if err = services.Handler.InsertCarManagement(c, p); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("insert-failed", err, "car management"))
 		return
-	} else {
-		c.JSON(http.StatusOK, dto.Response{Data: nil, Message: "success"})
 	}
+	c.JSON(http.StatusOK, dto.Response{Data: false, Message: "success"})
 }
