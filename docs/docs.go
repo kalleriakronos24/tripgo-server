@@ -293,6 +293,45 @@ const docTemplate = `{
                 }
             }
         },
+        "/booking-assigned/transfer/accepted": {
+            "get": {
+                "description": "A GET Request to fetch a all records for driver to view booking transfer that assigned and whose are not accepted by the driver",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking Assgined - Transfer"
+                ],
+                "summary": "List Booking Transfer Assigned",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer \u003cAdd access token here\u003e",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/booking-assigned/transfer/cancel": {
             "get": {
                 "description": "A GET Request to fetch a all records for driver to view booking transfer that assigned and whose are not accepted by the driver",
@@ -306,6 +345,123 @@ const docTemplate = `{
                     "Booking Assgined - Transfer"
                 ],
                 "summary": "Method to cancel booking transfer request",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer \u003cAdd access token here\u003e",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/booking-assigned/transfer/cancelled": {
+            "get": {
+                "description": "A GET Request to fetch a all records for driver to view booking transfer that assigned and whose are not accepted by the driver",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking Assgined - Transfer"
+                ],
+                "summary": "List Booking Transfer Assigned",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer \u003cAdd access token here\u003e",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/booking-assigned/transfer/completed": {
+            "get": {
+                "description": "A GET Request to fetch a all records for driver to view booking transfer that assigned and whose are not accepted by the driver",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking Assgined - Transfer"
+                ],
+                "summary": "List Booking Transfer Assigned",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer \u003cAdd access token here\u003e",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/booking-assigned/transfer/ongoing": {
+            "get": {
+                "description": "A GET Request to fetch a all records for driver to view booking transfer that assigned and whose are not accepted by the driver",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking Assgined - Transfer"
+                ],
+                "summary": "Method to set status to ongoing and notify passenger that driver on it's way to pickup",
                 "parameters": [
                     {
                         "type": "string",
@@ -385,6 +541,45 @@ const docTemplate = `{
                     "Booking - Transfer"
                 ],
                 "summary": "Method to get all booking transfer made by customer",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer \u003cAdd access token here\u003e",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/booking/transfer/cancel": {
+            "post": {
+                "description": "A POST Request to cancel the selected booking transfer and notify the assigned driver",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking - Transfer"
+                ],
+                "summary": "Method to cancel booking transfer by customer",
                 "parameters": [
                     {
                         "type": "string",

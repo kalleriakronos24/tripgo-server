@@ -53,9 +53,7 @@ func InitializeRouter() (router *gin.Engine) {
 	v1route.Use()
 	{
 
-		if config.AppConfig.Environment == "DEVELOPMENT" {
-			v1route.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-		}
+		v1route.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 		auth := v1route.Group("/auth")
 		{

@@ -290,6 +290,33 @@ paths:
       summary: Method to accept booking transfer request
       tags:
       - Booking Assgined - Transfer
+  /booking-assigned/transfer/accepted:
+    get:
+      consumes:
+      - application/json
+      description: A GET Request to fetch a all records for driver to view booking
+        transfer that assigned and whose are not accepted by the driver
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: List Booking Transfer Assigned
+      tags:
+      - Booking Assgined - Transfer
   /booking-assigned/transfer/cancel:
     get:
       consumes:
@@ -315,6 +342,88 @@ paths:
           schema:
             $ref: '#/definitions/dto.Response'
       summary: Method to cancel booking transfer request
+      tags:
+      - Booking Assgined - Transfer
+  /booking-assigned/transfer/cancelled:
+    get:
+      consumes:
+      - application/json
+      description: A GET Request to fetch a all records for driver to view booking
+        transfer that assigned and whose are not accepted by the driver
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: List Booking Transfer Assigned
+      tags:
+      - Booking Assgined - Transfer
+  /booking-assigned/transfer/completed:
+    get:
+      consumes:
+      - application/json
+      description: A GET Request to fetch a all records for driver to view booking
+        transfer that assigned and whose are not accepted by the driver
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: List Booking Transfer Assigned
+      tags:
+      - Booking Assgined - Transfer
+  /booking-assigned/transfer/ongoing:
+    get:
+      consumes:
+      - application/json
+      description: A GET Request to fetch a all records for driver to view booking
+        transfer that assigned and whose are not accepted by the driver
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Method to set status to ongoing and notify passenger that driver on
+        it's way to pickup
       tags:
       - Booking Assgined - Transfer
   /booking/transfer:
@@ -369,6 +478,33 @@ paths:
           schema:
             $ref: '#/definitions/dto.Response'
       summary: Method to get all booking transfer made by customer
+      tags:
+      - Booking - Transfer
+  /booking/transfer/cancel:
+    post:
+      consumes:
+      - application/json
+      description: A POST Request to cancel the selected booking transfer and notify
+        the assigned driver
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Method to cancel booking transfer by customer
       tags:
       - Booking - Transfer
   /car-management/create:
