@@ -48,7 +48,7 @@ func InitializeRouter() (router *gin.Engine) {
 	configCors.AllowOrigins = str
 	router.Use(cors.New(configCors), middleware.AuthMiddleware)
 
-	commonRoute := router.Group("/")
+	// commonRoute := router.Group("/")
 	v1route := router.Group("/api/v1")
 	v1route.Use()
 	{
@@ -148,15 +148,12 @@ func InitializeRouter() (router *gin.Engine) {
 			}
 		}
 	}
-	fileServingGroupRoute := config.AppConfig.APPUrlStaticFileGroupRoute
+
 	fileServingMainRoute := config.AppConfig.AppUrlStaticFileMainRoute
-	fileServing := commonRoute.Group(fileServingGroupRoute)
-	{
-		//todo improve static file serving security
-		workdir, _ := os.Getwd()
-		path := filepath.Join(workdir, "../files-uploaded")
-		fileServing.StaticFS(fileServingMainRoute, http.Dir(path))
-	}
+	//todo improve static file serving security
+	workdir, _ := os.Getwd()
+	path := filepath.Join(workdir, "../files-uploaded")
+	v1route.StaticFS(fileServingMainRoute, http.Dir(path))
 
 	if viper.GetBool("SOCKET_ENABLED") {
 
