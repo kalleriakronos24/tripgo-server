@@ -39,9 +39,9 @@ func InitializeRouter() (router *gin.Engine) {
 	router = gin.New()
 	str := []string{"http://localhost:4321"}
 
-	// if config.AppConfig.Environment == "PRODUCTION" {
-	// 	str = []string{"https://wadahgo.com"}
-	// }
+	if config.AppConfig.Environment == "PRODUCTION" {
+		str = []string{"https://wadahgo.com"}
+	}
 
 	configCors := cors.DefaultConfig()
 	configCors.AddAllowHeaders("Authorization")
