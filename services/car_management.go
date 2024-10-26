@@ -30,7 +30,7 @@ func (module *module) InsertCarManagement(c *gin.Context, p *dto.InsertCarManage
 		CarManagementType: p.CarManagementType,
 		DriverID:          p.DriverID,
 		CarModelID:        p.CarModelID,
-		FrontCarPhoto:     fmt.Sprintf("%s/%s/%s/car-management/front-car-photo/%s", config.AppConfig.APPUrl, config.AppConfig.APPUrlStaticFileGroupRoute, config.AppConfig.AppUrlStaticFileMainRoute, p.FrontCarPhoto.Filename),
+		FrontCarPhoto:     fmt.Sprintf("%s/%s/car-management/front-car-photo/%s", config.AppConfig.APPUrl, config.AppConfig.AppUrlStaticFileMainRoute, p.FrontCarPhoto.Filename),
 	}
 
 	if CarManagementErr := tx.Create(&CarManagement); CarManagementErr.Error != nil {
