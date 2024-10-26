@@ -149,11 +149,11 @@ func InitializeRouter() (router *gin.Engine) {
 		}
 	}
 
-	fileServingMainRoute := config.AppConfig.AppUrlStaticFileMainRoute
+	// fileServingMainRoute := config.AppConfig.AppUrlStaticFileMainRoute
 	//todo improve static file serving security
 	workdir, _ := os.Getwd()
 	path := filepath.Join(workdir, "../files-uploaded")
-	v1route.StaticFS(fileServingMainRoute, http.Dir(path))
+	v1route.StaticFS("N2H9ujApix2W2tNB5B2bOApye0uDZ7", http.Dir(path))
 
 	if viper.GetBool("SOCKET_ENABLED") {
 
