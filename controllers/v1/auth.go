@@ -1,7 +1,6 @@
 package v1
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -52,7 +51,7 @@ func POSTLogin(c *gin.Context) {
 	}
 
 	if customer, err = services.Handler.RetrieveEntityCredentialsByUserID(claims.ID); err != nil {
-		c.JSON(http.StatusNotFound, constants.GetErrorResponse("logical", err, "Passenger data not found."))
+		c.JSON(http.StatusNotFound, constants.GetErrorResponse("data-not-found", err, "Passenger data not found."))
 		return
 	}
 
@@ -115,7 +114,7 @@ func POSTLoginDriver(c *gin.Context) {
 	}
 
 	if driver, err = services.Handler.RetrieveEntityCredentialsByUserID(claims.ID); err != nil {
-		c.JSON(http.StatusNotFound, constants.GetErrorResponse("logical", err, "Passenger data not found."))
+		c.JSON(http.StatusNotFound, constants.GetErrorResponse("data-not-found", err, "Passenger data not found."))
 		return
 	}
 
@@ -271,8 +270,6 @@ func POSTRegisterDriver(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
 		return
 	}
-
-	log.Printf("%v", p)
 
 	if err := utils.ValidateHTTPPayload(p); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))

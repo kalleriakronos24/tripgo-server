@@ -15,7 +15,7 @@ type CheckExistingEntityCredentialsStruct struct {
 
 func (module *module) RetrieveEntityCredentialsByUserID(userId uuid.UUID) (m master.Credentials, err error) {
 	if m, err = module.db.credentialModel.GetOneByID(userId); err != nil {
-		return m, errors.New(err.Error())
+		return m, errors.New("failed to get user information")
 	}
 	return
 }

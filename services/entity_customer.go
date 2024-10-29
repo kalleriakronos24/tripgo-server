@@ -1,7 +1,7 @@
 package services
 
 import (
-	"fmt"
+	"errors"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -15,7 +15,7 @@ type CheckExistingEntityCustomerStruct struct {
 
 func (module *module) RetrieveEntityCustomerByUserID(userId uuid.UUID) (m master.Customer, err error) {
 	if m, err = module.db.userCustomerModel.GetOneByID(userId); err != nil {
-		return m, fmt.Errorf("%s", err.Error())
+		return m, errors.New("failed to get user information")
 	}
 	return
 }

@@ -53,7 +53,7 @@ func POSTCreateCarManagement(c *gin.Context) {
 
 	var cred master.Credentials
 	if cred, err = services.Handler.RetrieveEntityCredentialsByUserID(userId); err != nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("retrieve-failed", err, "driver"))
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "driver"))
 		return
 	}
 

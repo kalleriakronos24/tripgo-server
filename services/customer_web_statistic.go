@@ -11,7 +11,7 @@ import (
 
 func (module *module) RetrieveCustomerWebStatisticByUserID(userId uuid.UUID) (ctx int64, err error) {
 	if ctx, err = module.db.bookingTransfer.GetCountByCustomerID(userId); err != nil {
-		return ctx, errors.New(err.Error())
+		return ctx, errors.New("failed to get statistic count")
 	}
 	return
 }

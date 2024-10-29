@@ -42,7 +42,7 @@ func GetErrorResponse(kind string, err error, message string) dto.Response {
 			Data:    false,
 			Kind:    "data-not-found",
 			Error:   err.Error(),
-			Message: message,
+			Message: err.Error(),
 		}
 		return response
 	case "data-existing":
@@ -72,7 +72,7 @@ func GetErrorResponse(kind string, err error, message string) dto.Response {
 	case "insert-failed":
 		response = dto.Response{
 			Data:    false,
-			Message: fmt.Sprintf("Failed inserting new %s", message),
+			Message: err.Error(),
 			Kind:    "insert-failed",
 			Error:   err.Error(),
 		}
@@ -81,7 +81,7 @@ func GetErrorResponse(kind string, err error, message string) dto.Response {
 		response = dto.Response{
 			Data:    false,
 			Kind:    "retrieve-failed",
-			Message: fmt.Sprintf("Failed when finding %s", message),
+			Message: err.Error(),
 			Error:   err.Error(),
 		}
 		return response
@@ -89,7 +89,7 @@ func GetErrorResponse(kind string, err error, message string) dto.Response {
 		response = dto.Response{
 			Data:    false,
 			Kind:    "update-failed",
-			Message: fmt.Sprintf("Failed when updating %s", message),
+			Message: err.Error(),
 			Error:   err.Error(),
 		}
 		return response
@@ -97,7 +97,7 @@ func GetErrorResponse(kind string, err error, message string) dto.Response {
 		response = dto.Response{
 			Data:    false,
 			Kind:    "delete-failed",
-			Message: fmt.Sprintf("Failed when deleting %s", message),
+			Message: err.Error(),
 			Error:   err.Error(),
 		}
 		return response
@@ -107,7 +107,7 @@ func GetErrorResponse(kind string, err error, message string) dto.Response {
 		response = dto.Response{
 			Data:    false,
 			Kind:    "logical",
-			Message: message,
+			Message: err.Error(),
 			Error:   err.Error(),
 		}
 		return response

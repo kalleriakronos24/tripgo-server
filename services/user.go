@@ -29,9 +29,7 @@ func (module *module) RetrieveAllUserPaginated(c *gin.Context, id uuid.UUID) (pa
 }
 
 func (module *module) DeleteUser(id uuid.UUID) (err error) {
-
 	tx := database.GetDatabaseConnection().Begin()
-
 	if err = module.db.userModel.DeleteUser(id, tx); err != nil {
 		tx.Rollback()
 		return errors.New(err.Error())
@@ -42,7 +40,6 @@ func (module *module) DeleteUser(id uuid.UUID) (err error) {
 }
 
 func (module *module) CheckExistingUser(id string, param CheckExistingUserStruct) (err error) {
-
 	if param.Email != "" {
 		if _, dbErr := module.db.credentialModel.GetOneByEmail(param.Email); dbErr != nil {
 			return errors.New(dbErr.Error())

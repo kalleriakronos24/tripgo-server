@@ -34,7 +34,7 @@ func GETAllBookingTransferAssignedByDriverID(c *gin.Context) {
 
 	var driver master.Credentials
 	if driver, err = services.Handler.RetrieveEntityCredentialsByUserID(userId); err != nil {
-		c.JSON(http.StatusNotFound, constants.GetErrorResponse("logical", err, "Driver data not found."))
+		c.JSON(http.StatusNotFound, constants.GetErrorResponse("data-not-found", err, "Driver data not found."))
 		return
 	}
 
@@ -69,7 +69,7 @@ func GETAllBookingTransferAccepteddByDriverID(c *gin.Context) {
 
 	var driver master.Credentials
 	if driver, err = services.Handler.RetrieveEntityCredentialsByUserID(userId); err != nil {
-		c.JSON(http.StatusNotFound, constants.GetErrorResponse("logical", err, "Driver data not found."))
+		c.JSON(http.StatusNotFound, constants.GetErrorResponse("data-not-found", err, "Driver data not found."))
 		return
 	}
 
@@ -104,7 +104,7 @@ func GETAllBookingTransferCancelledByDriverID(c *gin.Context) {
 
 	var driver master.Credentials
 	if driver, err = services.Handler.RetrieveEntityCredentialsByUserID(userId); err != nil {
-		c.JSON(http.StatusNotFound, constants.GetErrorResponse("logical", err, "Driver data not found."))
+		c.JSON(http.StatusNotFound, constants.GetErrorResponse("data-not-found", err, "Driver data not found."))
 		return
 	}
 
@@ -139,7 +139,7 @@ func GETAllBookingTransferOngoingByDriverID(c *gin.Context) {
 
 	var driver master.Credentials
 	if driver, err = services.Handler.RetrieveEntityCredentialsByUserID(userId); err != nil {
-		c.JSON(http.StatusNotFound, constants.GetErrorResponse("logical", err, "Driver data not found."))
+		c.JSON(http.StatusNotFound, constants.GetErrorResponse("data-not-found", err, "Driver data not found."))
 		return
 	}
 
@@ -174,7 +174,7 @@ func GETAllBookingTransferCompletedByDriverID(c *gin.Context) {
 
 	var driver master.Credentials
 	if driver, err = services.Handler.RetrieveEntityCredentialsByUserID(userId); err != nil {
-		c.JSON(http.StatusNotFound, constants.GetErrorResponse("logical", err, "Driver data not found."))
+		c.JSON(http.StatusNotFound, constants.GetErrorResponse("data-not-found", err, "Driver data not found."))
 		return
 	}
 

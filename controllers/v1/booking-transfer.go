@@ -39,7 +39,7 @@ func POSTBookingTransfer(c *gin.Context) {
 
 	var cred master.Credentials
 	if cred, err = services.Handler.RetrieveEntityCredentialsByUserID(userId); err != nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("retrieve-failed", err, "customer"))
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "customer"))
 		return
 	}
 
@@ -67,6 +67,7 @@ func POSTBookingTransfer(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("insert-failed", err, "booking transfer"))
 		return
 	}
+
 	c.JSON(http.StatusCreated, dto.Response{Message: "success"})
 }
 
@@ -93,7 +94,7 @@ func GETAllBookingTransferByCustomer(c *gin.Context) {
 
 	var cred master.Customer
 	if cred, err = services.Handler.RetrieveEntityCustomerByUserID(userId); err != nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("retrieve-failed", err, "customer"))
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "customer"))
 		return
 	}
 
@@ -128,7 +129,7 @@ func GETCountBookingTransferByCustomer(c *gin.Context) {
 
 	var cred master.Customer
 	if cred, err = services.Handler.RetrieveEntityCustomerByUserID(userId); err != nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("retrieve-failed", err, "customer"))
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "customer"))
 		return
 	}
 

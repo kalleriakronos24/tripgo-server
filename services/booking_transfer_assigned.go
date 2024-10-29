@@ -2,7 +2,6 @@ package services
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/google/uuid"
 	database "github.com/kalleriakronos24/khaimal-group/db"
@@ -17,37 +16,37 @@ type CheckExistingBookingTransferAssignedStruct struct {
 
 func (module *module) RetrieveBookingTransferAssignedByDriverID(userId uuid.UUID) (m []models.BookingTransferAssigned, err error) {
 	if m, err = module.db.bookingTransferAssigned.GetBookingAssignedNotAcceptedByDriverID(userId); err != nil {
-		return m, fmt.Errorf("%s", err.Error())
+		return m, errors.New("failed to get assigned bookings")
 	}
-	return
+	return m, nil
 }
 
 func (module *module) RetrieveBookingTransferAcceptedByDriverID(userId uuid.UUID) (m []models.BookingTransferAssigned, err error) {
 	if m, err = module.db.bookingTransferAssigned.GetBookingAssignedAcceptedByDriverID(userId); err != nil {
-		return m, fmt.Errorf("%s", err.Error())
+		return m, errors.New("failed to get accepted bookings")
 	}
-	return
+	return m, nil
 }
 
 func (module *module) RetrieveBookingTransferCancelledByDriverID(userId uuid.UUID) (m []models.BookingTransferAssigned, err error) {
 	if m, err = module.db.bookingTransferAssigned.GetBookingAssignedCancelledByDriverID(userId); err != nil {
-		return m, fmt.Errorf("%s", err.Error())
+		return m, errors.New("failed to get cancelled bookings")
 	}
-	return
+	return m, nil
 }
 
 func (module *module) RetrieveBookingTransferOngoingByDriverID(userId uuid.UUID) (m []models.BookingTransferAssigned, err error) {
 	if m, err = module.db.bookingTransferAssigned.GetBookingAssignedOnGoingByDriverID(userId); err != nil {
-		return m, fmt.Errorf("%s", err.Error())
+		return m, errors.New("failed to get ongoing bookings")
 	}
-	return
+	return m, nil
 }
 
 func (module *module) RetrieveBookingTransferCompletedByDriverID(userId uuid.UUID) (m []models.BookingTransferAssigned, err error) {
 	if m, err = module.db.bookingTransferAssigned.GetBookingAssignedCompletedByDriverID(userId); err != nil {
-		return m, fmt.Errorf("%s", err.Error())
+		return m, errors.New("failed to get completed bookings")
 	}
-	return
+	return m, nil
 }
 
 func (module *module) AcceptBookingTransfer(id uuid.UUID) (err error) {
@@ -103,7 +102,7 @@ func (module *module) CancelBookingTransfer(id uuid.UUID) (err error) {
 		Status: "driver cancelled due some reasons",
 	}, tx); err != nil {
 		tx.Rollback()
-		return errors.New(err.Error())
+		return errors.New("failed to cancel booking")
 	}
 
 	if err := module.db.bookingTransferAssigned.UpdateBookingTransferAssigned(id, models.BookingTransferAssigned{
@@ -114,7 +113,7 @@ func (module *module) CancelBookingTransfer(id uuid.UUID) (err error) {
 		IsCompleted: utils.NewFalse(),
 	}, tx); err != nil {
 		tx.Rollback()
-		return errors.New(err.Error())
+		return errors.New("failed to cancel booking")
 	}
 
 	if err = mail.SendMailV3(&mail.TSendMail{
@@ -125,9 +124,8 @@ func (module *module) CancelBookingTransfer(id uuid.UUID) (err error) {
 		<p>Oops.. Driver canceled your booking due to some reason :( please create a new booking</p>
 		</body></html>`,
 	}); err != nil {
-		return errors.New(err.Error())
+		return errors.New("server error. please try again later")
 	}
-
 	// logic to send email to customer
 	tx.Commit()
 	return
@@ -145,7 +143,7 @@ func (module *module) OngoingBookingTransfer(id uuid.UUID) (err error) {
 		Status: "driver on it's way to pickup location",
 	}, tx); err != nil {
 		tx.Rollback()
-		return errors.New(err.Error())
+		return errors.New("failed to set ongoing booking")
 	}
 
 	if err := module.db.bookingTransferAssigned.UpdateBookingTransferAssigned(id, models.BookingTransferAssigned{
@@ -156,7 +154,7 @@ func (module *module) OngoingBookingTransfer(id uuid.UUID) (err error) {
 		IsPickedUp:  utils.NewFalse(),
 	}, tx); err != nil {
 		tx.Rollback()
-		return errors.New(err.Error())
+		return errors.New("failed to set ongoing booking")
 	}
 
 	if err = mail.SendMailV3(&mail.TSendMail{
@@ -167,7 +165,7 @@ func (module *module) OngoingBookingTransfer(id uuid.UUID) (err error) {
 		<p>Sit tight, wait driver arrived at your pickup location and be ready travel to the destination.</p>
 		</body></html>`,
 	}); err != nil {
-		return errors.New(err.Error())
+		return errors.New("server error. please try again later")
 	}
 
 	tx.Commit()
@@ -186,7 +184,7 @@ func (module *module) CompleteBookingTransfer(id uuid.UUID) (err error) {
 		Status: "your rides completed. thank you :)",
 	}, tx); err != nil {
 		tx.Rollback()
-		return errors.New(err.Error())
+		return errors.New("failed to set complete booking")
 	}
 
 	if err := module.db.bookingTransferAssigned.UpdateBookingTransferAssigned(id, models.BookingTransferAssigned{
@@ -197,7 +195,7 @@ func (module *module) CompleteBookingTransfer(id uuid.UUID) (err error) {
 		IsPickedUp:  utils.NewFalse(),
 	}, tx); err != nil {
 		tx.Rollback()
-		return errors.New(err.Error())
+		return errors.New("failed to set complete booking")
 	}
 
 	if err = mail.SendMailV3(&mail.TSendMail{
@@ -208,7 +206,7 @@ func (module *module) CompleteBookingTransfer(id uuid.UUID) (err error) {
 		<p>Thank you for using our service</p>
 		</body></html>`,
 	}); err != nil {
-		return errors.New(err.Error())
+		return errors.New("server error. please try again later")
 	}
 	tx.Commit()
 	return
@@ -226,7 +224,7 @@ func (module *module) CompletePickupBooking(id uuid.UUID) (err error) {
 		Status: "pickup complete, heading to destination",
 	}, tx); err != nil {
 		tx.Rollback()
-		return errors.New(err.Error())
+		return errors.New("failed to set pickup complete booking")
 	}
 
 	if err := module.db.bookingTransferAssigned.UpdateBookingTransferAssigned(id, models.BookingTransferAssigned{
@@ -237,7 +235,7 @@ func (module *module) CompletePickupBooking(id uuid.UUID) (err error) {
 		IsPickedUp:  utils.NewTrue(),
 	}, tx); err != nil {
 		tx.Rollback()
-		return errors.New(err.Error())
+		return errors.New("failed to set pickup complete booking")
 	}
 
 	if err = mail.SendMailV3(&mail.TSendMail{
@@ -248,7 +246,7 @@ func (module *module) CompletePickupBooking(id uuid.UUID) (err error) {
 		<p>Thank you for using our service</p>
 		</body></html>`,
 	}); err != nil {
-		return errors.New(err.Error())
+		return errors.New("server error. please try again later")
 	}
 	tx.Commit()
 	return

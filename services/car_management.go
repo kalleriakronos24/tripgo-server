@@ -35,31 +35,8 @@ func (module *module) InsertCarManagement(c *gin.Context, p *dto.InsertCarManage
 
 	if CarManagementErr := tx.Create(&CarManagement); CarManagementErr.Error != nil {
 		tx.Rollback()
-		return CarManagementErr.Error
+		return errors.New("failed to upload car management")
 	}
-
 	tx.Commit()
 	return
 }
-
-// func (module *module) SaveManagementDocument(id uuid.UUID) (output GenerateDocumentOutput, err error) {
-
-// 	subTotalProductFormatted := formatCurrency.FormatMoney(subTotalProduct)
-// 	ppnProduct = formatCurrency.FormatMoney(subTotalProduct * 0.11)
-// 	grandTotalProduct = formatCurrency.FormatMoney(subTotalProduct + (subTotalProduct * 0.11))
-
-// 	date := utils.ConvertEnToIDDateTime(CarManagement.Date)
-
-// 	var outputPath string
-// 	var saveFileErr error
-// 	if outputPath, saveFileErr = utils.SaveFileToDockerVolume(nil, "", "po-out", nil); saveFileErr != nil {
-// 		return output, errors.New(saveFileErr.Error())
-// 	}
-
-// 	data := GenerateDocumentOutput{
-// 		OutputPath: outputPath,
-// 		FileName:   CarManagement.Number,
-// 	}
-
-// 	return data, nil
-// }

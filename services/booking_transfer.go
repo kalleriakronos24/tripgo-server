@@ -48,13 +48,13 @@ func (module *module) InsertBookingTransfer(p *dto.InsertBookingTransfer) (err e
 	var driverBalance *models.BalanceDriver
 	if driverBalance, err = module.db.balanceDriver.GetAllDriverHasEnoughBalance(float64(p.Price), p.CarModelID); err != nil {
 		tx.Rollback()
-		return errors.New(err.Error())
+		return errors.New("drivers seems busy. please try again later")
 	}
 
 	var carManagement master.CarManagement
 	if carManagement, err = module.db.carManagementModel.GetOneByCarModelIDAndAvailable(p.CarModelID, driverBalance.DriverID); err != nil {
 		tx.Rollback()
-		return errors.New(err.Error())
+		return errors.New("drivers seems busy. please try again later")
 	}
 
 	now := time.Now()
@@ -100,7 +100,7 @@ func (module *module) InsertBookingTransfer(p *dto.InsertBookingTransfer) (err e
 	formattedNotificationMessage := fmt.Sprintf("Booking Transfer Request <br/> %v <br/> %v Person Pax x %v Luggagge <br/> Pickup Date %v <br/> Notes: %v <br/> Price: %v", carManagement.Name, carManagement.CarModel.PersonCount, carManagement.CarModel.LuggageCount, utils.ConvertEnToIDDateTime(bookingTransfer.PickUpDate), bookingTransfer.PassengerNotes, bookingTransfer.GrandTotal)
 	// send notification to the selected driver
 	if err = onesignal.PushNotificationSingleExternalId(driverBalance.Driver.Credentials.Email, formattedNotificationMessage); err != nil {
-		return errors.New(err.Error())
+		return errors.New("server-error. please try again later")
 	}
 
 	// send backup email to the driver

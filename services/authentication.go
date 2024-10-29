@@ -74,7 +74,7 @@ func (module *module) RegisterCustomer(credentials *dto.CustomerSignup) (err err
 	tx := database.GetDatabaseConnection().Begin()
 	var hashedPassword []byte
 	if hashedPassword, err = bcrypt.GenerateFromPassword([]byte(credentials.Password), bcrypt.DefaultCost); err != nil {
-		return errors.New("failed hashing password")
+		return errors.New("server error. please try again later")
 	}
 
 	var cred *masterModels.Credentials
@@ -84,7 +84,7 @@ func (module *module) RegisterCustomer(credentials *dto.CustomerSignup) (err err
 		Password: string(hashedPassword),
 	}, tx); err != nil {
 		tx.Rollback()
-		return fmt.Errorf("error inserting credential. %v", err)
+		return errors.New("failed to register. try again")
 	}
 
 	if err = module.db.userCustomerModel.InsertCustomer(masterModels.Customer{
@@ -93,7 +93,7 @@ func (module *module) RegisterCustomer(credentials *dto.CustomerSignup) (err err
 		CredentialsID: cred.ID,
 	}, tx); err != nil {
 		tx.Rollback()
-		return fmt.Errorf("error inserting customer. %v", err)
+		return errors.New("failed to register. try again")
 	}
 
 	if err = mail.SendMailV3(&mail.TSendMail{
@@ -104,7 +104,7 @@ func (module *module) RegisterCustomer(credentials *dto.CustomerSignup) (err err
 		<p>Thank You for registrering</p>
 		</body></html>`,
 	}); err != nil {
-		return errors.New(err.Error())
+		return errors.New("server error. please try again later")
 	}
 	tx.Commit()
 	return
@@ -116,7 +116,7 @@ func (module *module) RegisterDriver(credentials *dto.DriverSignup) (err error) 
 
 	var hashedPassword []byte
 	if hashedPassword, err = bcrypt.GenerateFromPassword([]byte(credentials.Password), bcrypt.DefaultCost); err != nil {
-		return errors.New("failed hashing password")
+		return errors.New("server error. please try again later")
 	}
 
 	var cred *masterModels.Credentials
@@ -126,7 +126,7 @@ func (module *module) RegisterDriver(credentials *dto.DriverSignup) (err error) 
 		Password: string(hashedPassword),
 	}, tx); err != nil {
 		tx.Rollback()
-		return fmt.Errorf("error inserting credential. %v", err)
+		return errors.New("failed to register. try again")
 	}
 
 	if err = module.db.userDriverModel.InsertDriver(masterModels.Driver{
@@ -136,7 +136,7 @@ func (module *module) RegisterDriver(credentials *dto.DriverSignup) (err error) 
 		Phone:         credentials.Phone,
 	}, tx); err != nil {
 		tx.Rollback()
-		return fmt.Errorf("error inserting driver. %v", err)
+		return errors.New("failed to register. try again")
 	}
 	if err = mail.SendMailV3(&mail.TSendMail{
 		From:    "WadahGo <notification@wadahgo.com>",
@@ -146,7 +146,7 @@ func (module *module) RegisterDriver(credentials *dto.DriverSignup) (err error) 
 		<p>Thank You for registrering</p>
 		</body></html>`,
 	}); err != nil {
-		return errors.New(err.Error())
+		return errors.New("server error. please try again later")
 	}
 	tx.Commit()
 	return
