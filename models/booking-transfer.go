@@ -28,8 +28,9 @@ type BookingTransfer struct {
 	PassengerNotes    string    `json:"passengerNotes,omitempty" gorm:"default:NULL"`
 	PickUpDate        time.Time `json:"pickUpDate,omitempty" gorm:"not null"`
 	Price             float32   `json:"price,omitempty" gorm:"not null"`
-	AddPickupPoint    int       `json:"addPickupPoint,omitempty" gorm:"0"`
-	AddDropPoint      int       `json:"addDropPoint,omitempty" gorm:"0"`
+	GrandTotal        float32   `json:"grandTotal,omitempty" gorm:"default:NULL"`
+	AddPickupPoint    int       `json:"addPickupPoint,omitempty" gorm:"default:0"`
+	AddDropPoint      int       `json:"addDropPoint,omitempty" gorm:"default:0"`
 	Distance          float32   `json:"distance,omitempty" gorm:"default:0"`
 	Status            string    `json:"status,omitempty" gorm:"not null;default:waiting for driver accept"`
 	Uid               string    `json:"uid,omitempty" gorm:"default:NULL"`

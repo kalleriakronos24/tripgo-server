@@ -12,7 +12,7 @@ import (
 var configuration = onesignal.NewConfiguration()
 var apiClient = onesignal.NewAPIClient(configuration)
 
-func PushNotificationSingleExternalId(deviceId string, msgParam string) {
+func PushNotificationSingleExternalId(deviceId string, msgParam string) error {
 	appId := config.AppConfig.OneSignalAppID
 	restApiKey := config.AppConfig.OneSignalRestApiKey
 	osAuthCtx := context.WithValue(
@@ -23,9 +23,8 @@ func PushNotificationSingleExternalId(deviceId string, msgParam string) {
 
 	notification := *onesignal.NewNotification(appId)
 	notification.IncludeExternalUserIds = []string{deviceId}
-	notification.SetIsAndroid(true)
-	// notification.SetIsIos(true)
-	notification.SetPriority(10)
+	// notification.SetIsAndroid(true)
+	notification.SetPriority(8)
 	message := msgParam
 	stringMap := onesignal.StringMap{En: &message}
 	notification.Contents = *onesignal.NewNullableStringMap(&stringMap)
@@ -35,11 +34,13 @@ func PushNotificationSingleExternalId(deviceId string, msgParam string) {
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `CreateNotification`: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
-		return
+		return err
 	}
 
 	fmt.Fprintf(os.Stdout, "Response from `CreateNotification`: %v\n", resp)
 	fmt.Fprintf(os.Stdout, "Notification ID: %v\n", resp.GetId())
+
+	return err
 }
 
 // TODO
@@ -55,7 +56,6 @@ func PushNotificationMultipleExternalId(deviceId []string) {
 	notification := *onesignal.NewNotification(appId)
 	notification.IncludeExternalUserIds = deviceId
 	notification.SetIncludedSegments([]string{"Subscribed Users"})
-	// notification.SetIsIos(false)
 	message := "Go Test Notification"
 	stringMap := onesignal.StringMap{En: &message}
 	notification.Contents = *onesignal.NewNullableStringMap(&stringMap)

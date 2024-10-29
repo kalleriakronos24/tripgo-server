@@ -78,6 +78,9 @@ func (module *module) InsertBookingTransfer(p *dto.InsertBookingTransfer) (err e
 		Price:             p.Price,
 		CarModelID:        p.CarModelID,
 		CustomerID:        p.CustomerID,
+		AddPickupPoint:    p.AddPickupPoint,
+		AddDropPoint:      p.AddDropoffPoint,
+		GrandTotal:        p.GrandTotal,
 		Uid:               fmt.Sprintf("TRF/%v%v/%v", utils.IntegerToRoman(currentYear), utils.IntegerToRoman(month), randomUid),
 	}, tx); err != nil {
 		tx.Rollback()
@@ -94,13 +97,26 @@ func (module *module) InsertBookingTransfer(p *dto.InsertBookingTransfer) (err e
 		return errors.New(err.Error())
 	}
 
-	formattedNotificationMessage := fmt.Sprintf("Booking Transfer Request \n %v \n %v Person Pax x %v Luggagge \n Pickup Date %v \n Notes: %v \n Price: %v", carManagement.Name, carManagement.CarModel.PersonCount, carManagement.CarModel.LuggageCount, utils.ConvertEnToIDDateTime(bookingTransfer.PickUpDate), bookingTransfer.PassengerNotes, bookingTransfer.Price)
-
+	formattedNotificationMessage := fmt.Sprintf("Booking Transfer Request <br/> %v <br/> %v Person Pax x %v Luggagge <br/> Pickup Date %v <br/> Notes: %v <br/> Price: %v", carManagement.Name, carManagement.CarModel.PersonCount, carManagement.CarModel.LuggageCount, utils.ConvertEnToIDDateTime(bookingTransfer.PickUpDate), bookingTransfer.PassengerNotes, bookingTransfer.GrandTotal)
 	// send notification to the selected driver
-	onesignal.PushNotificationSingleExternalId(driverBalance.Driver.Credentials.Email, formattedNotificationMessage)
+	if err = onesignal.PushNotificationSingleExternalId(driverBalance.Driver.Credentials.Email, formattedNotificationMessage); err != nil {
+		return errors.New(err.Error())
+	}
+
+	// send backup email to the driver
+	if err = mail.SendMailV3(&mail.TSendMail{
+		From:    "WadahGo <notification@wadahgo.com>",
+		MailTo:  driverBalance.Driver.Credentials.Email,
+		Subject: "Booking Transfer Received",
+		Body: fmt.Sprintf(`<html><body>
+		<p>%v</p>
+		</body></html>`, formattedNotificationMessage),
+	}); err != nil {
+		return errors.New(err.Error())
+	}
 
 	tx.Commit()
-	return
+	return err
 }
 
 func (module *module) UpdateBookingTransfer(id uuid.UUID, p *dto.UpdateBookingTransfer) (err error) {
@@ -171,11 +187,10 @@ func (module *module) CustomerCancelBooking(id uuid.UUID) (err error) {
 	}); err != nil {
 		return errors.New(err.Error())
 	}
-
 	formattedNotificationMessage := fmt.Sprintf("Booking Transfer Cancelled \n We are sorry that your Booking was cancelled by the Passenger %v", bookingTransferAssigned.BookingTransfer.Customer.Name)
-
 	// send notification to the selected driver
 	onesignal.PushNotificationSingleExternalId(bookingTransferAssigned.CarManagement.Driver.Credentials.Email, formattedNotificationMessage)
+
 	tx.Commit()
 	return
 }

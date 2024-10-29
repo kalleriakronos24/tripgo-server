@@ -21,6 +21,9 @@ type InsertBookingTransfer struct {
 	PickUpDate        time.Time `json:"pickUpDate,omitempty"`
 	CarModelID        uuid.UUID `json:"carModelId"`
 	Price             float32   `json:"price,omitempty"`
+	GrandTotal        float32   `json:"grandTotal,omitempty"`
+	AddPickupPoint    int       `json:"addPickupPoint,omitempty"`
+	AddDropoffPoint   int       `json:"addDropoffPoint,omitempty"`
 }
 
 type UpdateBookingTransfer struct {
@@ -38,4 +41,7 @@ type UpdateBookingTransfer struct {
 	PickUpDate        time.Time `json:"pickUpDate,omitempty" validate:"required"`
 	CarModelID        uuid.UUID `json:"carModelId"`
 	Price             float32   `json:"price,omitempty" validate:"required"`
+	GrandTotal        float32   `json:"grandTotal,omitempty"`
+	AddPickupPoint    int       `json:"addPickupPoint,omitempty"`
+	AddDropoffPoint   int       `json:"addDropoffPoint,omitempty"`
 }

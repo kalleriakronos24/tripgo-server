@@ -56,6 +56,9 @@ func POSTBookingTransfer(c *gin.Context) {
 		PickUpDate:        pValidator.PickUpDate,
 		CarModelID:        pValidator.CarModelID,
 		Price:             pValidator.Price,
+		GrandTotal:        pValidator.GrandTotal,
+		AddPickupPoint:    pValidator.AddPickupPoint,
+		AddDropoffPoint:   pValidator.AddDropoffPoint,
 		CustomerID:        cred.CredentialCustomer.ID,
 		TotalDistance:     pValidator.TotalDistance,
 	}

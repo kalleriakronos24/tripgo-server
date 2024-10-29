@@ -82,6 +82,6 @@ func SendMailV3(p *TSendMail) (err error) {
 		return err
 	} else {
 		fmt.Println("HTML Email sent successfully")
+		return nil
 	}
-	return err
 }
