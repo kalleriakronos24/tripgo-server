@@ -24,10 +24,10 @@ func init() {
 }
 func runServer() {
 	/*
-	* set server timezone to Jakarta, Indonesia
+	* set server timezone to KL, Malaysia
 	* so is any request from client will converted to our TimeZone
 	 */
-	loc, err := time.LoadLocation("Asia/Jakarta")
+	loc, err := time.LoadLocation("Asia/Kuala_Lumpur")
 	if err != nil {
 		log.Fatalln(err)
 		return
@@ -35,9 +35,9 @@ func runServer() {
 	time.Local = loc
 	// swagger configs
 	docs.SwaggerInfo.Title = "Swagger Example API"
-	docs.SwaggerInfo.Description = "This is a sample server Booklap server."
+	docs.SwaggerInfo.Description = "This is a sample server Khaimal Group server."
 	docs.SwaggerInfo.Version = "1.0"
-	docs.SwaggerInfo.Host = "srv.wadahgo.com"
+	docs.SwaggerInfo.Host = "localhost:3009"
 	docs.SwaggerInfo.BasePath = "/api/v1"
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 	//automatic database backup

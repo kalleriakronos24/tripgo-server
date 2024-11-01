@@ -669,6 +669,54 @@
                 }
             }
         },
+        "/booking/transfer/rating": {
+            "post": {
+                "description": "A POST Request to give a driver's car a rating based on completed booking",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking Transfer - Rating"
+                ],
+                "summary": "Method to give rating to the driver car",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer \u003cAdd access token here\u003e",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "insert booking transfer rating",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.InsertBookingTransferRating"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/car-management/create": {
             "post": {
                 "description": "A POST Request to create a car and assigned to the driver whose creating it",
@@ -1115,6 +1163,23 @@
                 },
                 "totalDistance": {
                     "type": "number"
+                }
+            }
+        },
+        "dto.InsertBookingTransferRating": {
+            "type": "object",
+            "properties": {
+                "bookingTransferAssignedID": {
+                    "type": "string"
+                },
+                "carManagementId": {
+                    "type": "string"
+                },
+                "customerId": {
+                    "type": "string"
+                },
+                "rating": {
+                    "type": "integer"
                 }
             }
         },

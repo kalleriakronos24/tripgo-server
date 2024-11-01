@@ -22,12 +22,12 @@ type HandlerFunc interface {
 	UpdateDeviceToken(token string, credentialId uuid.UUID) (err error)
 	// Credentials
 	RetrieveEntityCredentialsByUserID(userId uuid.UUID) (m masterModels.Credentials, err error)
-	// Booking - Transfer
+	// Booking Transfer
 	InsertBookingTransfer(p *dto.InsertBookingTransfer) (err error)
 	UpdateBookingTransfer(id uuid.UUID, p *dto.UpdateBookingTransfer) (err error)
 	RetrieveAllBookingTransferByCustomer(id uuid.UUID) (m []*models.BookingTransfer, err error)
 	CustomerCancelBooking(id uuid.UUID) (err error)
-	// Booking Assigned - Transfer
+	// Booking Transfer - Assigned
 	RetrieveBookingTransferAssignedByDriverID(userId uuid.UUID) (m []models.BookingTransferAssigned, err error)
 	RetrieveBookingTransferAcceptedByDriverID(userId uuid.UUID) (m []models.BookingTransferAssigned, err error)
 	RetrieveBookingTransferCancelledByDriverID(userId uuid.UUID) (m []models.BookingTransferAssigned, err error)
@@ -38,6 +38,8 @@ type HandlerFunc interface {
 	OngoingBookingTransfer(id uuid.UUID) (err error)
 	CompleteBookingTransfer(id uuid.UUID) (err error)
 	CompletePickupBooking(id uuid.UUID) (err error)
+	// Booking Transfer - Rating
+	InsertBookingTransferRating(p *dto.InsertBookingTransferRating) (err error)
 	// CAR MANAGEMENT
 	InsertCarManagement(c *gin.Context, p *dto.InsertCarManagement) (err error)
 	UpdateCarManagement(c *gin.Context, p *dto.UpdateCarManagement, id uuid.UUID) (err error)
@@ -74,6 +76,7 @@ type dbEntity struct {
 	carModel                masterModels.CarModelModelAction
 	bookingTransfer         models.BookingTransferModelAction
 	bookingTransferAssigned models.BookingTransferAssignedModelAction
+	bookingTransferRating   models.BookingTransferRatingModelAction
 }
 
 type GenerateDocumentOutput struct {
@@ -100,6 +103,7 @@ func InitializeServices() (err error) {
 			bookingTransfer:         models.NewBookingTransferAction(db),
 			balanceDriver:           models.NewBalanceDriverAction(db),
 			bookingTransferAssigned: models.NewBookingTransferAssignedAction(db),
+			bookingTransferRating:   models.NewBookingTransferRatingAction(db),
 		},
 	}
 	return

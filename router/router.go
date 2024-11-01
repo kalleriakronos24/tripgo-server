@@ -48,7 +48,6 @@ func InitializeRouter() (router *gin.Engine) {
 	configCors.AllowOrigins = str
 	router.Use(cors.New(configCors), middleware.AuthMiddleware)
 
-	// commonRoute := router.Group("/")
 	v1route := router.Group("/api/v1")
 	v1route.Use()
 	{
@@ -119,6 +118,11 @@ func InitializeRouter() (router *gin.Engine) {
 			bookingTransferAssigned.POST("/ongoing/:id", utils.AuthOnly, v1.POSTOngoingBookingTransfer)
 			bookingTransferAssigned.POST("/pickup/:id", utils.AuthOnly, v1.POSTPickupBookingTransfer)
 			bookingTransferAssigned.POST("/complete/:id", utils.AuthOnly, v1.POSTCompleteBookingTransfer)
+		}
+
+		bookingTransferRating := v1route.Group("/booking/transfer/rating")
+		{
+			bookingTransferRating.POST("", utils.AuthOnly, v1.POSTCreateBookingTransferRating)
 		}
 
 		carManagement := v1route.Group("/car-management")

@@ -76,7 +76,7 @@ func (o *BookingTransferOrm) GetAllByCustomerID(id uuid.UUID) (BookingTransfer [
 		Preload("CarModel").
 		Preload("Customer").
 		Preload("BookingTransferAssigned", func(db *gorm.DB) *gorm.DB {
-			return db.Preload("CarManagement", func(dbx *gorm.DB) *gorm.DB {
+			return db.Preload("BookingTransferRating").Preload("CarManagement", func(dbx *gorm.DB) *gorm.DB {
 				return dbx.Preload("Driver")
 			})
 		}).

@@ -68,6 +68,17 @@ definitions:
       totalDistance:
         type: number
     type: object
+  dto.InsertBookingTransferRating:
+    properties:
+      bookingTransferAssignedID:
+        type: string
+      carManagementId:
+        type: string
+      customerId:
+        type: string
+      rating:
+        type: integer
+    type: object
   dto.Response:
     properties:
       code:
@@ -565,6 +576,39 @@ paths:
       summary: Method to cancel booking transfer by customer
       tags:
       - Booking - Transfer
+  /booking/transfer/rating:
+    post:
+      consumes:
+      - application/json
+      description: A POST Request to give a driver's car a rating based on completed
+        booking
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: insert booking transfer rating
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.InsertBookingTransferRating'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Method to give rating to the driver car
+      tags:
+      - Booking Transfer - Rating
   /car-management/create:
     post:
       consumes:

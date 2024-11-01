@@ -26,6 +26,8 @@ type BookingTransferAssigned struct {
 
 	BookingTransfer *BookingTransfer      `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;foreignKey:BookingTransferID;references:ID" json:"bookingTransfer,omitempty"`
 	CarManagement   *master.CarManagement `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;foreignKey:CarManagementID;references:ID" json:"carManagement,omitempty"`
+
+	BookingTransferRating *BookingTransferRating `json:"bookingTransferRating,omitempty"`
 	types.DefaultModelProperty
 }
 
