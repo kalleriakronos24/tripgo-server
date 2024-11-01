@@ -33,6 +33,10 @@ definitions:
     type: object
   dto.InsertBookingTransfer:
     properties:
+      addDropoffPoint:
+        type: integer
+      addPickupPoint:
+        type: integer
       adultSeater:
         type: integer
       carModelId:
@@ -45,6 +49,8 @@ definitions:
         type: number
       fromLocation:
         type: string
+      grandTotal:
+        type: number
       id:
         type: string
       passengerNotes:
@@ -263,17 +269,22 @@ paths:
       summary: List Booking Transfer Assigned
       tags:
       - Booking Assgined - Transfer
-  /booking-assigned/transfer/accept:
+  /booking-assigned/transfer/accept/{id}:
     get:
       consumes:
       - application/json
-      description: A GET Request to fetch a all records for driver to view booking
-        transfer that assigned and whose are not accepted by the driver
+      description: A POST Request for Driver to Accept specific booking transfer by
+        it's ID
       parameters:
       - default: Bearer <Add access token here>
         description: Insert your access token
         in: header
         name: Authorization
+        required: true
+        type: string
+      - description: Booking Transfer Assigned ID
+        in: path
+        name: id
         required: true
         type: string
       produces:
@@ -287,7 +298,7 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/dto.Response'
-      summary: Method to accept booking transfer request
+      summary: Method to accept booking transfer
       tags:
       - Booking Assgined - Transfer
   /booking-assigned/transfer/accepted:
@@ -321,13 +332,18 @@ paths:
     get:
       consumes:
       - application/json
-      description: A GET Request to fetch a all records for driver to view booking
-        transfer that assigned and whose are not accepted by the driver
+      description: A POST Request for Driver to Cancel specific booking transfer by
+        it's ID
       parameters:
       - default: Bearer <Add access token here>
         description: Insert your access token
         in: header
         name: Authorization
+        required: true
+        type: string
+      - description: Booking Transfer Assigned ID
+        in: path
+        name: id
         required: true
         type: string
       produces:
@@ -402,13 +418,50 @@ paths:
     get:
       consumes:
       - application/json
-      description: A GET Request to fetch a all records for driver to view booking
-        transfer that assigned and whose are not accepted by the driver
+      description: A POST Request for Driver to set Complete Pickup specific booking
+        transfer by it's ID
       parameters:
       - default: Bearer <Add access token here>
         description: Insert your access token
         in: header
         name: Authorization
+        required: true
+        type: string
+      - description: Booking Transfer Assigned ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Method to set status to Complete PickUp and notify passenger
+      tags:
+      - Booking Assgined - Transfer
+  /booking-assigned/transfer/ongoing/{id}:
+    get:
+      consumes:
+      - application/json
+      description: A POST Request for Driver to set status to be "OnGoing" to specific
+        booking transfer by it's ID
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Booking Transfer Assigned ID
+        in: path
+        name: id
         required: true
         type: string
       produces:
@@ -480,7 +533,7 @@ paths:
       summary: Method to get all booking transfer made by customer
       tags:
       - Booking - Transfer
-  /booking/transfer/cancel:
+  /booking/transfer/cancel/{id}:
     post:
       consumes:
       - application/json
@@ -491,6 +544,11 @@ paths:
         description: Insert your access token
         in: header
         name: Authorization
+        required: true
+        type: string
+      - description: Booking Transfer Assigned ID
+        in: path
+        name: id
         required: true
         type: string
       produces:
@@ -559,6 +617,157 @@ paths:
           schema:
             $ref: '#/definitions/dto.Response'
       summary: Method to create or assign a car to the driver
+      tags:
+      - Car Management
+  /car-management/delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: A DELETE Request to delete record car management
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Method to delete car management made by driver
+      tags:
+      - Car Management
+  /car-management/get:
+    get:
+      consumes:
+      - application/json
+      description: A GET Request to fetch a all records for driver to view list of
+        added car management that already created
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Method to get all car management made by driver
+      tags:
+      - Car Management
+  /car-management/set/active/{id}:
+    put:
+      consumes:
+      - application/json
+      description: A UPDATE Request to set record car management to active
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Method to set active car management made by driver
+      tags:
+      - Car Management
+  /car-management/set/inactive/{id}:
+    put:
+      consumes:
+      - application/json
+      description: A UPDATE Request to set record car management to inactive
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Method to set inactive car management made by driver
+      tags:
+      - Car Management
+  /car-management/update/{id}:
+    put:
+      consumes:
+      - application/json
+      description: A UPDATE Request to update record car management
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - in: formData
+        name: carModelId
+        required: true
+        type: string
+      - in: formData
+        name: licensePhoto
+        type: string
+      - in: formData
+        name: name
+        required: true
+        type: string
+      - in: formData
+        name: plateNumber
+        required: true
+        type: string
+      - description: front car photo upload
+        in: formData
+        name: frontCarPhoto
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Method to update car management made by driver
       tags:
       - Car Management
   /web/statistic/customer:

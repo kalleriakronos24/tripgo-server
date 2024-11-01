@@ -150,7 +150,8 @@ func GETCountBookingTransferByCustomer(c *gin.Context) {
 // @Success      200 {object}	dto.Response
 // @Failure      400 {object}	dto.Response
 // @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
-// @Router       /booking/transfer/cancel [post]
+// @Param        id   path      string  true  "Booking Transfer Assigned ID"
+// @Router       /booking/transfer/cancel/{id} [post]
 func POSTCancelBookingTransferByCustomer(c *gin.Context) {
 	var err error
 

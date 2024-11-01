@@ -22,14 +22,14 @@ type CheckExistingBookingTransferStruct struct {
 
 func (module *module) RetrieveBookingTransferByUserID(userId uuid.UUID) (m models.BookingTransfer, err error) {
 	if m, err = module.db.bookingTransfer.GetOneByID(userId); err != nil {
-		return m, fmt.Errorf("%s", err.Error())
+		return m, errors.New("failed to get booking transfers")
 	}
 	return
 }
 
 func (module *module) RetrieveAllBookingTransferByCustomer(id uuid.UUID) (m []*models.BookingTransfer, err error) {
 	if m, err = module.db.bookingTransfer.GetAllByCustomerID(id); err != nil {
-		return m, fmt.Errorf("%s", err.Error())
+		return m, errors.New("failed to get booking transfers")
 	}
 	return
 }
@@ -38,13 +38,6 @@ func (module *module) InsertBookingTransfer(p *dto.InsertBookingTransfer) (err e
 
 	tx := database.GetDatabaseConnection().Begin()
 
-	// get all available drivers
-	// with
-	// 1. enough balance
-	// 2. driver is active and not on ride/active booking
-	// 3. has the request car from the customer
-	// 4. internal driver has 90% chance to get order
-	// 5. external driver has 20% chance to get order
 	var driverBalance *models.BalanceDriver
 	if driverBalance, err = module.db.balanceDriver.GetAllDriverHasEnoughBalance(float64(p.Price), p.CarModelID); err != nil {
 		tx.Rollback()

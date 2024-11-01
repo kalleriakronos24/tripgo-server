@@ -40,6 +40,11 @@ type HandlerFunc interface {
 	CompletePickupBooking(id uuid.UUID) (err error)
 	// CAR MANAGEMENT
 	InsertCarManagement(c *gin.Context, p *dto.InsertCarManagement) (err error)
+	UpdateCarManagement(c *gin.Context, p *dto.UpdateCarManagement, id uuid.UUID) (err error)
+	DeleteCarManagement(c *gin.Context, id uuid.UUID) (err error)
+	RetrieveCarManagementrByUserID(userId uuid.UUID) (m []masterModels.CarManagement, err error)
+	SetCarManagementInactive(c *gin.Context, id uuid.UUID) (err error)
+	SetCarManagementActive(c *gin.Context, id uuid.UUID) (err error)
 	// AUTH - CUSTOMER
 	RegisterCustomer(credentials *dto.CustomerSignup) (err error)
 	RetrieveEntityCustomerByUserID(userId uuid.UUID) (m masterModels.Customer, err error)

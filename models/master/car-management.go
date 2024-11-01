@@ -22,6 +22,7 @@ type CarManagement struct {
 	FrontCarPhoto     string    `json:"frontCarPhoto,omitempty" gorm:"default:NULL"`
 	LicensePhoto      string    `json:"licensePhoto,omitempty" gorm:"default:NULL"`
 	CarManagementType string    `json:"carType,omitempty" gorm:"default:external"`
+	FileName          string    `json:"fileName,omitempty" gorm:"default:NULL"`
 	Status            string    `json:"status,omitempty" binding:"required" gorm:"not null;default:active;"`
 
 	CarModelID uuid.UUID `json:"carModelId" gorm:"type:uuid;not null"`
@@ -41,6 +42,7 @@ type CarManagementModelAction interface {
 	GetOneByEmail(email string) (m CarManagement, err error)
 	GetAllCarManagementPaginated(c *gin.Context, CarManagementId uuid.UUID) (*database.Pagination, error)
 	GetOneByCarModelIDAndAvailable(id uuid.UUID, driverId uuid.UUID) (CarManagement CarManagement, err error)
+	GetAllCarManagementByDriverID(driverId uuid.UUID) (CarManagement []CarManagement, err error)
 
 	InsertCarManagement(p CarManagement) (err error)
 	UpdateCarManagementToInactive(id uuid.UUID, tx *gorm.DB) (err error)
@@ -71,11 +73,27 @@ func (o *CarManagementOrm) GetOneByID(id uuid.UUID) (CarManagement CarManagement
 	return CarManagement, result.Error
 }
 
+func (o *CarManagementOrm) GetOneByDriverIdAndCarManagementId(id uuid.UUID) (CarManagement CarManagement, err error) {
+	result := o.db.Model(&CarManagement).
+		Where("driver_id = ?", id).
+		Preload(clause.Associations).
+		First(&CarManagement)
+	return CarManagement, result.Error
+}
+
 func (o *CarManagementOrm) GetOneByCarModelIDAndAvailable(id uuid.UUID, driverId uuid.UUID) (CarManagement CarManagement, err error) {
 	result := o.db.Model(&CarManagement).
 		Where("car_model_id = ? AND status = ?", id, "active").
 		Preload(clause.Associations).
 		First(&CarManagement)
+	return CarManagement, result.Error
+}
+
+func (o *CarManagementOrm) GetAllCarManagementByDriverID(driverId uuid.UUID) (CarManagement []CarManagement, err error) {
+	result := o.db.Model(&CarManagement).
+		Where("driver_id", driverId).
+		Preload(clause.Associations).
+		Find(&CarManagement)
 	return CarManagement, result.Error
 }
 

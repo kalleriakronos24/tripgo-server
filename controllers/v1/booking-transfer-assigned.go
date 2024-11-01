@@ -187,15 +187,16 @@ func GETAllBookingTransferCompletedByDriverID(c *gin.Context) {
 }
 
 // AuthLogin godoc
-// @Summary      Method to accept booking transfer request
-// @Description  A GET Request to fetch a all records for driver to view booking transfer that assigned and whose are not accepted by the driver
+// @Summary      Method to accept booking transfer
+// @Description  A POST Request for Driver to Accept specific booking transfer by it's ID
 // @Tags         Booking Assgined - Transfer
 // @Accept       json
 // @Produce      json
 // @Success      200 {object}	dto.Response
 // @Failure      400 {object}	dto.Response
 // @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
-// @Router       /booking-assigned/transfer/accept [get]
+// @Param        id   path      string  true  "Booking Transfer Assigned ID"
+// @Router       /booking-assigned/transfer/accept/{id} [get]
 func POSTAcceptBookingTransfer(c *gin.Context) {
 	var err error
 
@@ -223,13 +224,14 @@ func POSTAcceptBookingTransfer(c *gin.Context) {
 
 // AuthLogin godoc
 // @Summary      Method to cancel booking transfer request
-// @Description  A GET Request to fetch a all records for driver to view booking transfer that assigned and whose are not accepted by the driver
+// @Description  A POST Request for Driver to Cancel specific booking transfer by it's ID
 // @Tags         Booking Assgined - Transfer
 // @Accept       json
 // @Produce      json
 // @Success      200 {object}	dto.Response
 // @Failure      400 {object}	dto.Response
 // @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
+// @Param        id   path      string  true  "Booking Transfer Assigned ID"
 // @Router       /booking-assigned/transfer/cancel [get]
 func POSTCancelBookingTransfer(c *gin.Context) {
 	var err error
@@ -259,14 +261,15 @@ func POSTCancelBookingTransfer(c *gin.Context) {
 
 // AuthLogin godoc
 // @Summary      Method to set status to ongoing and notify passenger that driver on it's way to pickup
-// @Description  A GET Request to fetch a all records for driver to view booking transfer that assigned and whose are not accepted by the driver
+// @Description  A POST Request for Driver to set status to be "OnGoing" to specific booking transfer by it's ID
 // @Tags         Booking Assgined - Transfer
 // @Accept       json
 // @Produce      json
 // @Success      200 {object}	dto.Response
 // @Failure      400 {object}	dto.Response
 // @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
-// @Router       /booking-assigned/transfer/ongoing [get]
+// @Param        id   path      string  true  "Booking Transfer Assigned ID"
+// @Router       /booking-assigned/transfer/ongoing/{id} [get]
 func POSTOngoingBookingTransfer(c *gin.Context) {
 	var err error
 
@@ -294,14 +297,15 @@ func POSTOngoingBookingTransfer(c *gin.Context) {
 }
 
 // AuthLogin godoc
-// @Summary      Method to set status to ongoing and notify passenger that driver on it's way to pickup
-// @Description  A GET Request to fetch a all records for driver to view booking transfer that assigned and whose are not accepted by the driver
+// @Summary      Method to set status to complete and notify passenger
+// @Description  A POST Request for Driver to set Complete specific booking transfer by it's ID
 // @Tags         Booking Assgined - Transfer
 // @Accept       json
 // @Produce      json
 // @Success      200 {object}	dto.Response
 // @Failure      400 {object}	dto.Response
 // @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
+// @Param        id   path      string  true  "Booking Transfer Assigned ID"
 // @Router       /booking-assigned/transfer/ongoing [get]
 func POSTCompleteBookingTransfer(c *gin.Context) {
 	var err error
@@ -324,14 +328,15 @@ func POSTCompleteBookingTransfer(c *gin.Context) {
 }
 
 // AuthLogin godoc
-// @Summary      Method to set status to ongoing and notify passenger that driver on it's way to pickup
-// @Description  A GET Request to fetch a all records for driver to view booking transfer that assigned and whose are not accepted by the driver
+// @Summary      Method to set status to Complete PickUp and notify passenger
+// @Description  A POST Request for Driver to set Complete Pickup specific booking transfer by it's ID
 // @Tags         Booking Assgined - Transfer
 // @Accept       json
 // @Produce      json
 // @Success      200 {object}	dto.Response
 // @Failure      400 {object}	dto.Response
 // @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
+// @Param        id   path      string  true  "Booking Transfer Assigned ID"
 // @Router       /booking-assigned/transfer/ongoing [get]
 func POSTPickupBookingTransfer(c *gin.Context) {
 	var err error

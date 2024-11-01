@@ -124,6 +124,10 @@ func InitializeRouter() (router *gin.Engine) {
 		carManagement := v1route.Group("/car-management")
 		{
 			carManagement.POST("/create", utils.AuthOnly, v1.POSTCreateCarManagement)
+			carManagement.PUT("/update/:id", utils.AuthOnly, v1.PUTUpdateCarManagementByID)
+			carManagement.DELETE("/delete/:id", utils.AuthOnly, v1.DELCarManagementByID)
+			carManagement.PUT("/set/active/:id", utils.AuthOnly, v1.UPDCarManagementToActiveByID)
+			carManagement.PUT("/set/inactive/:id", utils.AuthOnly, v1.UPDCarManagementToInactiveByID)
 		}
 
 		webStatistic := v1route.Group("/web/statistic/customer")

@@ -254,9 +254,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/booking-assigned/transfer/accept": {
+        "/booking-assigned/transfer/accept/{id}": {
             "get": {
-                "description": "A GET Request to fetch a all records for driver to view booking transfer that assigned and whose are not accepted by the driver",
+                "description": "A POST Request for Driver to Accept specific booking transfer by it's ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -266,7 +266,7 @@ const docTemplate = `{
                 "tags": [
                     "Booking Assgined - Transfer"
                 ],
-                "summary": "Method to accept booking transfer request",
+                "summary": "Method to accept booking transfer",
                 "parameters": [
                     {
                         "type": "string",
@@ -274,6 +274,13 @@ const docTemplate = `{
                         "description": "Insert your access token",
                         "name": "Authorization",
                         "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Booking Transfer Assigned ID",
+                        "name": "id",
+                        "in": "path",
                         "required": true
                     }
                 ],
@@ -334,7 +341,7 @@ const docTemplate = `{
         },
         "/booking-assigned/transfer/cancel": {
             "get": {
-                "description": "A GET Request to fetch a all records for driver to view booking transfer that assigned and whose are not accepted by the driver",
+                "description": "A POST Request for Driver to Cancel specific booking transfer by it's ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -352,6 +359,13 @@ const docTemplate = `{
                         "description": "Insert your access token",
                         "name": "Authorization",
                         "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Booking Transfer Assigned ID",
+                        "name": "id",
+                        "in": "path",
                         "required": true
                     }
                 ],
@@ -451,7 +465,53 @@ const docTemplate = `{
         },
         "/booking-assigned/transfer/ongoing": {
             "get": {
-                "description": "A GET Request to fetch a all records for driver to view booking transfer that assigned and whose are not accepted by the driver",
+                "description": "A POST Request for Driver to set Complete Pickup specific booking transfer by it's ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking Assgined - Transfer"
+                ],
+                "summary": "Method to set status to Complete PickUp and notify passenger",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer \u003cAdd access token here\u003e",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Booking Transfer Assigned ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/booking-assigned/transfer/ongoing/{id}": {
+            "get": {
+                "description": "A POST Request for Driver to set status to be \"OnGoing\" to specific booking transfer by it's ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -469,6 +529,13 @@ const docTemplate = `{
                         "description": "Insert your access token",
                         "name": "Authorization",
                         "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Booking Transfer Assigned ID",
+                        "name": "id",
+                        "in": "path",
                         "required": true
                     }
                 ],
@@ -567,7 +634,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/booking/transfer/cancel": {
+        "/booking/transfer/cancel/{id}": {
             "post": {
                 "description": "A POST Request to cancel the selected booking transfer and notify the assigned driver",
                 "consumes": [
@@ -587,6 +654,13 @@ const docTemplate = `{
                         "description": "Insert your access token",
                         "name": "Authorization",
                         "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Booking Transfer Assigned ID",
+                        "name": "id",
+                        "in": "path",
                         "required": true
                     }
                 ],
@@ -644,6 +718,231 @@ const docTemplate = `{
                         "type": "string",
                         "name": "driverID",
                         "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "name": "licensePhoto",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "name": "name",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "plateNumber",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "front car photo upload",
+                        "name": "frontCarPhoto",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/car-management/delete/{id}": {
+            "delete": {
+                "description": "A DELETE Request to delete record car management",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Car Management"
+                ],
+                "summary": "Method to delete car management made by driver",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer \u003cAdd access token here\u003e",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/car-management/get": {
+            "get": {
+                "description": "A GET Request to fetch a all records for driver to view list of added car management that already created",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Car Management"
+                ],
+                "summary": "Method to get all car management made by driver",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer \u003cAdd access token here\u003e",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/car-management/set/active/{id}": {
+            "put": {
+                "description": "A UPDATE Request to set record car management to active",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Car Management"
+                ],
+                "summary": "Method to set active car management made by driver",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer \u003cAdd access token here\u003e",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/car-management/set/inactive/{id}": {
+            "put": {
+                "description": "A UPDATE Request to set record car management to inactive",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Car Management"
+                ],
+                "summary": "Method to set inactive car management made by driver",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer \u003cAdd access token here\u003e",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/car-management/update/{id}": {
+            "put": {
+                "description": "A UPDATE Request to update record car management",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Car Management"
+                ],
+                "summary": "Method to update car management made by driver",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer \u003cAdd access token here\u003e",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "carModelId",
+                        "in": "formData",
+                        "required": true
                     },
                     {
                         "type": "string",
@@ -777,6 +1076,12 @@ const docTemplate = `{
         "dto.InsertBookingTransfer": {
             "type": "object",
             "properties": {
+                "addDropoffPoint": {
+                    "type": "integer"
+                },
+                "addPickupPoint": {
+                    "type": "integer"
+                },
                 "adultSeater": {
                     "type": "integer"
                 },
@@ -794,6 +1099,9 @@ const docTemplate = `{
                 },
                 "fromLocation": {
                     "type": "string"
+                },
+                "grandTotal": {
+                    "type": "number"
                 },
                 "id": {
                     "type": "string"

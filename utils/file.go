@@ -49,13 +49,13 @@ func ConvertMultipartFileToBase64(c *gin.Context, file *multipart.FileHeader, ds
 	return base64Encoding, err
 }
 
-func SaveFileToDockerVolume(c *gin.Context, folderName string, documentType string, file *multipart.FileHeader) (outputPath string, err error) {
+func SaveFileToDockerVolume(c *gin.Context, folderName string, documentType string, file *multipart.FileHeader, fileName string) (outputPath string, err error) {
 
 	workdir, err := os.Getwd()
 
 	filePath := fmt.Sprintf("../files-uploaded/%s/%s", folderName, documentType)
 	if file != nil {
-		err = c.SaveUploadedFile(file, filepath.Join(workdir, filePath, file.Filename))
+		err = c.SaveUploadedFile(file, filepath.Join(workdir, filePath, fileName))
 		if err != nil {
 			return "", err
 		}
@@ -71,7 +71,59 @@ func SaveFileToDockerVolume(c *gin.Context, folderName string, documentType stri
 		c.JSON(http.StatusBadRequest, dto.Response{Code: 401, Data: nil, Message: "Failed to save uploaded files into our server.", Error: err})
 		return "", err
 	}
+	return "", err
+}
 
+func RemoveFileFromDockerVolume(c *gin.Context, folderName string, documentType string, oldFileName string) (outputPath string, err error) {
+	workdir, err := os.Getwd()
+	if err != nil {
+		return "", errors.New("failed to get current directory")
+	}
+	oldFilePath := fmt.Sprintf("../files-uploaded/%s/%s", folderName, documentType)
+
+	err = os.Remove(filepath.Join(workdir, oldFilePath, oldFileName))
+	if err != nil {
+		return "", errors.New("failed to delete old file. try again later")
+	}
+
+	document := documentType
+	if document == "car-management" {
+		outputPath := "success"
+		return outputPath, nil
+	}
+
+	return "", err
+}
+
+func UpdateFileFromDockerVolume(c *gin.Context, folderName string, documentType string, file *multipart.FileHeader, fileName string, oldFileName string) (outputPath string, err error) {
+	workdir, err := os.Getwd()
+	if err != nil {
+		return "", errors.New("failed to get current directory")
+	}
+	filePath := fmt.Sprintf("../files-uploaded/%s/%s", folderName, documentType)
+	oldFilePath := fmt.Sprintf("../files-uploaded/%s/%s", folderName, documentType)
+
+	err = os.Remove(filepath.Join(workdir, oldFilePath, oldFileName))
+	if err != nil {
+		return "", errors.New("failed to delete old file. try again later")
+	}
+	if file != nil {
+		err = c.SaveUploadedFile(file, filepath.Join(workdir, filePath, fileName))
+		if err != nil {
+			return "", errors.New("failed to save new file. try again later")
+		}
+	}
+
+	document := documentType
+	if document == "car-management" {
+		outputPath := "success"
+		return outputPath, nil
+	}
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, dto.Response{Code: 401, Data: nil, Message: "Failed to save uploaded files into our server.", Error: err})
+		return "", err
+	}
 	return "", err
 }
 
