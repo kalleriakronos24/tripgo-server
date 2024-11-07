@@ -20,10 +20,10 @@ import (
 func (module *module) AuthenticateUser(credentials dto.CredentialSignInDto) (token string, err error) {
 	var user masterModels.Credentials
 	if user, err = module.db.credentialModel.GetOneByEmail(credentials.Email); err != nil {
-		return "", errors.New("incorrect credentials")
+		return "", errors.New("email or password is incorrect")
 	}
 	if err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(credentials.Password)); err != nil {
-		return "", errors.New("incorrect credentials")
+		return "", errors.New("email or password is incorrect")
 	}
 	return generateToken(user)
 }
