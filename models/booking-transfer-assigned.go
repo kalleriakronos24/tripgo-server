@@ -71,9 +71,9 @@ func (o *BookingTransferAssignedOrm) GetOneByEmail(email string) (m BookingTrans
 }
 
 func (o *BookingTransferAssignedOrm) GetBookingAssignedNotAcceptedByDriverID(id uuid.UUID) (m []BookingTransferAssigned, err error) {
-	result := o.db.Model(&m).Where("is_accepted = ? AND is_cancelled = ? AND is_on_going = ? AND is_picked_up = ? AND is_completed = ?", false, false, false, false, false).
+	result := o.db.Model(&m).Joins("CarmManagement").Where("is_accepted = ? AND is_cancelled = ? AND is_on_going = ? AND is_picked_up = ? AND is_completed = ? AND car_managements.driver_id = ?", false, false, false, false, false, id).
 		Preload("CarManagement", func(db *gorm.DB) *gorm.DB {
-			return db.Where("driver_id", id).Preload("CarModel").Find(&master.CarManagement{})
+			return db.Preload("CarModel").Find(&master.CarManagement{})
 		}).
 		Preload("BookingTransfer", func(db *gorm.DB) *gorm.DB {
 			return db.Preload("Customer", func(dbx *gorm.DB) *gorm.DB {
@@ -86,9 +86,9 @@ func (o *BookingTransferAssignedOrm) GetBookingAssignedNotAcceptedByDriverID(id 
 }
 
 func (o *BookingTransferAssignedOrm) GetBookingAssignedAcceptedByDriverID(id uuid.UUID) (m []BookingTransferAssigned, err error) {
-	result := o.db.Model(&m).Where("is_accepted = ? AND is_cancelled = ? AND is_on_going = ? AND is_picked_up = ? AND is_completed = ?", true, false, false, false, false).
+	result := o.db.Model(&m).Joins("CarManagement").Where("is_accepted = ? AND is_cancelled = ? AND is_on_going = ? AND is_picked_up = ? AND is_completed = ? AND car_managements.driver_id = ?", true, false, false, false, false, id).
 		Preload("CarManagement", func(db *gorm.DB) *gorm.DB {
-			return db.Where("driver_id", id).Preload("CarModel").Find(&master.CarManagement{})
+			return db.Preload("CarModel").Find(&master.CarManagement{})
 		}).
 		Preload("BookingTransfer", func(db *gorm.DB) *gorm.DB {
 			return db.Preload("Customer", func(dbx *gorm.DB) *gorm.DB {
@@ -101,9 +101,9 @@ func (o *BookingTransferAssignedOrm) GetBookingAssignedAcceptedByDriverID(id uui
 }
 
 func (o *BookingTransferAssignedOrm) GetBookingAssignedCancelledByDriverID(id uuid.UUID) (m []BookingTransferAssigned, err error) {
-	result := o.db.Model(&m).Where("is_accepted = ? AND is_cancelled = ? AND is_on_going = ? AND is_picked_up = ? AND is_completed = ?", false, true, false, false, false).
+	result := o.db.Model(&m).Where("is_accepted = ? AND is_cancelled = ? AND is_on_going = ? AND is_picked_up = ? AND is_completed = ? AND car_managements.driver_id = ?", false, true, false, false, false, id).
 		Preload("CarManagement", func(db *gorm.DB) *gorm.DB {
-			return db.Where("driver_id", id).Preload("CarModel").Find(&master.CarManagement{})
+			return db.Preload("CarModel").Find(&master.CarManagement{})
 		}).
 		Preload("BookingTransfer", func(db *gorm.DB) *gorm.DB {
 			return db.Preload("Customer", func(dbx *gorm.DB) *gorm.DB {
@@ -116,9 +116,9 @@ func (o *BookingTransferAssignedOrm) GetBookingAssignedCancelledByDriverID(id uu
 }
 
 func (o *BookingTransferAssignedOrm) GetBookingAssignedOnGoingByDriverID(id uuid.UUID) (m []BookingTransferAssigned, err error) {
-	result := o.db.Model(&m).Where("is_accepted = ? AND is_cancelled = ? AND (is_on_going = ? OR is_picked_up = ?) AND is_completed = ?", false, false, true, true, false).
+	result := o.db.Model(&m).Joins("CarManagement").Where("is_accepted = ? AND is_cancelled = ? AND (is_on_going = ? OR is_picked_up = ?) AND is_completed = ? AND car_managements.driver_id = ?", false, false, true, true, false, id).
 		Preload("CarManagement", func(db *gorm.DB) *gorm.DB {
-			return db.Where("driver_id", id).Preload("CarModel").Find(&master.CarManagement{})
+			return db.Preload("CarModel").Find(&master.CarManagement{})
 		}).
 		Preload("BookingTransfer", func(db *gorm.DB) *gorm.DB {
 			return db.Preload("Customer", func(dbx *gorm.DB) *gorm.DB {
@@ -131,9 +131,9 @@ func (o *BookingTransferAssignedOrm) GetBookingAssignedOnGoingByDriverID(id uuid
 }
 
 func (o *BookingTransferAssignedOrm) GetBookingAssignedCompletedByDriverID(id uuid.UUID) (m []BookingTransferAssigned, err error) {
-	result := o.db.Model(&m).Where("is_accepted = ? AND is_cancelled = ? AND is_on_going = ? AND is_picked_up = ? AND is_completed = ?", false, false, false, false, true).
+	result := o.db.Model(&m).Joins("CarManagement").Where("is_accepted = ? AND is_cancelled = ? AND is_on_going = ? AND is_picked_up = ? AND is_completed = ? AND car_managements.driver_id = ?", false, false, false, false, true, id).
 		Preload("CarManagement", func(db *gorm.DB) *gorm.DB {
-			return db.Where("driver_id", id).Preload("CarModel").Find(&master.CarManagement{})
+			return db.Preload("CarModel").Find(&master.CarManagement{})
 		}).
 		Preload("BookingTransfer", func(db *gorm.DB) *gorm.DB {
 			return db.Preload("Customer", func(dbx *gorm.DB) *gorm.DB {
