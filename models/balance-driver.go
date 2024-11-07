@@ -1,8 +1,6 @@
 package models
 
 import (
-	"fmt"
-
 	"github.com/google/uuid"
 	"github.com/kalleriakronos24/khaimal-group/models/master"
 	"github.com/kalleriakronos24/khaimal-group/types"
@@ -32,7 +30,7 @@ type BalanceDriverModelAction interface {
 	GetOneByEmail(email string) (m BalanceDriver, err error)
 	GetAllDriverHasEnoughBalance(price float64, carModelId uuid.UUID) (balanceDriver *BalanceDriver, err error)
 
-	InsertBalanceDriver(p BalanceDriver) (err error)
+	InsertBalanceDriver(p BalanceDriver, tx *gorm.DB) (err error)
 	DeleteBalanceDriver(id uuid.UUID, tx *gorm.DB) (err error)
 }
 
@@ -72,9 +70,8 @@ func (o *BalanceDriverOrm) GetOneByEmail(email string) (m BalanceDriver, err err
 	return m, result.Error
 }
 
-func (o *BalanceDriverOrm) InsertBalanceDriver(p BalanceDriver) (err error) {
-	fmt.Printf("%v", p)
-	result := o.db.Model(&p).Create(&p)
+func (o *BalanceDriverOrm) InsertBalanceDriver(p BalanceDriver, tx *gorm.DB) (err error) {
+	result := tx.Model(&p).Create(&p)
 	return result.Error
 }
 

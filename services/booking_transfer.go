@@ -84,6 +84,7 @@ func (module *module) InsertBookingTransfer(p *dto.InsertBookingTransfer) (err e
 	if err = module.db.bookingTransferAssigned.InsertBookingTransferAssigned(models.BookingTransferAssigned{
 		CarManagementID:   carManagement.ID,
 		BookingTransferID: bookingTransfer.ID,
+		DriverID:          driverBalance.Driver.ID,
 		IsAccepted:        utils.NewFalse(),
 	}, tx); err != nil {
 		tx.Rollback()

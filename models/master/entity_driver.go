@@ -91,7 +91,6 @@ func (o *DriverOrm) GetOneByDriverName(name string) (m Driver, err error) {
 	if m.Status == "inactive" {
 		return m, errors.New("Driver status is inactive. please ask your administartor for further information")
 	}
-
 	return m, result.Error
 }
 

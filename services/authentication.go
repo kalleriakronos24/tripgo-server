@@ -3,7 +3,6 @@ package services
 import (
 	"errors"
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/dgrijalva/jwt-go/v4"
@@ -12,10 +11,12 @@ import (
 	"github.com/kalleriakronos24/khaimal-group/constants"
 	database "github.com/kalleriakronos24/khaimal-group/db"
 	"github.com/kalleriakronos24/khaimal-group/dto"
+	"github.com/kalleriakronos24/khaimal-group/models"
 	masterModels "github.com/kalleriakronos24/khaimal-group/models/master"
 	"github.com/kalleriakronos24/khaimal-group/pkg/mail-service"
 	"github.com/kalleriakronos24/khaimal-group/templates/email"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm/clause"
 )
 
 func (module *module) AuthenticateUser(credentials dto.CredentialSignInDto) (token string, err error) {
@@ -137,6 +138,25 @@ func (module *module) RegisterDriver(credentials *dto.DriverSignup) (err error) 
 		tx.Rollback()
 		return errors.New("failed to register. try again")
 	}
+
+	var driver masterModels.Credentials
+	if txError := tx.Model(&driver).
+		Where("id = ?", cred.ID).
+		Preload(clause.Associations).
+		First(&driver); txError.Error != nil {
+		tx.Rollback()
+		return errors.New("failed to register. try again")
+	}
+	// todo
+	// fix
+	if err = module.db.balanceDriver.InsertBalanceDriver(models.BalanceDriver{
+		Amount:   3000,
+		DriverID: driver.CredentialDriver.ID,
+	}, tx); err != nil {
+		tx.Rollback()
+		return errors.New("failed to register. try again")
+	}
+
 	if err = mail.SendMailV3(&mail.TSendMail{
 		From:    "WadahGo <notification@wadahgo.com>",
 		MailTo:  cred.Email,
@@ -150,8 +170,6 @@ func (module *module) RegisterDriver(credentials *dto.DriverSignup) (err error) 
 }
 
 func generateToken(user masterModels.Credentials) (string, error) {
-
-	log.Printf("%v", user)
 	now := time.Now()
 	expiry := time.Now().Add(constants.AuthenticationTimeout)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, dto.JWTClaims{
