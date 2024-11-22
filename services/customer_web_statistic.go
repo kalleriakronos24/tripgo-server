@@ -16,6 +16,13 @@ func (module *module) RetrieveCustomerWebStatisticByUserID(userId uuid.UUID) (ct
 	return
 }
 
+func (module *module) RetrieveCustomerWebStatisticActiveByUserID(userId uuid.UUID) (ctx int64, err error) {
+	if ctx, err = module.db.bookingTransfer.GetCountByCustomerID(userId); err != nil {
+		return ctx, errors.New("failed to get statistic count")
+	}
+	return
+}
+
 func (module *module) RetrieveAllCustomerWebStatistic(id uuid.UUID) (m []master.Credentials, err error) {
 	return
 }

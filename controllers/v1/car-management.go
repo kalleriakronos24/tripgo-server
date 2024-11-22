@@ -24,6 +24,9 @@ import (
 // @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
 // @Param data formData dto.InsertFormCarManagement true "insert car management"
 // @Param frontCarPhoto formData file true "front car photo upload"
+// @Param licensePhoto formData file true "license photo upload"
+// @Param roadTaxPhoto formData file true "road tax photo upload"
+// @Param vepPhoto formData file true "vep photo upload"
 // @Router       /car-management/create [post]
 func POSTCreateCarManagement(c *gin.Context) {
 	var err error
@@ -40,6 +43,7 @@ func POSTCreateCarManagement(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
 		return
 	}
+
 	if err := utils.ValidateHTTPPayload(pValidator); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
 		return
@@ -49,6 +53,20 @@ func POSTCreateCarManagement(c *gin.Context) {
 	if fFrontCarPhotoDocument == nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", errors.New("field frontCarPhoto is required"), "cannot submit if front car photo is empty"))
 		return
+	}
+
+	fLicensePhotoDocument, _ := c.FormFile("licensePhoto")
+	if fLicensePhotoDocument == nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", errors.New("field licensePhoto is required"), "cannot submit if front license photo is empty"))
+		return
+	}
+
+	fRoadTaxPhotoDocument, _ := c.FormFile("roadTaxPhoto")
+	if fRoadTaxPhotoDocument == nil {
+	}
+
+	fVEPPhotoDocument, _ := c.FormFile("vepPhoto")
+	if fVEPPhotoDocument == nil {
 	}
 
 	var cred master.Credentials
@@ -61,11 +79,13 @@ func POSTCreateCarManagement(c *gin.Context) {
 	p := &dto.InsertCarManagement{
 		Name:              pValidator.Name,
 		PlateNumber:       pValidator.PlateNumber,
-		LicensePhoto:      pValidator.LicensePhoto,
+		LicensePhoto:      fLicensePhotoDocument,
 		CarManagementType: "internal",
 		CarModelID:        carModelid,
 		DriverID:          cred.CredentialDriver.ID,
 		FrontCarPhoto:     fFrontCarPhotoDocument,
+		RoadTaxPhoto:      fRoadTaxPhotoDocument,
+		VEPPhoto:          fVEPPhotoDocument,
 	}
 
 	if err = services.Handler.InsertCarManagement(c, p); err != nil {
@@ -102,7 +122,7 @@ func GETAllCarManagementByDriverID(c *gin.Context) {
 		return
 	}
 
-	if carManagements, err := services.Handler.RetrieveCarManagementrByUserID(cred.ID); err != nil {
+	if carManagements, err := services.Handler.RetrieveCarManagementrByUserID(cred.CredentialDriver.ID); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "car management"))
 		return
 	} else {

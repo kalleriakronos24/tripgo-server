@@ -52,3 +52,7 @@ func ETRegisterSuccess(userName string) string {
 </body>
 </html>`
 }
+
+func ETVerifyEmailOTP() {
+
+}

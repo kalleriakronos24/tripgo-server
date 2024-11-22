@@ -22,8 +22,8 @@ type Driver struct {
 	PlateNumber   string    `json:"plateNumber,omitempty" gorm:"default:NULL"`
 	LicensePhoto  string    `json:"licensePhoto,omitempty" gorm:"default:NULL"`
 	DriverType    string    `json:"driverType,omitempty" gorm:"default:internal"`
-	Status        string    `json:"status,omitempty" binding:"required" gorm:"not null;default:active;"`
-	BookingStatus string    `json:"bookingStatus,omitempty" binding:"required" gorm:"not null;default:ready;"`
+	Status        string    `json:"status,omitempty" binding:"required" gorm:"not null;default:active;"`       // active, inactive
+	BookingStatus string    `json:"bookingStatus,omitempty" binding:"required" gorm:"not null;default:ready;"` // ready, busy
 	Prob          int       `json:"prob,omitempty" binding:"required" gorm:"not null;default:95;"`
 
 	CredentialsID uuid.UUID `json:"credentialsId" gorm:"type:uuid;not null"`
@@ -45,6 +45,7 @@ type DriverModelAction interface {
 	GetAllDriverPaginated(c *gin.Context, DriverId uuid.UUID) (*database.Pagination, error)
 	InsertDriver(p Driver, tx *gorm.DB) (err error)
 	UpdateDriverToInactive(id uuid.UUID, tx *gorm.DB) (err error)
+	UpdateDriverToBusy(id uuid.UUID, tx *gorm.DB) (err error)
 	RemoveDriverFromCompany(id uuid.UUID, tx *gorm.DB) (err error)
 	DeleteDriver(id uuid.UUID, tx *gorm.DB) (err error)
 }
@@ -96,6 +97,11 @@ func (o *DriverOrm) GetOneByDriverName(name string) (m Driver, err error) {
 
 func (o *DriverOrm) UpdateDriverToInactive(id uuid.UUID, tx *gorm.DB) (err error) {
 	result := tx.Model(&Driver{}).Where("id = ?", id).Update("status", "inactive")
+	return result.Error
+}
+
+func (o *DriverOrm) UpdateDriverToBusy(id uuid.UUID, tx *gorm.DB) (err error) {
+	result := tx.Model(&Driver{}).Where("id = ?", id).Update("booking_status", "busy")
 	return result.Error
 }
 

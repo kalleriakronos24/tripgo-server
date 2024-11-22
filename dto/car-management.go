@@ -9,8 +9,10 @@ import (
 type InsertFormCarManagement struct {
 	Name              string                `form:"name" binding:"required" validate:"required"`
 	PlateNumber       string                `form:"plateNumber" binding:"required" validate:"required"`
-	FrontCarPhoto     *multipart.FileHeader `swaggerignore:"true"`
-	LicensePhoto      string                `form:"licensePhoto"`
+	FrontCarPhoto     *multipart.FileHeader `form:"frontCarPhoto" swaggerignore:"true"`
+	LicensePhoto      *multipart.FileHeader `form:"licensePhoto" swaggerignore:"true"`
+	RoadTaxPhoto      *multipart.FileHeader `form:"roadTaxPhoto" swaggerignore:"true"`
+	VEPPhoto          *multipart.FileHeader `form:"vepPhoto" swaggerignore:"true"`
 	CarManagementType string                `form:"carManagementType" binding:"required" validate:"required"`
 	CarModelID        string                `form:"carModelId" binding:"required" validate:"required,uuid4"`
 	DriverID          uuid.UUID
@@ -20,7 +22,9 @@ type InsertCarManagement struct {
 	Name              string
 	PlateNumber       string
 	FrontCarPhoto     *multipart.FileHeader
-	LicensePhoto      string
+	LicensePhoto      *multipart.FileHeader
+	RoadTaxPhoto      *multipart.FileHeader
+	VEPPhoto          *multipart.FileHeader
 	CarManagementType string
 	CarModelID        uuid.UUID
 	DriverID          uuid.UUID

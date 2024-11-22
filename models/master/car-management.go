@@ -21,6 +21,8 @@ type CarManagement struct {
 	PlateNumber       string    `json:"plateNumber,omitempty" gorm:"default:NULL"`
 	FrontCarPhoto     string    `json:"frontCarPhoto,omitempty" gorm:"default:NULL"`
 	LicensePhoto      string    `json:"licensePhoto,omitempty" gorm:"default:NULL"`
+	RoadTaxPhoto      string    `json:"roadTaxPhoto,omitempty" gorm:"default:NULL"`
+	VEPPhoto          string    `json:"vepPhoto,omitempty" gorm:"default:NULL"`
 	CarManagementType string    `json:"carType,omitempty" gorm:"default:external"`
 	FileName          string    `json:"fileName,omitempty" gorm:"default:NULL"`
 	Status            string    `json:"status,omitempty" binding:"required" gorm:"not null;default:active;"`
@@ -43,6 +45,7 @@ type CarManagementModelAction interface {
 	GetAllCarManagementPaginated(c *gin.Context, CarManagementId uuid.UUID) (*database.Pagination, error)
 	GetOneByCarModelIDAndAvailable(id uuid.UUID, driverId uuid.UUID) (CarManagement CarManagement, err error)
 	GetAllCarManagementByDriverID(driverId uuid.UUID) (CarManagement []CarManagement, err error)
+	UpdateInternalCarManagementStatus(plateNumber string, status string, tx *gorm.DB) (err error)
 
 	InsertCarManagement(p CarManagement) (err error)
 	UpdateCarManagementToInactive(id uuid.UUID, tx *gorm.DB) (err error)
@@ -92,7 +95,7 @@ func (o *CarManagementOrm) GetOneByCarModelIDAndAvailable(id uuid.UUID, driverId
 func (o *CarManagementOrm) GetAllCarManagementByDriverID(driverId uuid.UUID) (CarManagement []CarManagement, err error) {
 	result := o.db.Model(&CarManagement).
 		Where("driver_id", driverId).
-		Preload(clause.Associations).
+		Preload("CarModel").
 		Find(&CarManagement)
 	return CarManagement, result.Error
 }
@@ -104,7 +107,6 @@ func (o *CarManagementOrm) GetOneByEmail(email string) (m CarManagement, err err
 
 func (o *CarManagementOrm) GetOneByCarManagementName(name string) (m CarManagement, err error) {
 	result := o.db.Model(&m).Where("name = ?", name).First(&m)
-
 	if m.Status == "inactive" {
 		return m, errors.New("CarManagement status is inactive. please ask your administartor for further information")
 	}
@@ -118,6 +120,11 @@ func (o *CarManagementOrm) UpdateCarManagementToInactive(id uuid.UUID, tx *gorm.
 
 func (o *CarManagementOrm) RemoveCarManagementFromCompany(id uuid.UUID, tx *gorm.DB) (err error) {
 	result := tx.Model(&CarManagement{}).Where("id", id).Update("company_id", nil)
+	return result.Error
+}
+
+func (o *CarManagementOrm) UpdateInternalCarManagementStatus(plateNumber string, status string, tx *gorm.DB) (err error) {
+	result := tx.Model(&CarManagement{}).Where("status = ? AND car_management_type = ? AND plate_number = ?", "active", "internal", plateNumber).Update("status", status)
 	return result.Error
 }
 

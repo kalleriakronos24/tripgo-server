@@ -634,9 +634,6 @@ paths:
         name: driverID
         type: string
       - in: formData
-        name: licensePhoto
-        type: string
-      - in: formData
         name: name
         required: true
         type: string
@@ -647,6 +644,21 @@ paths:
       - description: front car photo upload
         in: formData
         name: frontCarPhoto
+        required: true
+        type: file
+      - description: license photo upload
+        in: formData
+        name: licensePhoto
+        required: true
+        type: file
+      - description: road tax photo upload
+        in: formData
+        name: roadTaxPhoto
+        required: true
+        type: file
+      - description: vep photo upload
+        in: formData
+        name: vepPhoto
         required: true
         type: file
       produces:

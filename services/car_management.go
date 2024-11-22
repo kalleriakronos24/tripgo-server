@@ -21,23 +21,70 @@ type CheckExistingCarManagementStruct struct {
 func (module *module) InsertCarManagement(c *gin.Context, p *dto.InsertCarManagement) (err error) {
 	tx := database.GetDatabaseConnection().Begin()
 	randomFileName, _ := utils.GenerateNumber(30)
-	fileExt := filepath.Ext(p.FrontCarPhoto.Filename)
-	uniqueFileName := fmt.Sprintf("%v%v", randomFileName, fileExt)
+	// fileExt := filepath.Ext(p.FrontCarPhoto.Filename)
+	uniqueFileName := fmt.Sprintf("%v%v", randomFileName, ".jpg")
 
 	if _, saveFileErr := utils.SaveFileToDockerVolume(c, "car-management", "front-car-photo", p.FrontCarPhoto, uniqueFileName); saveFileErr != nil {
 		return errors.New("failed to get create car management")
 	}
 
+	if _, saveFileErr := utils.SaveFileToDockerVolume(c, "car-management", "license-photo", p.FrontCarPhoto, uniqueFileName); saveFileErr != nil {
+		return errors.New("failed to get create car management")
+	}
+
+	if p.RoadTaxPhoto != nil {
+		if _, saveFileErr := utils.SaveFileToDockerVolume(c, "car-management", "road-tax-photo", p.FrontCarPhoto, uniqueFileName); saveFileErr != nil {
+			return errors.New("failed to get create car management")
+		}
+	}
+
+	if p.VEPPhoto != nil {
+		if _, saveFileErr := utils.SaveFileToDockerVolume(c, "car-management", "vep-photo", p.FrontCarPhoto, uniqueFileName); saveFileErr != nil {
+			return errors.New("failed to get create car management")
+		}
+	}
+
 	CarManagement := master.CarManagement{
 		Name:              p.Name,
 		PlateNumber:       p.PlateNumber,
-		LicensePhoto:      p.LicensePhoto,
+		LicensePhoto:      fmt.Sprintf("%s/%s/car-management/front-car-photo/%s", config.AppConfig.APPUrl, config.AppConfig.AppUrlStaticFileMainRoute, uniqueFileName),
 		CarManagementType: p.CarManagementType,
 		DriverID:          p.DriverID,
 		CarModelID:        p.CarModelID,
 		FileName:          uniqueFileName,
 		FrontCarPhoto:     fmt.Sprintf("%s/%s/car-management/front-car-photo/%s", config.AppConfig.APPUrl, config.AppConfig.AppUrlStaticFileMainRoute, uniqueFileName),
+		RoadTaxPhoto:      fmt.Sprintf("%s/%s/car-management/road-tax-photo/%s", config.AppConfig.APPUrl, config.AppConfig.AppUrlStaticFileMainRoute, uniqueFileName),
+		VEPPhoto:          fmt.Sprintf("%s/%s/car-management/vep-photo/%s", config.AppConfig.APPUrl, config.AppConfig.AppUrlStaticFileMainRoute, uniqueFileName),
 	}
+
+	if p.VEPPhoto == nil {
+		CarManagement = master.CarManagement{
+			Name:              p.Name,
+			PlateNumber:       p.PlateNumber,
+			LicensePhoto:      fmt.Sprintf("%s/%s/car-management/front-car-photo/%s", config.AppConfig.APPUrl, config.AppConfig.AppUrlStaticFileMainRoute, uniqueFileName),
+			CarManagementType: p.CarManagementType,
+			DriverID:          p.DriverID,
+			CarModelID:        p.CarModelID,
+			FileName:          uniqueFileName,
+			FrontCarPhoto:     fmt.Sprintf("%s/%s/car-management/front-car-photo/%s", config.AppConfig.APPUrl, config.AppConfig.AppUrlStaticFileMainRoute, uniqueFileName),
+			RoadTaxPhoto:      fmt.Sprintf("%s/%s/car-management/road-tax-photo/%s", config.AppConfig.APPUrl, config.AppConfig.AppUrlStaticFileMainRoute, uniqueFileName),
+		}
+	}
+
+	if p.RoadTaxPhoto == nil {
+		CarManagement = master.CarManagement{
+			Name:              p.Name,
+			PlateNumber:       p.PlateNumber,
+			LicensePhoto:      fmt.Sprintf("%s/%s/car-management/front-car-photo/%s", config.AppConfig.APPUrl, config.AppConfig.AppUrlStaticFileMainRoute, uniqueFileName),
+			CarManagementType: p.CarManagementType,
+			DriverID:          p.DriverID,
+			CarModelID:        p.CarModelID,
+			FileName:          uniqueFileName,
+			FrontCarPhoto:     fmt.Sprintf("%s/%s/car-management/front-car-photo/%s", config.AppConfig.APPUrl, config.AppConfig.AppUrlStaticFileMainRoute, uniqueFileName),
+			VEPPhoto:          fmt.Sprintf("%s/%s/car-management/vep-photo/%s", config.AppConfig.APPUrl, config.AppConfig.AppUrlStaticFileMainRoute, uniqueFileName),
+		}
+	}
+
 	if CarManagementErr := tx.Create(&CarManagement); CarManagementErr.Error != nil {
 		tx.Rollback()
 		return errors.New("failed to upload car management")
@@ -128,4 +175,40 @@ func (module *module) SetCarManagementActive(c *gin.Context, id uuid.UUID) (err 
 	}
 	tx.Commit()
 	return
+}
+
+func (module *module) SetMassInternalCarActive(c *gin.Context, plateNumbers []string) (err error) {
+	tx := database.GetDatabaseConnection().Begin()
+
+	if len(plateNumbers) < 0 {
+		return
+	}
+
+	for i := range plateNumbers {
+		if CarManagementErr := module.db.carManagementModel.UpdateInternalCarManagementStatus(plateNumbers[i], "active", tx); CarManagementErr != nil {
+			tx.Rollback()
+			return errors.New("failed to update internal car to active")
+		}
+	}
+
+	tx.Commit()
+	return err
+}
+
+func (module *module) SetMassInternalCarInactive(c *gin.Context, plateNumbers []string) (err error) {
+	tx := database.GetDatabaseConnection().Begin()
+
+	if len(plateNumbers) < 0 {
+		return
+	}
+
+	for i := range plateNumbers {
+		if CarManagementErr := module.db.carManagementModel.UpdateInternalCarManagementStatus(plateNumbers[i], "inactive", tx); CarManagementErr != nil {
+			tx.Rollback()
+			return errors.New("failed to update internal car to active")
+		}
+	}
+
+	tx.Commit()
+	return err
 }

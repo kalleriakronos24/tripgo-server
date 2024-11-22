@@ -769,11 +769,6 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "name": "licensePhoto",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
                         "name": "name",
                         "in": "formData",
                         "required": true
@@ -788,6 +783,27 @@ const docTemplate = `{
                         "type": "file",
                         "description": "front car photo upload",
                         "name": "frontCarPhoto",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "license photo upload",
+                        "name": "licensePhoto",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "road tax photo upload",
+                        "name": "roadTaxPhoto",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "vep photo upload",
+                        "name": "vepPhoto",
                         "in": "formData",
                         "required": true
                     }
