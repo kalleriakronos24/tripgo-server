@@ -56,6 +56,13 @@ type HandlerFunc interface {
 	RegisterUser(p *dto.UserSignup) (err error)
 	// WEB STATISTIC - CUSTOMER
 	RetrieveCustomerWebStatisticByUserID(userId uuid.UUID) (ctx int64, err error)
+	// DRIVER TOPUP
+	RetrieveAllDriverTopup() (m []models.DriverTopup, err error)
+	InsertDriverTopup(c *gin.Context, p *dto.InsertDriverTopup) (err error)
+	// DRIVER TOPUP HISTORY
+	RetrieveAllDriverTopupByDriver(id uuid.UUID) (m []models.DriverTransactionHistory, err error)
+	ApproveDriverTopup(c *gin.Context, p *dto.UpdateDriverTopupHistory) (err error)
+	RejectDriverTopup(c *gin.Context, p *dto.UpdateDriverTopupHistory) (err error)
 }
 
 type module struct {
@@ -63,20 +70,22 @@ type module struct {
 }
 
 type dbEntity struct {
-	conn                    *gorm.DB
-	userModel               masterModels.UserModelAction
-	credentialModel         masterModels.CredentialsModelAction
-	driverModel             masterModels.DriverModelAction
-	balanceDriver           models.BalanceDriverModelAction
-	companyModel            masterModels.CompanyModelAction
-	userCustomerModel       masterModels.CustomerModelAction
-	userDriverModel         masterModels.DriverModelAction
-	userInternalModel       masterModels.InternalModelAction
-	carManagementModel      masterModels.CarManagementModelAction
-	carModel                masterModels.CarModelModelAction
-	bookingTransfer         models.BookingTransferModelAction
-	bookingTransferAssigned models.BookingTransferAssignedModelAction
-	bookingTransferRating   models.BookingTransferRatingModelAction
+	conn                          *gorm.DB
+	userModel                     masterModels.UserModelAction
+	credentialModel               masterModels.CredentialsModelAction
+	driverModel                   masterModels.DriverModelAction
+	balanceDriver                 models.BalanceDriverModelAction
+	companyModel                  masterModels.CompanyModelAction
+	userCustomerModel             masterModels.CustomerModelAction
+	userDriverModel               masterModels.DriverModelAction
+	userInternalModel             masterModels.InternalModelAction
+	carManagementModel            masterModels.CarManagementModelAction
+	carModel                      masterModels.CarModelModelAction
+	bookingTransfer               models.BookingTransferModelAction
+	bookingTransferAssigned       models.BookingTransferAssignedModelAction
+	bookingTransferRating         models.BookingTransferRatingModelAction
+	driverTopupModel              models.DriverTopupModelAction
+	driverTransactionHistoryModel models.DriverTransactionHistoryModelAction
 }
 
 type GenerateDocumentOutput struct {
@@ -90,20 +99,22 @@ func InitializeServices() (err error) {
 
 	Handler = &module{
 		db: &dbEntity{
-			conn:                    db,
-			userModel:               masterModels.NewUserAction(db),
-			credentialModel:         masterModels.NewCredentialsAction(db),
-			driverModel:             masterModels.NewDriverAction(db),
-			companyModel:            masterModels.NewCompanyAction(db),
-			userCustomerModel:       masterModels.NewCustomerAction(db),
-			userDriverModel:         masterModels.NewDriverAction(db),
-			userInternalModel:       masterModels.NewInternalAction(db),
-			carManagementModel:      masterModels.NewCarManagementAction(db),
-			carModel:                masterModels.NewCarModelAction(db),
-			bookingTransfer:         models.NewBookingTransferAction(db),
-			balanceDriver:           models.NewBalanceDriverAction(db),
-			bookingTransferAssigned: models.NewBookingTransferAssignedAction(db),
-			bookingTransferRating:   models.NewBookingTransferRatingAction(db),
+			conn:                          db,
+			userModel:                     masterModels.NewUserAction(db),
+			credentialModel:               masterModels.NewCredentialsAction(db),
+			driverModel:                   masterModels.NewDriverAction(db),
+			companyModel:                  masterModels.NewCompanyAction(db),
+			userCustomerModel:             masterModels.NewCustomerAction(db),
+			userDriverModel:               masterModels.NewDriverAction(db),
+			userInternalModel:             masterModels.NewInternalAction(db),
+			carManagementModel:            masterModels.NewCarManagementAction(db),
+			carModel:                      masterModels.NewCarModelAction(db),
+			bookingTransfer:               models.NewBookingTransferAction(db),
+			balanceDriver:                 models.NewBalanceDriverAction(db),
+			bookingTransferAssigned:       models.NewBookingTransferAssignedAction(db),
+			bookingTransferRating:         models.NewBookingTransferRatingAction(db),
+			driverTopupModel:              models.NewDriverTopupAction(db),
+			driverTransactionHistoryModel: models.NewDriverTransactionHistoryAction(db),
 		},
 	}
 	return

@@ -37,7 +37,7 @@ import (
 
 func InitializeRouter() (router *gin.Engine) {
 	router = gin.New()
-	str := []string{"http://localhost:4321"}
+	str := []string{"http://localhost:4321", "http://localhost:3000"}
 
 	if config.AppConfig.Environment == "PRODUCTION" {
 		str = []string{"https://wadahgo.com"}
@@ -133,6 +133,20 @@ func InitializeRouter() (router *gin.Engine) {
 			carManagement.PUT("/set/active/:id", utils.AuthOnly, v1.UPDCarManagementToActiveByID)
 			carManagement.PUT("/set/inactive/:id", utils.AuthOnly, v1.UPDCarManagementToInactiveByID)
 			carManagement.DELETE("/delete/:id", utils.AuthOnly, v1.DELCarManagementByID)
+		}
+
+		driverTopup := v1route.Group("/driver-topup")
+		{
+			driverTopup.GET("/get", v1.GETAllDriverTopup)
+			driverTopup.POST("/create", utils.AuthOnly, v1.POSTCreateDriverTopup)
+			driverTopup.GET("/driver/get", utils.AuthOnly, v1.GETAllDriverTopup)
+		}
+
+		driverTopupHistory := v1route.Group("/driver-topup-history")
+		{
+			driverTopupHistory.GET("/get", utils.AuthOnly, v1.GETAllDriverTopupByDriver)
+			driverTopupHistory.GET("/approve", v1.POSTApproveDriverTopup)
+			driverTopupHistory.GET("/reject", v1.POSTRejectDriverTopup)
 		}
 
 		webStatistic := v1route.Group("/web/statistic/customer")

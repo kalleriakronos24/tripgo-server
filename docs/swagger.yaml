@@ -826,6 +826,148 @@ paths:
       summary: Method to update car management made by driver
       tags:
       - Car Management
+  /driver-topup-history/approve:
+    post:
+      consumes:
+      - application/json
+      description: A POST Request to approve driver topup request
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Method to approve driver topup request
+      tags:
+      - Driver Topup History
+  /driver-topup-history/get:
+    get:
+      consumes:
+      - application/json
+      description: A GET Request to fetch a all records driver topup
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Method to get all driver topup by drivers
+      tags:
+      - Driver Topup History
+  /driver-topup-history/reject:
+    post:
+      consumes:
+      - application/json
+      description: A POST Request to reject driver topup request
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Method to reject driver topup request
+      tags:
+      - Driver Topup History
+  /driver-topup/create:
+    post:
+      consumes:
+      - application/json
+      description: A POST Request to insert new row of driver topups
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - in: formData
+        name: amount
+        required: true
+        type: number
+      - in: formData
+        name: driverID
+        type: string
+      - description: receipt image upload
+        in: formData
+        name: receiptImage
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Method to insert new row of driver topups
+      tags:
+      - Driver Topup
+  /driver-topup/get:
+    get:
+      consumes:
+      - application/json
+      description: A GET Request to fetch a all records driver topup
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Method to get all driver topup by drivers
+      tags:
+      - Driver Topup
   /web/statistic/customer:
     get:
       consumes:

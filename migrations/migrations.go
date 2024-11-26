@@ -24,6 +24,8 @@ func Migrate() {
 		models.BookingTransferAssigned{},
 		models.BalanceDriver{},
 		models.BookingTransferRating{},
+		models.DriverTopup{},
+		models.DriverTransactionHistory{},
 	); err != nil {
 		panic(err)
 	}
@@ -40,4 +42,6 @@ func Migrate() {
 	database.DropUnusedColumns(models.BookingTransferAssigned{})
 	database.DropUnusedColumns(models.BalanceDriver{})
 	database.DropUnusedColumns(models.BookingTransferRating{})
+	database.DropUnusedColumns(models.DriverTopup{})
+	database.DropUnusedColumns(models.DriverTransactionHistory{})
 }

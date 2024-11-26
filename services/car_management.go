@@ -180,10 +180,6 @@ func (module *module) SetCarManagementActive(c *gin.Context, id uuid.UUID) (err 
 func (module *module) SetMassInternalCarActive(c *gin.Context, plateNumbers []string) (err error) {
 	tx := database.GetDatabaseConnection().Begin()
 
-	if len(plateNumbers) < 0 {
-		return
-	}
-
 	for i := range plateNumbers {
 		if CarManagementErr := module.db.carManagementModel.UpdateInternalCarManagementStatus(plateNumbers[i], "active", tx); CarManagementErr != nil {
 			tx.Rollback()
@@ -197,10 +193,6 @@ func (module *module) SetMassInternalCarActive(c *gin.Context, plateNumbers []st
 
 func (module *module) SetMassInternalCarInactive(c *gin.Context, plateNumbers []string) (err error) {
 	tx := database.GetDatabaseConnection().Begin()
-
-	if len(plateNumbers) < 0 {
-		return
-	}
 
 	for i := range plateNumbers {
 		if CarManagementErr := module.db.carManagementModel.UpdateInternalCarManagementStatus(plateNumbers[i], "inactive", tx); CarManagementErr != nil {
