@@ -54,18 +54,12 @@ func GETAllDriverTopupByDriver(c *gin.Context) {
 // @Success      200 {object}	dto.Response
 // @Failure      400 {object}	dto.Response
 // @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
+// @Param 		 data body dto.ValidatorUpdateDriverTopupHistory true "approve driver topup"
 // @Router       /driver-topup-history/approve [post]
 func POSTApproveDriverTopup(c *gin.Context) {
 	var err error
 
-	userLoggedInId := c.GetString("user_id")
-	userId, err := uuid.Parse(userLoggedInId)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("uuid-error", err, ""))
-		return
-	}
-
-	pValidator := &dto.UpdateDriverTopupHistory{}
+	pValidator := &dto.ValidatorUpdateDriverTopupHistory{}
 	if err = c.Bind(&pValidator); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
 		return
@@ -76,21 +70,17 @@ func POSTApproveDriverTopup(c *gin.Context) {
 		return
 	}
 
-	var cred master.Credentials
-	if cred, err = services.Handler.RetrieveEntityCredentialsByUserID(userId); err != nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "driver"))
-		return
-	}
-
+	driverTopupID, _ := uuid.Parse(pValidator.DriverTopupID)
+	driverId, _ := uuid.Parse(pValidator.DriverID)
 	p := &dto.UpdateDriverTopupHistory{
 		Amount:        pValidator.Amount,
-		DriverID:      cred.CredentialDriver.ID,
-		DriverTopupID: pValidator.DriverTopupID,
+		DriverID:      driverId,
+		DriverTopupID: driverTopupID,
 		Status:        pValidator.Status,
 	}
 
 	if err = services.Handler.ApproveDriverTopup(c, p); err != nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("insert-failed", err, "driver topup"))
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("insert-failed", err, "approve topup"))
 		return
 	}
 	c.JSON(http.StatusOK, dto.Response{Data: false, Message: "success"})

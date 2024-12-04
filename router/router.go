@@ -145,8 +145,13 @@ func InitializeRouter() (router *gin.Engine) {
 		driverTopupHistory := v1route.Group("/driver-topup-history")
 		{
 			driverTopupHistory.GET("/get", utils.AuthOnly, v1.GETAllDriverTopupByDriver)
-			driverTopupHistory.GET("/approve", v1.POSTApproveDriverTopup)
-			driverTopupHistory.GET("/reject", v1.POSTRejectDriverTopup)
+			driverTopupHistory.POST("/approve", v1.POSTApproveDriverTopup)
+			driverTopupHistory.POST("/reject", v1.POSTRejectDriverTopup)
+		}
+
+		driverWallet := v1route.Group("/driver-balance")
+		{
+			driverWallet.GET("/get", utils.AuthOnly, v1.GETDWalletInformationByDriver)
 		}
 
 		webStatistic := v1route.Group("/web/statistic/customer")

@@ -90,6 +90,21 @@ definitions:
       message:
         type: string
     type: object
+  dto.UpdateDriverTopupHistory:
+    properties:
+      amount:
+        type: number
+      driverID:
+        type: string
+      driverTopupId:
+        type: string
+      status:
+        type: string
+    required:
+    - amount
+    - driverTopupId
+    - status
+    type: object
   dto.UserLogin:
     properties:
       email:
@@ -838,6 +853,12 @@ paths:
         name: Authorization
         required: true
         type: string
+      - description: approve driver topup
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateDriverTopupHistory'
       produces:
       - application/json
       responses:
@@ -919,7 +940,7 @@ paths:
       - in: formData
         name: amount
         required: true
-        type: number
+        type: string
       - in: formData
         name: driverID
         type: string

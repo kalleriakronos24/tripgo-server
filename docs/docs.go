@@ -1070,6 +1070,15 @@ const docTemplate = `{
                         "name": "Authorization",
                         "in": "header",
                         "required": true
+                    },
+                    {
+                        "description": "approve driver topup",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateDriverTopupHistory"
+                        }
                     }
                 ],
                 "responses": {
@@ -1189,7 +1198,7 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "type": "number",
+                        "type": "string",
                         "name": "amount",
                         "in": "formData",
                         "required": true
@@ -1435,6 +1444,28 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UpdateDriverTopupHistory": {
+            "type": "object",
+            "required": [
+                "amount",
+                "driverTopupId",
+                "status"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "driverID": {
+                    "type": "string"
+                },
+                "driverTopupId": {
+                    "type": "string"
+                },
+                "status": {
                     "type": "string"
                 }
             }

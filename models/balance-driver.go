@@ -40,7 +40,7 @@ func NewBalanceDriverAction(db *gorm.DB) BalanceDriverModelAction {
 
 func (o *BalanceDriverOrm) GetOneByID(id uuid.UUID) (BalanceDriver BalanceDriver, err error) {
 	result := o.db.Model(&BalanceDriver).
-		Where("id = ?", id).
+		Where("driver_id = ?", id).
 		Preload(clause.Associations).
 		First(&BalanceDriver)
 	return BalanceDriver, result.Error

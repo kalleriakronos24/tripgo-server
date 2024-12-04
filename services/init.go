@@ -63,6 +63,8 @@ type HandlerFunc interface {
 	RetrieveAllDriverTopupByDriver(id uuid.UUID) (m []models.DriverTransactionHistory, err error)
 	ApproveDriverTopup(c *gin.Context, p *dto.UpdateDriverTopupHistory) (err error)
 	RejectDriverTopup(c *gin.Context, p *dto.UpdateDriverTopupHistory) (err error)
+	// DRIVER BALANCE
+	RetrieveDriverBalanceDetailByDriver(id uuid.UUID) (m models.BalanceDriver, err error)
 }
 
 type module struct {
