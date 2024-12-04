@@ -76,6 +76,30 @@ func (module *module) AcceptBookingTransfer(id uuid.UUID) (err error) {
 		return errors.New(err.Error())
 	}
 
+	// once accepted the order immediately deduct the driver balance
+	var balanceDriver models.BalanceDriver
+	if balanceDriver, err = module.db.balanceDriver.GetOneByID(bookingTransferAssigned.DriverID); err != nil {
+		return errors.New(err.Error())
+	}
+
+	if BalanceDriverErr := tx.Model(&models.BalanceDriver{}).Where("driver_id", bookingTransferAssigned.DriverID).Updates(&models.BalanceDriver{
+		Amount: balanceDriver.Amount - float64(bookingTransferAssigned.BookingTransfer.Price)*0.1,
+	}); BalanceDriverErr.Error != nil {
+		tx.Rollback()
+		return errors.New("failed to deduct driver balance")
+	}
+
+	DriverTransactionHistory := models.DriverTransactionHistory{
+		Remark:   "order deduction",
+		Status:   "deduction",
+		DriverID: bookingTransferAssigned.DriverID,
+	}
+
+	if DriverTransactionHistoryErr := tx.Create(&DriverTransactionHistory); DriverTransactionHistoryErr.Error != nil {
+		tx.Rollback()
+		return errors.New("failed to upload balance topup")
+	}
+
 	if err = mail.SendMailV3(&mail.TSendMail{
 		From:    "WadahGo <notification@wadahgo.com>",
 		MailTo:  bookingTransferAssigned.BookingTransfer.Customer.Credentials.Email,
