@@ -40,7 +40,7 @@ func InitializeRouter() (router *gin.Engine) {
 	str := []string{"http://localhost:4321", "http://localhost:3000"}
 
 	if config.AppConfig.Environment == "PRODUCTION" {
-		str = []string{"https://wadahgo.com"}
+		str = []string{"https://wadahgo.com", "http://localhost:3000"}
 	}
 
 	configCors := cors.DefaultConfig()
