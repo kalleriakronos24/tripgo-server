@@ -51,7 +51,7 @@ func (module *module) InsertDriverTopup(c *gin.Context, p *dto.InsertDriverTopup
 	DriverTopup := models.DriverTopup{
 		Uid:          fmt.Sprintf("DRV/TP/%v%v/%v", utils.IntegerToRoman(currentYear), utils.IntegerToRoman(month), randomUid),
 		Amount:       float64(p.Amount),
-		ReceiptImage: fmt.Sprintf("%s/%s/driver-topup/uploaded-receipt/%s", "http://localhost:3009/api/v1", config.AppConfig.AppUrlStaticFileMainRoute, uniqueFileName),
+		ReceiptImage: fmt.Sprintf("%s/%s/driver-topup/uploaded-receipt/%s", "https://srv.wadahgo.com/api/v1", config.AppConfig.AppUrlStaticFileMainRoute, uniqueFileName),
 		DriverID:     p.DriverID,
 	}
 
