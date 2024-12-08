@@ -150,6 +150,65 @@ func (module *module) RegisterDriver(credentials *dto.DriverSignup) (err error) 
 	// todo
 	// fix
 	if err = module.db.balanceDriver.InsertBalanceDriver(models.BalanceDriver{
+		Amount:   0,
+		DriverID: driver.CredentialDriver.ID,
+	}, tx); err != nil {
+		tx.Rollback()
+		return errors.New("failed to register. try again")
+	}
+
+	if err = mail.SendMailV3(&mail.TSendMail{
+		From:    "WadahGo <notification@wadahgo.com>",
+		MailTo:  cred.Email,
+		Subject: "Registration Success",
+		Body:    email.ETRegisterSuccess(credentials.Name),
+	}); err != nil {
+		return errors.New("server error. please try again later")
+	}
+	tx.Commit()
+	return
+}
+
+func (module *module) RegisterDriverInternal(credentials *dto.DriverSignup) (err error) {
+
+	tx := database.GetDatabaseConnection().Begin()
+
+	var hashedPassword []byte
+	if hashedPassword, err = bcrypt.GenerateFromPassword([]byte(credentials.Password), bcrypt.DefaultCost); err != nil {
+		return errors.New("server error. please try again later")
+	}
+
+	var cred *masterModels.Credentials
+
+	if cred, err = module.db.credentialModel.InsertCredentials(masterModels.Credentials{
+		Email:    credentials.Email,
+		Password: string(hashedPassword),
+	}, tx); err != nil {
+		tx.Rollback()
+		return errors.New("failed to register. try again")
+	}
+
+	if err = module.db.userDriverModel.InsertDriver(masterModels.Driver{
+		Name:          credentials.Name,
+		CredentialsID: cred.ID,
+		DriverType:    credentials.DriverType,
+		Phone:         credentials.Phone,
+	}, tx); err != nil {
+		tx.Rollback()
+		return errors.New("failed to register. try again")
+	}
+
+	var driver masterModels.Credentials
+	if txError := tx.Model(&driver).
+		Where("id = ?", cred.ID).
+		Preload(clause.Associations).
+		First(&driver); txError.Error != nil {
+		tx.Rollback()
+		return errors.New("failed to register. try again")
+	}
+	// todo
+	// fix
+	if err = module.db.balanceDriver.InsertBalanceDriver(models.BalanceDriver{
 		Amount:   3000,
 		DriverID: driver.CredentialDriver.ID,
 	}, tx); err != nil {

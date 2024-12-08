@@ -90,6 +90,13 @@ func (o *BookingTransferOrm) GetCountByCustomerID(id uuid.UUID) (ctx int64, err 
 	return ctx, result.Error
 }
 
+func (o *BookingTransferOrm) GetCountActiveByCustomerID(id uuid.UUID) (ctx int64, err error) {
+	result := o.db.Model(&BookingTransfer{}).Where("customer_id = ?", id).Preload("BookingTransferAssigned", func(db *gorm.DB) *gorm.DB {
+		return db.Where("is_completed != ? OR is_cancelled != ?", true, true).First(&BookingTransferAssigned{})
+	}).Count(&ctx)
+	return ctx, result.Error
+}
+
 func (o *BookingTransferOrm) GetOneByEmail(email string) (m BookingTransfer, err error) {
 	result := o.db.Model(&m).Where("email = ?", email).First(&m)
 	return m, result.Error

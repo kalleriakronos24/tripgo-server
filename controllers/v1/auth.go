@@ -309,3 +309,17 @@ func POSTRegisterDriver(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, dto.Response{Message: "success", Data: responseData})
 }
+
+// AuthSignup godoc
+// @Summary      Universal Reset Password
+// @Description  Universal Reset Password
+// @Tags         Authentication - Reset Password
+// @Accept       json
+// @Produce      json
+// @Success      200 {object}	dto.Response
+// @Failure      400 {object}	dto.Response
+// @Param 	 	 data body dto.DriverSignup true "universal reset password"
+// @Router       /auth/reset-password [post]
+func POSTResetPassword(c *gin.Context) {
+	
+}

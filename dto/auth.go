@@ -23,3 +23,9 @@ func (c JWTClaims) Valid(helper *jwt.ValidationHelper) (err error) {
 	}
 	return err
 }
+
+type UniversalResetPassword struct {
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required"`
+}
+
