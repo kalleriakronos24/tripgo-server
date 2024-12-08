@@ -3,6 +3,7 @@ package services
 import (
 	"errors"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/dgrijalva/jwt-go/v4"
@@ -41,34 +42,45 @@ func (module *module) UpdateDeviceToken(token string, credentialId uuid.UUID) (e
 	return err
 }
 
+// Internal / Dashboard user registration
 func (module *module) RegisterUser(credentials *dto.UserSignup) (err error) {
+	tx := database.GetDatabaseConnection().Begin()
 	var hashedPassword []byte
 	if hashedPassword, err = bcrypt.GenerateFromPassword([]byte(credentials.Password), bcrypt.DefaultCost); err != nil {
-		return errors.New("failed hashing password")
+		return errors.New("server error. please try again later")
 	}
 
-	if err = module.db.userModel.InsertUser(masterModels.User{
-		Name:      credentials.Name,
-		Email:     credentials.Email,
-		Password:  string(hashedPassword),
-		CreatedBy: credentials.CreatedBy,
-		UpdatedBy: credentials.CreatedBy,
-		Role:      "user",
-	}); err != nil {
-		return fmt.Errorf("error inserting user. %v", err)
+	var cred *masterModels.Credentials
+
+	log.Printf("%v", credentials)
+	if cred, err = module.db.credentialModel.InsertCredentials(masterModels.Credentials{
+		Email:    credentials.Email,
+		Password: string(hashedPassword),
+	}, tx); err != nil {
+		tx.Rollback()
+		return errors.New("failed to register. try again")
 	}
 
-	// mailPayload := &mail.TSendMail{}
+	if err = module.db.userInternalModel.InsertInternal(masterModels.Internal{
+		Name:          credentials.Name,
+		Email:         cred.Email,
+		Password:      string(hashedPassword),
+		Phone:         "",
+		CredentialsID: cred.ID,
+	}, tx); err != nil {
+		tx.Rollback()
+		return errors.New("failed to register. try again")
+	}
+
 	if err = mail.SendMailV3(&mail.TSendMail{
-		From:    "notification@wadahgo.com",
-		MailTo:  "credentials.Email",
-		Subject: "WadahGo - Registration Success",
-		Body: `<html><body>
-		<p>Thank You for registrering</p>
-		</body></html>`,
+		From:    "WadahGo <notification@wadahgo.com>",
+		MailTo:  cred.Email,
+		Subject: "Registration Success",
+		Body:    email.ETRegisterSuccess(credentials.Name),
 	}); err != nil {
-		return errors.New(err.Error())
+		return errors.New("server error. please try again later")
 	}
+	tx.Commit()
 	return
 }
 

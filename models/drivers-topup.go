@@ -44,6 +44,7 @@ func (o *DriverTopupOrm) GetAllTopupRequest() (DriverTopup []DriverTopup, err er
 	result := o.db.Model(&DriverTopup).
 		Preload("Driver").
 		Preload("DriverTransactionHistory").
+		Order("created_at DESC").
 		Find(&DriverTopup)
 	return DriverTopup, result.Error
 }
@@ -55,6 +56,7 @@ func (o *DriverTopupOrm) GetOneByID(id uuid.UUID) (DriverTopup DriverTopup, err 
 		First(&DriverTopup)
 	return DriverTopup, result.Error
 }
+
 func (o *DriverTopupOrm) GetOneByEmail(email string) (m DriverTopup, err error) {
 	result := o.db.Model(&m).Where("email = ?", email).First(&m)
 	return m, result.Error

@@ -175,6 +175,46 @@ const docTemplate = `{
                 }
             }
         },
+        "/auth/i/signin": {
+            "post": {
+                "description": "A Internal authentication sign-in method",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authentication - Internal"
+                ],
+                "summary": "Internal Sign-In",
+                "parameters": [
+                    {
+                        "description": "internal login",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CredentialSignInDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/auth/i/signup": {
             "post": {
                 "description": "Internal Sign-Up",
@@ -196,6 +236,46 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/dto.UserSignup"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/reset-password": {
+            "post": {
+                "description": "Universal Reset Password",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authentication - Reset Password"
+                ],
+                "summary": "Universal Reset Password",
+                "parameters": [
+                    {
+                        "description": "universal reset password",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.DriverSignup"
                         }
                     }
                 ],
@@ -1049,6 +1129,45 @@ const docTemplate = `{
                 }
             }
         },
+        "/driver-balance/get": {
+            "get": {
+                "description": "A GET Request to fetch a record by driver to check their wallet information",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Driver Balance"
+                ],
+                "summary": "Method to get wallet information by driver",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer \u003cAdd access token here\u003e",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/driver-topup-history/approve": {
             "post": {
                 "description": "A POST Request to approve driver topup request",
@@ -1077,7 +1196,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.UpdateDriverTopupHistory"
+                            "$ref": "#/definitions/dto.ValidatorUpdateDriverTopupHistory"
                         }
                     }
                 ],
@@ -1312,6 +1431,24 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "dto.CredentialSignInDto": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "deviceToken": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.CustomerSignup": {
             "type": "object",
             "required": [
@@ -1448,28 +1585,6 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.UpdateDriverTopupHistory": {
-            "type": "object",
-            "required": [
-                "amount",
-                "driverTopupId",
-                "status"
-            ],
-            "properties": {
-                "amount": {
-                    "type": "number"
-                },
-                "driverID": {
-                    "type": "string"
-                },
-                "driverTopupId": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "string"
-                }
-            }
-        },
         "dto.UserLogin": {
             "type": "object",
             "required": [
@@ -1510,6 +1625,29 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.ValidatorUpdateDriverTopupHistory": {
+            "type": "object",
+            "required": [
+                "amount",
+                "driverId",
+                "driverTopupId",
+                "status"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "driverId": {
+                    "type": "string"
+                },
+                "driverTopupId": {
+                    "type": "string"
+                },
+                "status": {
                     "type": "string"
                 }
             }

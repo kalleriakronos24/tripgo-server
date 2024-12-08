@@ -1,4 +1,16 @@
 definitions:
+  dto.CredentialSignInDto:
+    properties:
+      deviceToken:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
   dto.CustomerSignup:
     properties:
       email:
@@ -90,21 +102,6 @@ definitions:
       message:
         type: string
     type: object
-  dto.UpdateDriverTopupHistory:
-    properties:
-      amount:
-        type: number
-      driverID:
-        type: string
-      driverTopupId:
-        type: string
-      status:
-        type: string
-    required:
-    - amount
-    - driverTopupId
-    - status
-    type: object
   dto.UserLogin:
     properties:
       email:
@@ -134,6 +131,22 @@ definitions:
     - name
     - password
     - username
+    type: object
+  dto.ValidatorUpdateDriverTopupHistory:
+    properties:
+      amount:
+        type: number
+      driverId:
+        type: string
+      driverTopupId:
+        type: string
+      status:
+        type: string
+    required:
+    - amount
+    - driverId
+    - driverTopupId
+    - status
     type: object
 info:
   contact: {}
@@ -242,6 +255,32 @@ paths:
       summary: Driver Sign-Up
       tags:
       - Authentication - Driver
+  /auth/i/signin:
+    post:
+      consumes:
+      - application/json
+      description: A Internal authentication sign-in method
+      parameters:
+      - description: internal login
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CredentialSignInDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Internal Sign-In
+      tags:
+      - Authentication - Internal
   /auth/i/signup:
     post:
       consumes:
@@ -268,6 +307,32 @@ paths:
       summary: Internal Sign-Up
       tags:
       - Authentication - Internal
+  /auth/reset-password:
+    post:
+      consumes:
+      - application/json
+      description: Universal Reset Password
+      parameters:
+      - description: universal reset password
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.DriverSignup'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Universal Reset Password
+      tags:
+      - Authentication - Reset Password
   /booking-assigned/transfer:
     get:
       consumes:
@@ -841,6 +906,33 @@ paths:
       summary: Method to update car management made by driver
       tags:
       - Car Management
+  /driver-balance/get:
+    get:
+      consumes:
+      - application/json
+      description: A GET Request to fetch a record by driver to check their wallet
+        information
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Method to get wallet information by driver
+      tags:
+      - Driver Balance
   /driver-topup-history/approve:
     post:
       consumes:
@@ -858,7 +950,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/dto.UpdateDriverTopupHistory'
+          $ref: '#/definitions/dto.ValidatorUpdateDriverTopupHistory'
       produces:
       - application/json
       responses:

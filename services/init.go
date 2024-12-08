@@ -50,6 +50,8 @@ type HandlerFunc interface {
 	// AUTH - CUSTOMER
 	RegisterCustomer(credentials *dto.CustomerSignup) (err error)
 	RetrieveEntityCustomerByUserID(userId uuid.UUID) (m masterModels.Customer, err error)
+	// AUTH - INTERNAL
+	RetrieveEntityInternalByUserID(userId uuid.UUID) (m masterModels.Internal, err error)
 	// AUTH - DRIVER
 	RegisterDriver(credentials *dto.DriverSignup) (err error)
 	// AUTH - PUBLIC

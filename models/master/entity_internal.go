@@ -25,7 +25,7 @@ type Internal struct {
 	Status   string    `json:"status,omitempty" binding:"required" gorm:"not null;default:active;"`
 
 	CredentialsID uuid.UUID `json:"credentialsId" gorm:"type:uuid;not null"`
-	CompanyID     uuid.UUID `json:"companyId" gorm:"type:uuid;not null"`
+	CompanyID     uuid.UUID `json:"companyId" gorm:"type:uuid;default:NULL"`
 	CreatedBy     uuid.UUID `json:"createdBy,omitempty" gorm:"type:uuid;default:NULL"`
 	UpdatedBy     uuid.UUID `json:"updatedBy,omitempty" gorm:"type:uuid;default:NULL"`
 
@@ -41,7 +41,7 @@ type InternalModelAction interface {
 	GetOneByEmail(email string) (m Internal, err error)
 	GetAllInternalPaginated(c *gin.Context, InternalId uuid.UUID) (*database.Pagination, error)
 
-	InsertInternal(p Internal) (err error)
+	InsertInternal(p Internal, tx *gorm.DB) (err error)
 
 	UpdateInternalToInactive(id uuid.UUID, tx *gorm.DB) (err error)
 	RemoveInternalFromCompany(id uuid.UUID, tx *gorm.DB) (err error)
@@ -96,9 +96,8 @@ func (o *InternalOrm) RemoveInternalFromCompany(id uuid.UUID, tx *gorm.DB) (err 
 	return result.Error
 }
 
-func (o *InternalOrm) InsertInternal(p Internal) (err error) {
-	fmt.Printf("%v", p)
-	result := o.db.Model(&p).Create(&p)
+func (o *InternalOrm) InsertInternal(p Internal, tx *gorm.DB) (err error) {
+	result := tx.Model(&p).Create(&p)
 	return result.Error
 }
 

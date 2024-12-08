@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"github.com/kalleriakronos24/khaimal-group/config"
 	"github.com/kalleriakronos24/khaimal-group/constants"
 	middleware "github.com/kalleriakronos24/khaimal-group/controllers/middlewares"
@@ -140,6 +139,58 @@ func POSTLoginDriver(c *gin.Context) {
 	c.JSON(http.StatusCreated, dto.Response{Message: "success", Data: responseData})
 }
 
+// AuthLogin godoc
+// @Summary      Internal Sign-In
+// @Description  A Internal authentication sign-in method
+// @Tags         Authentication - Internal
+// @Accept       json
+// @Produce      json
+// @Success      200 {object}	dto.Response
+// @Failure      400 {object}	dto.Response
+// @Param 		 data body dto.CredentialSignInDto true "internal login"
+// @Router       /auth/i/signin [post]
+func POSTLoginInternal(c *gin.Context) {
+	var err error
+	var p dto.CredentialSignInDto
+	if err = c.ShouldBindJSON(&p); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
+		return
+	}
+
+	if err := utils.ValidateHTTPPayload(p); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
+		return
+	}
+
+	var token string
+	if token, err = services.Handler.AuthenticateUser(p); err != nil {
+		c.JSON(http.StatusNotFound, constants.GetErrorResponse("logical", err, "Incorrect email or password. Please try again"))
+		return
+	}
+
+	var userInternal masterModels.Credentials
+	claims, err := middleware.ParseToken(token, config.AppConfig.JWTSecret)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, dto.Response{Message: "Unauthorized. Please Login Again"})
+		return
+	}
+
+	if userInternal, err = services.Handler.RetrieveEntityCredentialsByUserID(claims.ID); err != nil {
+		c.JSON(http.StatusNotFound, constants.GetErrorResponse("data-not-found", err, "User internal data not found."))
+		return
+	}
+
+	responseData := struct {
+		Token    string `json:"token,omitempty"`
+		FullName string `json:"fullName,omitempty"`
+	}{
+		Token:    token,
+		FullName: userInternal.CredentialInternal.Name,
+	}
+
+	c.JSON(http.StatusCreated, dto.Response{Message: "success", Data: responseData})
+}
+
 // AuthSignup godoc
 // @Summary      Internal Sign-Up
 // @Description  Internal Sign-Up
@@ -153,10 +204,7 @@ func POSTLoginDriver(c *gin.Context) {
 func POSTRegister(c *gin.Context) {
 	var err error
 
-	userLoggedInId := c.GetString("user_id")
-	userId, _ := uuid.Parse(userLoggedInId)
-
-	p := &dto.UserSignup{CreatedBy: userId}
+	p := &dto.UserSignup{}
 
 	if err = c.ShouldBindJSON(&p); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
@@ -321,5 +369,5 @@ func POSTRegisterDriver(c *gin.Context) {
 // @Param 	 	 data body dto.DriverSignup true "universal reset password"
 // @Router       /auth/reset-password [post]
 func POSTResetPassword(c *gin.Context) {
-	
+
 }
