@@ -24,7 +24,7 @@ type Driver struct {
 	DriverType    string    `json:"driverType,omitempty" gorm:"default:internal"`
 	Status        string    `json:"status,omitempty" binding:"required" gorm:"not null;default:active;"`       // active, inactive
 	BookingStatus string    `json:"bookingStatus,omitempty" binding:"required" gorm:"not null;default:ready;"` // ready, busy
-	Prob          int       `json:"prob,omitempty" binding:"required" gorm:"not null;default:95;"`
+	Prob          int       `json:"prob,omitempty" binding:"required" gorm:"not null;default:30;"`
 
 	CredentialsID uuid.UUID `json:"credentialsId" gorm:"type:uuid;not null"`
 	CompanyID     uuid.UUID `json:"companyId" gorm:"type:uuid;default:NULL"`

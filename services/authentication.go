@@ -144,7 +144,7 @@ func (module *module) RegisterDriver(credentials *dto.DriverSignup) (err error) 
 	if err = module.db.userDriverModel.InsertDriver(masterModels.Driver{
 		Name:          credentials.Name,
 		CredentialsID: cred.ID,
-		DriverType:    credentials.DriverType,
+		DriverType:    "external",
 		Phone:         credentials.Phone,
 	}, tx); err != nil {
 		tx.Rollback()
