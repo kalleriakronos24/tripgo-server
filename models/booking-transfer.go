@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/kalleriakronos24/khaimal-group/models/master"
 	"github.com/kalleriakronos24/khaimal-group/types"
+	"github.com/kalleriakronos24/khaimal-group/utils"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -52,6 +53,7 @@ type BookingTransferModelAction interface {
 	GetOneByEmail(email string) (m BookingTransfer, err error)
 	GetAllByCustomerID(id uuid.UUID) (BookingTransfer []*BookingTransfer, err error)
 	GetCountByCustomerID(id uuid.UUID) (ctx int64, err error)
+	GetCountActiveByCustomerID(id uuid.UUID) (ctx int64, err error)
 
 	InsertBookingTransfer(p BookingTransfer, tx *gorm.DB) (bookingTransfer BookingTransfer, err error)
 	UpdateBookingTransfer(id uuid.UUID, p BookingTransfer, tx *gorm.DB) (err error)
@@ -91,9 +93,16 @@ func (o *BookingTransferOrm) GetCountByCustomerID(id uuid.UUID) (ctx int64, err 
 }
 
 func (o *BookingTransferOrm) GetCountActiveByCustomerID(id uuid.UUID) (ctx int64, err error) {
-	result := o.db.Model(&BookingTransfer{}).Where("customer_id = ?", id).Preload("BookingTransferAssigned", func(db *gorm.DB) *gorm.DB {
-		return db.Where("is_completed != ? OR is_cancelled != ?", true, true).First(&BookingTransferAssigned{})
-	}).Count(&ctx)
+
+	var assignedCount int64
+	result := o.db.Model(&BookingTransfer{}).
+		Preload("BookingTransferAssigned", func(db *gorm.DB) *gorm.DB {
+			return db.Where("is_completed = ? AND is_cancelled = ?", utils.NewFalse(), utils.NewFalse()).Count(&assignedCount)
+		}).
+		Where("customer_id = ?", id).
+		Find(&BookingTransfer{})
+
+	ctx = assignedCount
 	return ctx, result.Error
 }
 

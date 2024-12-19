@@ -58,6 +58,7 @@ type HandlerFunc interface {
 	RegisterUser(p *dto.UserSignup) (err error)
 	// WEB STATISTIC - CUSTOMER
 	RetrieveCustomerWebStatisticByUserID(userId uuid.UUID) (ctx int64, err error)
+	RetrieveCustomerWebStatisticActiveByUserID(userId uuid.UUID) (ctx int64, err error)
 	// DRIVER TOPUP
 	RetrieveAllDriverTopup() (m []models.DriverTopup, err error)
 	InsertDriverTopup(c *gin.Context, p *dto.InsertDriverTopup) (err error)

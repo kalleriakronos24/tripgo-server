@@ -1081,7 +1081,7 @@ paths:
       summary: Method to get all driver topup by drivers
       tags:
       - Driver Topup
-  /web/statistic/customer:
+  /web/statistic/customer/booking-count:
     get:
       consumes:
       - application/json
@@ -1106,6 +1106,33 @@ paths:
           schema:
             $ref: '#/definitions/dto.Response'
       summary: Method to count booking transfer by customer
+      tags:
+      - Booking - Transfer
+  /web/statistic/customer/booking-count/active:
+    get:
+      consumes:
+      - application/json
+      description: A GET Request to fetch active count how many bookings are made
+        by customer either transfer, tour or delivery
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Method to count active booking transfer by customer
       tags:
       - Booking - Transfer
 swagger: "2.0"

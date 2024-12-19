@@ -158,6 +158,7 @@ func InitializeRouter() (router *gin.Engine) {
 		webStatistic := v1route.Group("/web/statistic/customer")
 		{
 			webStatistic.GET("/booking-count", utils.AuthOnly, v1.GETCountBookingTransferByCustomer)
+			webStatistic.GET("/booking-count/active", utils.AuthOnly, v1.GETActiveCountBookingTransferByCustomer)
 		}
 
 		websockets := v1route.Group("/ws")

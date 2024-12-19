@@ -1390,7 +1390,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/web/statistic/customer": {
+        "/web/statistic/customer/booking-count": {
             "get": {
                 "description": "A GET Request to fetch count how many bookings are made by customer either transfer, tour or delivery",
                 "consumes": [
@@ -1403,6 +1403,45 @@ const docTemplate = `{
                     "Booking - Transfer"
                 ],
                 "summary": "Method to count booking transfer by customer",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer \u003cAdd access token here\u003e",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/web/statistic/customer/booking-count/active": {
+            "get": {
+                "description": "A GET Request to fetch active count how many bookings are made by customer either transfer, tour or delivery",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking - Transfer"
+                ],
+                "summary": "Method to count active booking transfer by customer",
                 "parameters": [
                     {
                         "type": "string",

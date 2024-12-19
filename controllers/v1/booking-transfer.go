@@ -115,7 +115,7 @@ func GETAllBookingTransferByCustomer(c *gin.Context) {
 // @Success      200 {object}	dto.Response
 // @Failure      400 {object}	dto.Response
 // @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
-// @Router       /web/statistic/customer [get]
+// @Router       /web/statistic/customer/booking-count [get]
 func GETCountBookingTransferByCustomer(c *gin.Context) {
 	var err error
 
@@ -134,6 +134,41 @@ func GETCountBookingTransferByCustomer(c *gin.Context) {
 	}
 
 	if bookingTransfer, err := services.Handler.RetrieveCustomerWebStatisticByUserID(cred.ID); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "booking transfer"))
+		return
+	} else {
+		c.JSON(http.StatusOK, dto.Response{Data: &bookingTransfer, Message: "success"})
+	}
+}
+
+// AuthLogin godoc
+// @Summary      Method to count active booking transfer by customer
+// @Description  A GET Request to fetch active count how many bookings are made by customer either transfer, tour or delivery
+// @Tags         Booking - Transfer
+// @Accept       json
+// @Produce      json
+// @Success      200 {object}	dto.Response
+// @Failure      400 {object}	dto.Response
+// @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
+// @Router       /web/statistic/customer/booking-count/active [get]
+func GETActiveCountBookingTransferByCustomer(c *gin.Context) {
+	var err error
+
+	userLoggedInId := c.GetString("user_id")
+	userId, err := uuid.Parse(userLoggedInId)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("uuid-error", err, ""))
+		return
+	}
+
+	var cred master.Customer
+	if cred, err = services.Handler.RetrieveEntityCustomerByUserID(userId); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "customer"))
+		return
+	}
+
+	if bookingTransfer, err := services.Handler.RetrieveCustomerWebStatisticActiveByUserID(cred.ID); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "booking transfer"))
 		return
 	} else {
