@@ -17,20 +17,21 @@ type companyOrm struct {
 }
 
 type Company struct {
-	ID            uuid.UUID `gorm:"index:id,unique;type:uuid;default:gen_random_uuid();" json:"id"`
-	Name          string    `json:"name" gorm:"not null"`
-	PhoneNumber   string    `json:"phoneNumber,omitempty" gorm:"default:NULL"`
-	Email         string    `gorm:"index:email,unique;default:NULL" json:"email,omitempty"`
-	Address       string    `json:"address,omitempty" gorm:"default:NULL"`
-	CompanyPhoto  string    `json:"companyPhoto,omitempty" gorm:"default:NULL"`
-	CompanyNumber string    `json:"companyNumber,omitempty" gorm:"default:NULL"`
+	ID                 uuid.UUID `gorm:"index:id,unique;type:uuid;default:gen_random_uuid();" json:"id"`
+	Name               string    `json:"name" gorm:"not null"`
+	PhoneNumber        string    `json:"phoneNumber,omitempty" gorm:"default:NULL"`
+	Email              string    `gorm:"index:email,unique;default:NULL" json:"email,omitempty"`
+	CompanyName        string    `json:"companyName,omitempty" gorm:"default:NULL"`
+	CompanyAddress     string    `json:"companyAddress,omitempty" gorm:"default:NULL"`
+	CompanyCountry     string    `json:"companyCountry,omitempty" gorm:"default:NULL"`
+	CompanyCertificate string    `json:"companyCertificate,omitempty" gorm:"default:NULL"`
+	CompanyNumber      string    `json:"companyNumber,omitempty" gorm:"default:NULL"`
+	Status             string    `json:"status,omitempty" gorm:"default:pending-approval"` // pending-approval | active | inactive | suspended
 
 	CompanyCreatedBy uuid.UUID `json:"createdBy" gorm:"type:uuid;default:NULL;"`
 	CompanyUpdatedBy uuid.UUID `json:"updatedBy" gorm:"type:uuid;default:NULL;"`
 
-	Driver   []*Driver   `json:"drivers,omitempty"`
-	Internal []*Internal `json:"internals,omitempty"`
-
+	Driver []*Driver `json:"drivers,omitempty"`
 	types.DefaultModelProperty
 }
 

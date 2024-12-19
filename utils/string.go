@@ -11,6 +11,18 @@ func RandStringBytes() string {
 	return time.Now().Format(time.RFC3339)
 }
 
+const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+func RandStringGenerator(n int) string {
+	ll := len(letterBytes)
+	b := make([]byte, n)
+	rand.Read(b) // generates len(b) random bytes
+	for i := 0; i < n; i++ {
+		b[i] = letterBytes[int(b[i])%ll]
+	}
+	return string(b)
+}
+
 func IntegerToRoman(number int) string {
 	maxRomanNumber := 3999
 	if number > maxRomanNumber {
