@@ -2,10 +2,12 @@ package services
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/google/uuid"
 	database "github.com/kalleriakronos24/khaimal-group/db"
 	"github.com/kalleriakronos24/khaimal-group/models"
+	"github.com/kalleriakronos24/khaimal-group/models/master"
 	"github.com/kalleriakronos24/khaimal-group/pkg/mail-service"
 	"github.com/kalleriakronos24/khaimal-group/utils"
 )
@@ -83,7 +85,7 @@ func (module *module) AcceptBookingTransfer(id uuid.UUID) (err error) {
 	}
 
 	if BalanceDriverErr := tx.Model(&models.BalanceDriver{}).Where("driver_id", bookingTransferAssigned.DriverID).Updates(&models.BalanceDriver{
-		Amount: balanceDriver.Amount - float64(bookingTransferAssigned.BookingTransfer.Price)*0.1,
+		Amount: balanceDriver.Amount - float64(bookingTransferAssigned.BookingTransfer.Price)*0.14,
 	}); BalanceDriverErr.Error != nil {
 		tx.Rollback()
 		return errors.New("failed to deduct driver balance")
@@ -274,4 +276,42 @@ func (module *module) CompletePickupBooking(id uuid.UUID) (err error) {
 	}
 	tx.Commit()
 	return
+}
+
+func (module *module) SwitchDriver(id uuid.UUID, driverId uuid.UUID, plateNumber string) (err error) {
+	tx := database.GetDatabaseConnection().Begin()
+
+	var bookingTransferAssigned models.BookingTransferAssigned
+	if bookingTransferAssigned, err = module.db.bookingTransferAssigned.GetOneByID(id); err != nil {
+		return errors.New(err.Error())
+	}
+
+	var carManagement master.CarManagement
+	if carManagement, err = module.db.carManagementModel.GetSameCarManagementByAgentByPlateNumberAndCompanyIdAndDriverId(bookingTransferAssigned.Driver.Company.ID, plateNumber, driverId); err != nil {
+		return errors.New(err.Error())
+	}
+
+	if err := module.db.bookingTransferAssigned.UpdateBookingTransferAssigned(id, models.BookingTransferAssigned{
+		DriverID:        driverId,
+		CarManagementID: carManagement.ID,
+	}, tx); err != nil {
+		tx.Rollback()
+		return errors.New("failed to set pickup complete booking")
+	}
+
+	if err = mail.SendMailV3(&mail.TSendMail{
+		From:    "WadahGo <notification@wadahgo.com>",
+		MailTo:  bookingTransferAssigned.BookingTransfer.Customer.Credentials.Email,
+		Subject: fmt.Sprintf("Your BookingID: %v, driver has changed", bookingTransferAssigned.BookingTransfer.Uid),
+		Body: fmt.Sprintf(`<html><body>
+		<p>Your new driver for BookingID: %v</p>
+		<p>Driver Name: %v</p>
+		<p>Plate Number: %v</p>
+		</body></html>`, bookingTransferAssigned.BookingTransfer.Uid, carManagement.Driver.Name, carManagement.PlateNumber),
+	}); err != nil {
+		return errors.New("server error. please try again later")
+	}
+
+	tx.Commit()
+	return err
 }

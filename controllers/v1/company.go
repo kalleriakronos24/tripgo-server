@@ -1,13 +1,14 @@
 package v1
 
 import (
-	"errors"
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/kalleriakronos24/khaimal-group/constants"
 	"github.com/kalleriakronos24/khaimal-group/dto"
+	"github.com/kalleriakronos24/khaimal-group/models/master"
+	"github.com/kalleriakronos24/khaimal-group/services"
 	"github.com/kalleriakronos24/khaimal-group/utils"
 )
 
@@ -39,8 +40,6 @@ func POSTCreateCompany(c *gin.Context) {
 
 	fCompanyCertificate, _ := c.FormFile("companyCertificate")
 	if fCompanyCertificate == nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", errors.New("field company certificate is required"), "cannot submit if front company certificate is empty"))
-		return
 	}
 
 	p := &dto.InsertCompany{
@@ -54,31 +53,92 @@ func POSTCreateCompany(c *gin.Context) {
 		CompanyCertificate: fCompanyCertificate,
 	}
 
-	if len(pValidator.Drivers) > 0 {
-
-		for i := 0; i < len(pValidator.Drivers); i++ {
-			fDriverLicensePhoto, _ := c.FormFile("drivers.licensePhoto")
-			pDriver := &dto.DriverSignup{
-				Name:         pValidator.Drivers[i].Name,
-				Email:        pValidator.Drivers[i].Email,
-				Phone:        pValidator.Drivers[i].Phone,
-				DriverType:   "internal",
-				LicensePhoto: fDriverLicensePhoto,
-				Password:     utils.RandStringGenerator(8),
-			}
-			log.Printf("%v, %v", pDriver, p)
-		}
+	pAgentPIC := &dto.DriverSignUpValidator{
+		Name:  pValidator.Name,
+		Email: pValidator.Email,
+		Phone: pValidator.PhoneNumber,
 	}
 
-	// pDriver := &dto.DriverSignup{
-	// 	DriverType: "internal",
-	// 	// Email: ,
-	// }
+	if err = services.Handler.InsertCompany(c, p, pAgentPIC, pValidator.Drivers, pValidator.Transports); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("insert-failed", err, "conpany"))
+		return
+	}
 
-	// if err = services.Handler.InsertCarManagement(c, p); err != nil {
-	// 	c.JSON(http.StatusBadRequest, constants.GetErrorResponse("insert-failed", err, "car management"))
+	c.JSON(http.StatusOK, dto.Response{Data: false, Message: "success"})
+}
+
+// AuthLogin godoc
+// @Summary      Method to Approve company registration
+// @Description  A POST Request to accept company submission request
+// @Tags         Company
+// @Accept       json
+// @Produce      json
+// @Success      200 {object}	dto.Response
+// @Failure      400 {object}	dto.Response
+// @Param        id   path      string  true  "Company ID"
+// @Router       /company/create/approval/{id} [get]
+func POSTApproveCompanyRegistration(c *gin.Context) {
+	var err error
+
+	// userLoggedInId := c.GetString("user_id")
+	// userId, err := uuid.Parse(userLoggedInId)
+	companyIdParam, _ := c.Params.Get("id")
+	companyId, err := uuid.Parse(companyIdParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("uuid-error", err, ""))
+		return
+	}
+
+	if err := services.Handler.ApproveCompany(companyId); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("insert-failed", err, "approve company"))
+		return
+	}
+
+	c.JSON(http.StatusOK, dto.Response{Data: false, Message: "success"})
+}
+
+// AuthLogin godoc
+// @Summary      Method to get all drivers by company id
+// @Description  A GET Request to fetch a all records
+// @Tags         Company
+// @Accept       json
+// @Produce      json
+// @Success      200 {object}	dto.Response
+// @Failure      400 {object}	dto.Response
+// @Param        id   path      string  true  "Company ID"
+// @Router       /company/driver/all/{id} [get]
+func GETAllDriversByCompanyId(c *gin.Context) {
+
+	userLoggedInId := c.GetString("user_id")
+	userId, err := uuid.Parse(userLoggedInId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("uuid-error", err, ""))
+		return
+	}
+
+	// companyIdParam, _ := c.Params.Get("id")
+	// companyId, err := uuid.Parse(companyIdParam)
+	// if err != nil {
+	// 	c.JSON(http.StatusBadRequest, constants.GetErrorResponse("uuid-error", err, ""))
 	// 	return
 	// }
 
-	c.JSON(http.StatusOK, dto.Response{Data: false, Message: "success"})
+	var driver master.Credentials
+	if driver, err = services.Handler.RetrieveEntityCredentialsByUserID(userId); err != nil {
+		c.JSON(http.StatusNotFound, constants.GetErrorResponse("logical", err, "Driver data not found."))
+		return
+	}
+
+	var companyDriver master.Driver
+	if companyDriver, err = services.Handler.RetrieveDriverLinkedCompany(driver.CredentialDriver.ID); err != nil {
+		c.JSON(http.StatusNotFound, constants.GetErrorResponse("logical", err, "Driver data not found."))
+		return
+	}
+
+	if drivers, err := services.Handler.RetrieveAllAvailableDrivers(companyDriver.Company.ID); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "available drivers"))
+		return
+	} else {
+		c.JSON(http.StatusOK, dto.Response{Data: &drivers, Message: "success"})
+	}
 }

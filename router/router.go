@@ -57,7 +57,14 @@ func InitializeRouter() (router *gin.Engine) {
 		auth := v1route.Group("/auth")
 		{
 			auth.POST("/signin", v1.POSTLogin)
+			auth.POST("/reset-password", v1.POSTResetPassword)
+		}
 
+		company := v1route.Group("/company")
+		{
+			company.POST("/create", v1.POSTCreateCompany)
+			company.GET("/create/approval/:id", v1.POSTApproveCompanyRegistration)
+			company.GET("/driver/all/:id", v1.GETAllDriversByCompanyId)
 		}
 
 		authInternal := v1route.Group("/auth/i")
@@ -119,6 +126,7 @@ func InitializeRouter() (router *gin.Engine) {
 			bookingTransferAssigned.POST("/ongoing/:id", utils.AuthOnly, v1.POSTOngoingBookingTransfer)
 			bookingTransferAssigned.POST("/pickup/:id", utils.AuthOnly, v1.POSTPickupBookingTransfer)
 			bookingTransferAssigned.POST("/complete/:id", utils.AuthOnly, v1.POSTCompleteBookingTransfer)
+			bookingTransferAssigned.GET("/switch/:id/:driverId/:plateNumber", v1.POSTSwitchDriverByAgent)
 		}
 
 		bookingTransferRating := v1route.Group("/booking/transfer/rating")

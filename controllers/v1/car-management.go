@@ -51,14 +51,11 @@ func POSTCreateCarManagement(c *gin.Context) {
 
 	fFrontCarPhotoDocument, _ := c.FormFile("frontCarPhoto")
 	if fFrontCarPhotoDocument == nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", errors.New("field frontCarPhoto is required"), "cannot submit if front car photo is empty"))
-		return
+
 	}
 
 	fLicensePhotoDocument, _ := c.FormFile("licensePhoto")
 	if fLicensePhotoDocument == nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", errors.New("field licensePhoto is required"), "cannot submit if front license photo is empty"))
-		return
 	}
 
 	fRoadTaxPhotoDocument, _ := c.FormFile("roadTaxPhoto")
@@ -77,15 +74,15 @@ func POSTCreateCarManagement(c *gin.Context) {
 
 	carModelid, _ := uuid.Parse(pValidator.CarModelID)
 	p := &dto.InsertCarManagement{
-		Name:              pValidator.Name,
-		PlateNumber:       pValidator.PlateNumber,
-		LicensePhoto:      fLicensePhotoDocument,
+		Name:        pValidator.Name,
+		PlateNumber: pValidator.PlateNumber,
+		// LicensePhoto:      fLicensePhotoDocument,
 		CarManagementType: "internal",
 		CarModelID:        carModelid,
 		DriverID:          cred.CredentialDriver.ID,
-		FrontCarPhoto:     fFrontCarPhotoDocument,
-		RoadTaxPhoto:      fRoadTaxPhotoDocument,
-		VEPPhoto:          fVEPPhotoDocument,
+		// FrontCarPhoto:     fFrontCarPhotoDocument,
+		// RoadTaxPhoto:      fRoadTaxPhotoDocument,
+		// VEPPhoto:          fVEPPhotoDocument,
 	}
 
 	if err = services.Handler.InsertCarManagement(c, p); err != nil {

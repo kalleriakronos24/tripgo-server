@@ -20,6 +20,13 @@ func (module *module) RetrieveEntityDriverByUserID(userId uuid.UUID) (m master.D
 	return
 }
 
+func (module *module) RetrieveDriverLinkedCompany(driverId uuid.UUID) (m master.Driver, err error) {
+	if m, err = module.db.driverModel.GetOneByDriverID(driverId); err != nil {
+		return m, errors.New("failed to get driver information")
+	}
+	return
+}
+
 func (module *module) RetrieveAllEntityDriver(id uuid.UUID) (m []master.Driver, err error) {
 	return
 }
@@ -30,4 +37,12 @@ func (module *module) RetrieveAllEntityDriverPaginated(c *gin.Context, id uuid.U
 
 func (module *module) RetrieveEntityDriver(id uuid.UUID) (m master.Driver, err error) {
 	return
+}
+
+func (module *module) RetrieveAllAvailableDrivers(companyId uuid.UUID) (m []*master.Driver, err error) {
+	if m, err = module.db.driverModel.GetAllAvailableDriversByCompanyId(companyId); err != nil {
+		return m, errors.New("failed to get company drivers")
+	}
+
+	return m, err
 }

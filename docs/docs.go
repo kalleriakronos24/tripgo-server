@@ -635,6 +635,58 @@ const docTemplate = `{
                 }
             }
         },
+        "/booking-assigned/transfer/switch/{id}/{driverId}/{plateNumber}": {
+            "get": {
+                "description": "A POST Request for Driver to set Complete Pickup specific booking transfer by it's ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking Assgined - Transfer"
+                ],
+                "summary": "Method to set status to Complete PickUp and notify passenger",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "BookingTransferAssigned ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "DriverID ID",
+                        "name": "driverId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Car Plate Number",
+                        "name": "plateNumber",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/booking/transfer": {
             "post": {
                 "description": "A POST Request to create a new record for costumer to make a new Transfer booking to the driver",
@@ -832,6 +884,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "description": "FrontCarPhoto     *multipart.FileHeader ` + "`" + `json:\"frontCarPhoto\" swaggerignore:\"true\"` + "`" + `\nLicensePhoto      *multipart.FileHeader ` + "`" + `json:\"licensePhoto\" swaggerignore:\"true\"` + "`" + `\nRoadTaxPhoto      *multipart.FileHeader ` + "`" + `json:\"roadTaxPhoto\" swaggerignore:\"true\"` + "`" + `\nVEPPhoto          *multipart.FileHeader ` + "`" + `json:\"vepPhoto\" swaggerignore:\"true\"` + "`" + `",
                         "name": "carManagementType",
                         "in": "formData",
                         "required": true
@@ -841,11 +894,6 @@ const docTemplate = `{
                         "name": "carModelId",
                         "in": "formData",
                         "required": true
-                    },
-                    {
-                        "type": "string",
-                        "name": "driverID",
-                        "in": "formData"
                     },
                     {
                         "type": "string",
@@ -1110,6 +1158,170 @@ const docTemplate = `{
                         "description": "front car photo upload",
                         "name": "frontCarPhoto",
                         "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/company/create": {
+            "post": {
+                "description": "A POST Request to create a company",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Company"
+                ],
+                "summary": "Method to create company",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer \u003cAdd access token here\u003e",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "companyAddress",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "companyCountry",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "companyName",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "companyNumber",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "email",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "name",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "phoneNumber",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "company certificate upload",
+                        "name": "companyCertificate",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/company/create/approval/{id}": {
+            "get": {
+                "description": "A POST Request to accept company submission request",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Company"
+                ],
+                "summary": "Method to Approve company registration",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Company ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/company/driver/all/{id}": {
+            "get": {
+                "description": "A GET Request to fetch a all records",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Company"
+                ],
+                "summary": "Method to get all drivers by company id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Company ID",
+                        "name": "id",
+                        "in": "path",
                         "required": true
                     }
                 ],
@@ -1510,12 +1722,15 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.DriverSignup": {
+        "dto.DriverSignUpValidator": {
             "type": "object",
             "required": [
+                "driverType",
                 "email",
                 "name",
-                "password"
+                "password",
+                "phone",
+                "plateNumber"
             ],
             "properties": {
                 "driverType": {
@@ -1532,8 +1747,14 @@ const docTemplate = `{
                 },
                 "phone": {
                     "type": "string"
+                },
+                "plateNumber": {
+                    "type": "string"
                 }
             }
+        },
+        "dto.DriverSignup": {
+            "type": "object"
         },
         "dto.InsertBookingTransfer": {
             "type": "object",
@@ -1605,6 +1826,27 @@ const docTemplate = `{
                 },
                 "rating": {
                     "type": "integer"
+                }
+            }
+        },
+        "dto.InsertCarManagement": {
+            "type": "object",
+            "properties": {
+                "carManagementType": {
+                    "description": "FrontCarPhoto     *multipart.FileHeader\nLicensePhoto      *multipart.FileHeader\nRoadTaxPhoto      *multipart.FileHeader\n VEPPhoto          *multipart.FileHeader",
+                    "type": "string"
+                },
+                "carModelID": {
+                    "type": "string"
+                },
+                "driverID": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "plateNumber": {
+                    "type": "string"
                 }
             }
         },

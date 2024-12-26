@@ -21,10 +21,10 @@ type Driver struct {
 	Phone         string    `json:"phone" gorm:"default:NULL" binding:"required"`
 	PlateNumber   string    `json:"plateNumber,omitempty" gorm:"default:NULL"`
 	LicensePhoto  string    `json:"licensePhoto,omitempty" gorm:"default:NULL"`
-	DriverType    string    `json:"driverType,omitempty" gorm:"default:internal"`
+	DriverType    string    `json:"driverType,omitempty" gorm:"default:internal"`                              // external | internal | internal-agent
 	Status        string    `json:"status,omitempty" binding:"required" gorm:"not null;default:active;"`       // active, inactive
 	BookingStatus string    `json:"bookingStatus,omitempty" binding:"required" gorm:"not null;default:ready;"` // ready, busy
-	Prob          int       `json:"prob,omitempty" binding:"required" gorm:"not null;default:30;"`
+	Prob          int       `json:"prob,omitempty" binding:"required" gorm:"not null;default:0;"`
 
 	CredentialsID uuid.UUID `json:"credentialsId" gorm:"type:uuid;not null"`
 	CompanyID     uuid.UUID `json:"companyId" gorm:"type:uuid;default:NULL"`
@@ -42,9 +42,14 @@ type DriverModelAction interface {
 	GetOneByID(id uuid.UUID) (m Driver, err error)
 	GetOneByDriverName(Drivername string) (m Driver, err error)
 	GetOneByEmail(email string) (m Driver, err error)
+	GetOneMainAgentByCompanyId(companyId uuid.UUID) (Driver Driver, err error)
 	GetAllDriverPaginated(c *gin.Context, DriverId uuid.UUID) (*database.Pagination, error)
 	InsertDriver(p Driver, tx *gorm.DB) (err error)
+	GetAllAvailableDriversByCompanyId(companyId uuid.UUID) (m []*Driver, err error)
+	GetOneByDriverID(id uuid.UUID) (Driver Driver, err error)
+
 	UpdateDriverToInactive(id uuid.UUID, tx *gorm.DB) (err error)
+	UpdateDriverByCompanyId(companyId uuid.UUID, p Driver, tx *gorm.DB) (err error)
 	UpdateDriverToBusy(id uuid.UUID, tx *gorm.DB) (err error)
 	RemoveDriverFromCompany(id uuid.UUID, tx *gorm.DB) (err error)
 	DeleteDriver(id uuid.UUID, tx *gorm.DB) (err error)
@@ -73,12 +78,33 @@ func (o *DriverOrm) GetOneByID(id uuid.UUID) (Driver Driver, err error) {
 	return Driver, result.Error
 }
 
+func (o *DriverOrm) GetOneByDriverID(id uuid.UUID) (Driver Driver, err error) {
+	result := o.db.Model(&Driver).
+		Where("id = ?", id).
+		Preload("Company").
+		First(&Driver)
+	return Driver, result.Error
+}
+
+func (o *DriverOrm) GetOneMainAgentByCompanyId(companyId uuid.UUID) (Driver Driver, err error) {
+	result := o.db.Model(&Driver).
+		Where("company_id = ? AND driver_type = ?", companyId, "internal-agent").
+		Preload(clause.Associations).
+		First(&Driver)
+	return Driver, result.Error
+}
+
 func (o *DriverOrm) GetAllAvailable(id uuid.UUID) (Driver []*Driver, err error) {
 	result := o.db.Model(&Driver).
 		Where("status = ? AND booking_status", "active", "ready").
 		Preload(clause.Associations).
-		First(&Driver)
+		Find(&Driver)
 	return Driver, result.Error
+}
+
+func (o *DriverOrm) GetAllAvailableDriversByCompanyId(companyId uuid.UUID) (m []*Driver, err error) {
+	result := o.db.Model(&m).Where("company_id = ?", companyId).Find(&m)
+	return m, result.Error
 }
 
 func (o *DriverOrm) GetOneByEmail(email string) (m Driver, err error) {
@@ -97,6 +123,11 @@ func (o *DriverOrm) GetOneByDriverName(name string) (m Driver, err error) {
 
 func (o *DriverOrm) UpdateDriverToInactive(id uuid.UUID, tx *gorm.DB) (err error) {
 	result := tx.Model(&Driver{}).Where("id = ?", id).Update("status", "inactive")
+	return result.Error
+}
+
+func (o *DriverOrm) UpdateDriverByCompanyId(companyId uuid.UUID, p Driver, tx *gorm.DB) (err error) {
+	result := tx.Model(&Driver{}).Where("company_id = ?", companyId).Updates(&p)
 	return result.Error
 }
 

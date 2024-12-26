@@ -44,8 +44,14 @@ func (module *module) InsertBookingTransfer(p *dto.InsertBookingTransfer) (err e
 		return errors.New("drivers seems busy. please try again later")
 	}
 
+	var driverBalanceDetail *models.BalanceDriver
+	if driverBalanceDetail, err = module.db.balanceDriver.GetOneDetailByID(driverBalance.ID); err != nil {
+		tx.Rollback()
+		return errors.New("drivers seems busy. please try again later")
+	}
+
 	var carManagement master.CarManagement
-	if carManagement, err = module.db.carManagementModel.GetOneByCarModelIDAndAvailable(p.CarModelID, driverBalance.DriverID); err != nil {
+	if carManagement, err = module.db.carManagementModel.GetOneByCarModelIDAndAvailable(p.CarModelID, driverBalanceDetail.Driver.ID, driverBalanceDetail.Driver.Company.ID); err != nil {
 		tx.Rollback()
 		return errors.New("drivers seems busy. please try again later")
 	}
@@ -93,14 +99,14 @@ func (module *module) InsertBookingTransfer(p *dto.InsertBookingTransfer) (err e
 
 	formattedNotificationMessage := fmt.Sprintf("Booking Transfer Request <br/> %v <br/> %v Person Pax x %v Luggagge <br/> Pickup Date %v <br/> Notes: %v <br/> Price: %v", carManagement.Name, carManagement.CarModel.PersonCount, carManagement.CarModel.LuggageCount, utils.ConvertEnToIDDateTime(bookingTransfer.PickUpDate), bookingTransfer.PassengerNotes, bookingTransfer.GrandTotal)
 	// send notification to the selected driver
-	if err = onesignal.PushNotificationSingleExternalId(driverBalance.Driver.Credentials.Email, formattedNotificationMessage); err != nil {
+	if err = onesignal.PushNotificationSingleExternalId(driverBalanceDetail.Driver.Credentials.Email, formattedNotificationMessage); err != nil {
 		return errors.New("server-error. please try again later")
 	}
 
 	// send backup email to the driver
 	if err = mail.SendMailV3(&mail.TSendMail{
 		From:    "WadahGo <notification@wadahgo.com>",
-		MailTo:  driverBalance.Driver.Credentials.Email,
+		MailTo:  driverBalanceDetail.Driver.Credentials.Email,
 		Subject: "Booking Transfer Received",
 		Body: fmt.Sprintf(`<html><body>
 		<p>%v</p>

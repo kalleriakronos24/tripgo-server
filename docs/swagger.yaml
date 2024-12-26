@@ -26,7 +26,7 @@ definitions:
     - name
     - password
     type: object
-  dto.DriverSignup:
+  dto.DriverSignUpValidator:
     properties:
       driverType:
         type: string
@@ -38,10 +38,17 @@ definitions:
         type: string
       phone:
         type: string
+      plateNumber:
+        type: string
     required:
+    - driverType
     - email
     - name
     - password
+    - phone
+    - plateNumber
+    type: object
+  dto.DriverSignup:
     type: object
   dto.InsertBookingTransfer:
     properties:
@@ -90,6 +97,24 @@ definitions:
         type: string
       rating:
         type: integer
+    type: object
+  dto.InsertCarManagement:
+    properties:
+      carManagementType:
+        description: |-
+          FrontCarPhoto     *multipart.FileHeader
+          LicensePhoto      *multipart.FileHeader
+          RoadTaxPhoto      *multipart.FileHeader
+           VEPPhoto          *multipart.FileHeader
+        type: string
+      carModelID:
+        type: string
+      driverID:
+        type: string
+      name:
+        type: string
+      plateNumber:
+        type: string
     type: object
   dto.Response:
     properties:
@@ -570,6 +595,42 @@ paths:
         it's way to pickup
       tags:
       - Booking Assgined - Transfer
+  /booking-assigned/transfer/switch/{id}/{driverId}/{plateNumber}:
+    get:
+      consumes:
+      - application/json
+      description: A POST Request for Driver to set Complete Pickup specific booking
+        transfer by it's ID
+      parameters:
+      - description: BookingTransferAssigned ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: DriverID ID
+        in: path
+        name: driverId
+        required: true
+        type: string
+      - description: Car Plate Number
+        in: path
+        name: plateNumber
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Method to set status to Complete PickUp and notify passenger
+      tags:
+      - Booking Assgined - Transfer
   /booking/transfer:
     post:
       consumes:
@@ -702,16 +763,18 @@ paths:
         name: Authorization
         required: true
         type: string
-      - in: formData
+      - description: |-
+          FrontCarPhoto     *multipart.FileHeader `json:"frontCarPhoto" swaggerignore:"true"`
+          LicensePhoto      *multipart.FileHeader `json:"licensePhoto" swaggerignore:"true"`
+          RoadTaxPhoto      *multipart.FileHeader `json:"roadTaxPhoto" swaggerignore:"true"`
+          VEPPhoto          *multipart.FileHeader `json:"vepPhoto" swaggerignore:"true"`
+        in: formData
         name: carManagementType
         required: true
         type: string
       - in: formData
         name: carModelId
         required: true
-        type: string
-      - in: formData
-        name: driverID
         type: string
       - in: formData
         name: name
@@ -906,6 +969,115 @@ paths:
       summary: Method to update car management made by driver
       tags:
       - Car Management
+  /company/create:
+    post:
+      consumes:
+      - application/json
+      description: A POST Request to create a company
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - in: formData
+        name: companyAddress
+        required: true
+        type: string
+      - in: formData
+        name: companyCountry
+        required: true
+        type: string
+      - in: formData
+        name: companyName
+        required: true
+        type: string
+      - in: formData
+        name: companyNumber
+        required: true
+        type: string
+      - in: formData
+        name: email
+        required: true
+        type: string
+      - in: formData
+        name: name
+        required: true
+        type: string
+      - in: formData
+        name: phoneNumber
+        required: true
+        type: string
+      - description: company certificate upload
+        in: formData
+        name: companyCertificate
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Method to create company
+      tags:
+      - Company
+  /company/create/approval/{id}:
+    get:
+      consumes:
+      - application/json
+      description: A POST Request to accept company submission request
+      parameters:
+      - description: Company ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Method to Approve company registration
+      tags:
+      - Company
+  /company/driver/all/{id}:
+    get:
+      consumes:
+      - application/json
+      description: A GET Request to fetch a all records
+      parameters:
+      - description: Company ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Method to get all drivers by company id
+      tags:
+      - Company
   /driver-balance/get:
     get:
       consumes:

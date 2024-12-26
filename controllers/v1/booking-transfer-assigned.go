@@ -357,3 +357,41 @@ func POSTPickupBookingTransfer(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, dto.Response{Data: false, Message: "success"})
 }
+
+// AuthLogin godoc
+// @Summary      Method to set status to Complete PickUp and notify passenger
+// @Description  A POST Request for Driver to set Complete Pickup specific booking transfer by it's ID
+// @Tags         Booking Assgined - Transfer
+// @Accept       json
+// @Produce      json
+// @Success      200 {object}	dto.Response
+// @Failure      400 {object}	dto.Response
+// @Param        id   path      string  true  "BookingTransferAssigned ID"
+// @Param        driverId   path      string  true  "DriverID ID"
+// @Param        plateNumber   path      string  true  "Car Plate Number"
+// @Router       /booking-assigned/transfer/switch/{id}/{driverId}/{plateNumber} [get]
+func POSTSwitchDriverByAgent(c *gin.Context) {
+	var err error
+
+	bookingTransferAssignedIdParam, _ := c.Params.Get("id")
+	bookingTransferAssignedId, err := uuid.Parse(bookingTransferAssignedIdParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("uuid-error", err, ""))
+		return
+	}
+
+	driverIdParamIdParam, _ := c.Params.Get("driverId")
+	driverId, err := uuid.Parse(driverIdParamIdParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("uuid-error", err, ""))
+		return
+	}
+
+	plateNumberParam, _ := c.Params.Get("plateNumber")
+
+	if err := services.Handler.SwitchDriver(bookingTransferAssignedId, driverId, plateNumberParam); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("insert-failed", err, "complete pickup transfer order"))
+		return
+	}
+	c.JSON(http.StatusOK, dto.Response{Data: false, Message: "success"})
+}

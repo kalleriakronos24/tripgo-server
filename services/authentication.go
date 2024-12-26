@@ -159,8 +159,6 @@ func (module *module) RegisterDriver(credentials *dto.DriverSignup) (err error) 
 		tx.Rollback()
 		return errors.New("failed to register. try again")
 	}
-	// todo
-	// fix
 	if err = module.db.balanceDriver.InsertBalanceDriver(models.BalanceDriver{
 		Amount:   0,
 		DriverID: driver.CredentialDriver.ID,
@@ -233,6 +231,35 @@ func (module *module) RegisterDriverInternal(credentials *dto.DriverSignup) (err
 		MailTo:  cred.Email,
 		Subject: "Registration Success",
 		Body:    email.ETRegisterSuccess(credentials.Name),
+	}); err != nil {
+		return errors.New("server error. please try again later")
+	}
+	tx.Commit()
+	return
+}
+
+func (module *module) ResetPassword(p *dto.UniversalResetPassword) (err error) {
+
+	tx := database.GetDatabaseConnection().Begin()
+
+	var hashedPassword []byte
+	if hashedPassword, err = bcrypt.GenerateFromPassword([]byte(p.Password), bcrypt.DefaultCost); err != nil {
+		return errors.New("server error. please try again later")
+	}
+
+	if _, err = module.db.credentialModel.UpdateCredentials(masterModels.Credentials{
+		Email:    p.Email,
+		Password: string(hashedPassword),
+	}, tx); err != nil {
+		tx.Rollback()
+		return errors.New("failed to update password. try again")
+	}
+
+	if err = mail.SendMailV3(&mail.TSendMail{
+		From:    "WadahGo <notification@wadahgo.com>",
+		MailTo:  p.Email,
+		Subject: "Update Password Success",
+		Body:    fmt.Sprintf("Your new password is: %v", p.Password),
 	}); err != nil {
 		return errors.New("server error. please try again later")
 	}

@@ -6,6 +6,7 @@ import (
 	database "github.com/kalleriakronos24/khaimal-group/db"
 	"github.com/kalleriakronos24/khaimal-group/dto"
 	"github.com/kalleriakronos24/khaimal-group/models"
+	"github.com/kalleriakronos24/khaimal-group/models/master"
 	masterModels "github.com/kalleriakronos24/khaimal-group/models/master"
 	"gorm.io/gorm"
 )
@@ -20,6 +21,11 @@ type HandlerFunc interface {
 	RetrieveUser(id uuid.UUID) (m masterModels.User, err error)
 	DeleteUser(id uuid.UUID) (err error)
 	UpdateDeviceToken(token string, credentialId uuid.UUID) (err error)
+	ResetPassword(p *dto.UniversalResetPassword) (err error)
+	// Company
+	InsertCompany(c *gin.Context, p *dto.InsertCompany, pAgent *dto.DriverSignUpValidator, pDrivers []*dto.DriverSignUpValidator, pTransports []*dto.InsertCarManagement) (err error)
+	ApproveCompany(companyId uuid.UUID) (err error)
+	RetrieveAllAvailableDrivers(companyId uuid.UUID) (m []*masterModels.Driver, err error)
 	// Credentials
 	RetrieveEntityCredentialsByUserID(userId uuid.UUID) (m masterModels.Credentials, err error)
 	// Booking Transfer
@@ -38,6 +44,7 @@ type HandlerFunc interface {
 	OngoingBookingTransfer(id uuid.UUID) (err error)
 	CompleteBookingTransfer(id uuid.UUID) (err error)
 	CompletePickupBooking(id uuid.UUID) (err error)
+	SwitchDriver(id uuid.UUID, driverId uuid.UUID, plateNumber string) (err error)
 	// Booking Transfer - Rating
 	InsertBookingTransferRating(p *dto.InsertBookingTransferRating) (err error)
 	// CAR MANAGEMENT
@@ -47,6 +54,7 @@ type HandlerFunc interface {
 	RetrieveCarManagementrByUserID(userId uuid.UUID) (m []masterModels.CarManagement, err error)
 	SetCarManagementInactive(c *gin.Context, id uuid.UUID) (err error)
 	SetCarManagementActive(c *gin.Context, id uuid.UUID) (err error)
+	RetrieveAllAvailable(userId uuid.UUID) (m []masterModels.CarManagement, err error)
 	// AUTH - CUSTOMER
 	RegisterCustomer(credentials *dto.CustomerSignup) (err error)
 	RetrieveEntityCustomerByUserID(userId uuid.UUID) (m masterModels.Customer, err error)
@@ -54,6 +62,7 @@ type HandlerFunc interface {
 	RetrieveEntityInternalByUserID(userId uuid.UUID) (m masterModels.Internal, err error)
 	// AUTH - DRIVER
 	RegisterDriver(credentials *dto.DriverSignup) (err error)
+	RetrieveDriverLinkedCompany(driverId uuid.UUID) (m master.Driver, err error)
 	// AUTH - PUBLIC
 	RegisterUser(p *dto.UserSignup) (err error)
 	// WEB STATISTIC - CUSTOMER

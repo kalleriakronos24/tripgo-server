@@ -24,7 +24,7 @@ func PushNotificationSingleExternalId(deviceId string, msgParam string) error {
 	notification := *onesignal.NewNotification(appId)
 	notification.IncludeExternalUserIds = []string{deviceId}
 	// notification.SetIsAndroid(true)
-	notification.SetPriority(8)
+	// notification.SetPriority(8)
 	message := msgParam
 	stringMap := onesignal.StringMap{En: &message}
 	notification.Contents = *onesignal.NewNullableStringMap(&stringMap)

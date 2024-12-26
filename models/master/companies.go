@@ -1,7 +1,6 @@
 package master
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -43,8 +42,8 @@ type CompanyModelAction interface {
 	GetOneCompanyByEmail(email string) (m Company, err error)
 	GetOneCompanyByUserID(userId uuid.UUID) (m Company, err error)
 
-	InsertCompany(p Company) (err error)
-	UpdateCompany(id uuid.UUID, p Company) (err error)
+	InsertCompany(p Company, tx *gorm.DB) (m *Company, err error)
+	UpdateCompany(id uuid.UUID, p Company, tx *gorm.DB) (err error)
 	DeleteCompany(id uuid.UUID, tx *gorm.DB) (err error)
 }
 
@@ -103,17 +102,7 @@ func (o *companyOrm) GetAllCompany(userId uuid.UUID) (m []Company, err error) {
 
 func (o *companyOrm) GetOneCompanyByID(id uuid.UUID) (m Company, err error) {
 	result := o.db.Model(&m).
-		Preload("CreatedByUser", func(db *gorm.DB) *gorm.DB {
-			return db.Select([]string{"ID", "Name", "CreatedBy", "UpdatedBy", "CreatedAt", "UpdatedAt"})
-		}).
-		Preload("UpdatedByUser", func(db *gorm.DB) *gorm.DB {
-			return db.Select([]string{"ID", "Name", "CreatedBy", "UpdatedBy", "CreatedAt", "UpdatedAt"})
-		}).
-		Preload("Client").
 		First(&m, id)
-
-	fmt.Printf("%v", &m)
-
 	return m, result.Error
 }
 
@@ -127,13 +116,13 @@ func (o *companyOrm) GetOneCompanyByEmail(email string) (m Company, err error) {
 	return m, result.Error
 }
 
-func (o *companyOrm) InsertCompany(p Company) (err error) {
-	result := o.db.Model(&p).Omit(clause.Associations).Create(&p)
-	return result.Error
+func (o *companyOrm) InsertCompany(p Company, tx *gorm.DB) (m *Company, err error) {
+	result := tx.Model(&p).Omit(clause.Associations).Create(&p)
+	return &p, result.Error
 }
 
-func (o *companyOrm) UpdateCompany(id uuid.UUID, p Company) (err error) {
-	result := o.db.Model(&p).Where("id = ?", id).Updates(&p)
+func (o *companyOrm) UpdateCompany(id uuid.UUID, p Company, tx *gorm.DB) (err error) {
+	result := o.db.Model(&Company{}).Where("id = ?", id).Updates(&p)
 	return result.Error
 }
 

@@ -120,9 +120,11 @@ func POSTLoginDriver(c *gin.Context) {
 	responseData := struct {
 		Token    string `json:"token,omitempty"`
 		FullName string `json:"fullName,omitempty"`
+		Type     string `json:"type,omitempty"`
 	}{
 		Token:    token,
 		FullName: driver.CredentialDriver.Name,
+		Type:     driver.CredentialDriver.DriverType,
 	}
 
 	// TODO
@@ -369,5 +371,36 @@ func POSTRegisterDriver(c *gin.Context) {
 // @Param 	 	 data body dto.DriverSignup true "universal reset password"
 // @Router       /auth/reset-password [post]
 func POSTResetPassword(c *gin.Context) {
+	var err error
 
+	p := &dto.UniversalResetPassword{}
+
+	if err = c.ShouldBindJSON(&p); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
+		return
+	}
+
+	if err := utils.ValidateHTTPPayload(p); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
+		return
+	}
+
+	if err := utils.EmailFormatValidation(p.Email); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, "Invalid email format"))
+		return
+	}
+
+	if err := services.Handler.CheckExistingUser("", struct{ *masterModels.Credentials }{&masterModels.Credentials{
+		Email: p.Email,
+	}}); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "email not found"))
+		return
+	}
+
+	if err = services.Handler.ResetPassword(p); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("insert-failed", err, "user"))
+		return
+	}
+
+	c.JSON(http.StatusCreated, dto.Response{Message: "success", Data: nil})
 }

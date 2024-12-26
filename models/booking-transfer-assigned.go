@@ -63,6 +63,9 @@ func (o *BookingTransferAssignedOrm) GetOneByID(id uuid.UUID) (BookingTransferAs
 				return dbxx.Preload("Credentials")
 			})
 		}).
+		Preload("Driver", func(db *gorm.DB) *gorm.DB {
+			return db.Preload("Company")
+		}).
 		First(&BookingTransferAssigned)
 	return BookingTransferAssigned, result.Error
 }

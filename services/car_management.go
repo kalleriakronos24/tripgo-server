@@ -21,28 +21,31 @@ type CheckExistingCarManagementStruct struct {
 func (module *module) InsertCarManagement(c *gin.Context, p *dto.InsertCarManagement) (err error) {
 	tx := database.GetDatabaseConnection().Begin()
 	randomFileName, _ := utils.GenerateNumber(30)
-	// fileExt := filepath.Ext(p.FrontCarPhoto.Filename)
 	uniqueFileName := fmt.Sprintf("%v%v", randomFileName, ".jpg")
 
-	if _, saveFileErr := utils.SaveFileToDockerVolume(c, "car-management", "front-car-photo", p.FrontCarPhoto, uniqueFileName); saveFileErr != nil {
-		return errors.New("failed to get create car management")
-	}
+	// if p.FrontCarPhoto != nil {
+	// 	if _, saveFileErr := utils.SaveFileToDockerVolume(c, "car-management", "front-car-photo", p.FrontCarPhoto, uniqueFileName); saveFileErr != nil {
+	// 		return errors.New("failed to get create car management")
+	// 	}
+	// }
 
-	if _, saveFileErr := utils.SaveFileToDockerVolume(c, "car-management", "license-photo", p.FrontCarPhoto, uniqueFileName); saveFileErr != nil {
-		return errors.New("failed to get create car management")
-	}
+	// if p.LicensePhoto != nil {
+	// 	if _, saveFileErr := utils.SaveFileToDockerVolume(c, "car-management", "license-photo", p.FrontCarPhoto, uniqueFileName); saveFileErr != nil {
+	// 		return errors.New("failed to get create car management")
+	// 	}
+	// }
 
-	if p.RoadTaxPhoto != nil {
-		if _, saveFileErr := utils.SaveFileToDockerVolume(c, "car-management", "road-tax-photo", p.FrontCarPhoto, uniqueFileName); saveFileErr != nil {
-			return errors.New("failed to get create car management")
-		}
-	}
+	// if p.RoadTaxPhoto != nil {
+	// 	if _, saveFileErr := utils.SaveFileToDockerVolume(c, "car-management", "road-tax-photo", p.FrontCarPhoto, uniqueFileName); saveFileErr != nil {
+	// 		return errors.New("failed to get create car management")
+	// 	}
+	// }
 
-	if p.VEPPhoto != nil {
-		if _, saveFileErr := utils.SaveFileToDockerVolume(c, "car-management", "vep-photo", p.FrontCarPhoto, uniqueFileName); saveFileErr != nil {
-			return errors.New("failed to get create car management")
-		}
-	}
+	// if p.VEPPhoto != nil {
+	// 	if _, saveFileErr := utils.SaveFileToDockerVolume(c, "car-management", "vep-photo", p.FrontCarPhoto, uniqueFileName); saveFileErr != nil {
+	// 		return errors.New("failed to get create car management")
+	// 	}
+	// }
 
 	CarManagement := master.CarManagement{
 		Name:              p.Name,
@@ -57,33 +60,61 @@ func (module *module) InsertCarManagement(c *gin.Context, p *dto.InsertCarManage
 		VEPPhoto:          fmt.Sprintf("%s/%s/car-management/vep-photo/%s", config.AppConfig.APPUrl, config.AppConfig.AppUrlStaticFileMainRoute, uniqueFileName),
 	}
 
-	if p.VEPPhoto == nil {
-		CarManagement = master.CarManagement{
-			Name:              p.Name,
-			PlateNumber:       p.PlateNumber,
-			LicensePhoto:      fmt.Sprintf("%s/%s/car-management/front-car-photo/%s", config.AppConfig.APPUrl, config.AppConfig.AppUrlStaticFileMainRoute, uniqueFileName),
-			CarManagementType: p.CarManagementType,
-			DriverID:          p.DriverID,
-			CarModelID:        p.CarModelID,
-			FileName:          uniqueFileName,
-			FrontCarPhoto:     fmt.Sprintf("%s/%s/car-management/front-car-photo/%s", config.AppConfig.APPUrl, config.AppConfig.AppUrlStaticFileMainRoute, uniqueFileName),
-			RoadTaxPhoto:      fmt.Sprintf("%s/%s/car-management/road-tax-photo/%s", config.AppConfig.APPUrl, config.AppConfig.AppUrlStaticFileMainRoute, uniqueFileName),
-		}
-	}
+	// if p.LicensePhoto == nil {
+	// 	CarManagement = master.CarManagement{
+	// 		Name:              p.Name,
+	// 		PlateNumber:       p.PlateNumber,
+	// 		CarManagementType: p.CarManagementType,
+	// 		DriverID:          p.DriverID,
+	// 		CarModelID:        p.CarModelID,
+	// 		FileName:          uniqueFileName,
+	// 		FrontCarPhoto:     fmt.Sprintf("%s/%s/car-management/front-car-photo/%s", config.AppConfig.APPUrl, config.AppConfig.AppUrlStaticFileMainRoute, uniqueFileName),
+	// 		RoadTaxPhoto:      fmt.Sprintf("%s/%s/car-management/road-tax-photo/%s", config.AppConfig.APPUrl, config.AppConfig.AppUrlStaticFileMainRoute, uniqueFileName),
+	// 		VEPPhoto:          fmt.Sprintf("%s/%s/car-management/vep-photo/%s", config.AppConfig.APPUrl, config.AppConfig.AppUrlStaticFileMainRoute, uniqueFileName),
+	// 	}
+	// }
 
-	if p.RoadTaxPhoto == nil {
-		CarManagement = master.CarManagement{
-			Name:              p.Name,
-			PlateNumber:       p.PlateNumber,
-			LicensePhoto:      fmt.Sprintf("%s/%s/car-management/front-car-photo/%s", config.AppConfig.APPUrl, config.AppConfig.AppUrlStaticFileMainRoute, uniqueFileName),
-			CarManagementType: p.CarManagementType,
-			DriverID:          p.DriverID,
-			CarModelID:        p.CarModelID,
-			FileName:          uniqueFileName,
-			FrontCarPhoto:     fmt.Sprintf("%s/%s/car-management/front-car-photo/%s", config.AppConfig.APPUrl, config.AppConfig.AppUrlStaticFileMainRoute, uniqueFileName),
-			VEPPhoto:          fmt.Sprintf("%s/%s/car-management/vep-photo/%s", config.AppConfig.APPUrl, config.AppConfig.AppUrlStaticFileMainRoute, uniqueFileName),
-		}
-	}
+	// if p.FrontCarPhoto == nil {
+	// 	CarManagement = master.CarManagement{
+	// 		Name:              p.Name,
+	// 		PlateNumber:       p.PlateNumber,
+	// 		LicensePhoto:      fmt.Sprintf("%s/%s/car-management/front-car-photo/%s", config.AppConfig.APPUrl, config.AppConfig.AppUrlStaticFileMainRoute, uniqueFileName),
+	// 		CarManagementType: p.CarManagementType,
+	// 		DriverID:          p.DriverID,
+	// 		CarModelID:        p.CarModelID,
+	// 		FileName:          uniqueFileName,
+	// 		RoadTaxPhoto:      fmt.Sprintf("%s/%s/car-management/road-tax-photo/%s", config.AppConfig.APPUrl, config.AppConfig.AppUrlStaticFileMainRoute, uniqueFileName),
+	// 		VEPPhoto:          fmt.Sprintf("%s/%s/car-management/vep-photo/%s", config.AppConfig.APPUrl, config.AppConfig.AppUrlStaticFileMainRoute, uniqueFileName),
+	// 	}
+	// }
+
+	// if p.VEPPhoto == nil {
+	// 	CarManagement = master.CarManagement{
+	// 		Name:              p.Name,
+	// 		PlateNumber:       p.PlateNumber,
+	// 		LicensePhoto:      fmt.Sprintf("%s/%s/car-management/front-car-photo/%s", config.AppConfig.APPUrl, config.AppConfig.AppUrlStaticFileMainRoute, uniqueFileName),
+	// 		CarManagementType: p.CarManagementType,
+	// 		DriverID:          p.DriverID,
+	// 		CarModelID:        p.CarModelID,
+	// 		FileName:          uniqueFileName,
+	// 		FrontCarPhoto:     fmt.Sprintf("%s/%s/car-management/front-car-photo/%s", config.AppConfig.APPUrl, config.AppConfig.AppUrlStaticFileMainRoute, uniqueFileName),
+	// 		RoadTaxPhoto:      fmt.Sprintf("%s/%s/car-management/road-tax-photo/%s", config.AppConfig.APPUrl, config.AppConfig.AppUrlStaticFileMainRoute, uniqueFileName),
+	// 	}
+	// }
+
+	// if p.RoadTaxPhoto == nil {
+	// 	CarManagement = master.CarManagement{
+	// 		Name:              p.Name,
+	// 		PlateNumber:       p.PlateNumber,
+	// 		LicensePhoto:      fmt.Sprintf("%s/%s/car-management/front-car-photo/%s", config.AppConfig.APPUrl, config.AppConfig.AppUrlStaticFileMainRoute, uniqueFileName),
+	// 		CarManagementType: p.CarManagementType,
+	// 		DriverID:          p.DriverID,
+	// 		CarModelID:        p.CarModelID,
+	// 		FileName:          uniqueFileName,
+	// 		FrontCarPhoto:     fmt.Sprintf("%s/%s/car-management/front-car-photo/%s", config.AppConfig.APPUrl, config.AppConfig.AppUrlStaticFileMainRoute, uniqueFileName),
+	// 		VEPPhoto:          fmt.Sprintf("%s/%s/car-management/vep-photo/%s", config.AppConfig.APPUrl, config.AppConfig.AppUrlStaticFileMainRoute, uniqueFileName),
+	// 	}
+	// }
 
 	if CarManagementErr := tx.Create(&CarManagement); CarManagementErr.Error != nil {
 		tx.Rollback()
@@ -94,6 +125,13 @@ func (module *module) InsertCarManagement(c *gin.Context, p *dto.InsertCarManage
 }
 
 func (module *module) RetrieveCarManagementrByUserID(userId uuid.UUID) (m []master.CarManagement, err error) {
+	if m, err = module.db.carManagementModel.GetAllCarManagementByDriverID(userId); err != nil {
+		return nil, errors.New("failed to get car management list")
+	}
+	return m, nil
+}
+
+func (module *module) RetrieveAllAvailable(userId uuid.UUID) (m []master.CarManagement, err error) {
 	if m, err = module.db.carManagementModel.GetAllCarManagementByDriverID(userId); err != nil {
 		return nil, errors.New("failed to get car management list")
 	}
