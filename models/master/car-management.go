@@ -51,6 +51,8 @@ type CarManagementModelAction interface {
 	GetOneByDriverIdAndCompanyId(driverId uuid.UUID, companyId uuid.UUID) (m CarManagement, err error)
 	GetAllAvailableCarManagementByCompanyIdAndDriverId(companyId uuid.UUID, driverId uuid.UUID) (CarManagement []*CarManagement, err error)
 	GetSameCarManagementByAgentByPlateNumberAndCompanyIdAndDriverId(companyId uuid.UUID, plateNumber string, driverId uuid.UUID) (CarManagement CarManagement, err error)
+	CheckKhaimalDriverAvailable(carModelId uuid.UUID) (CarManagement []*CarManagement, err error)
+	GetKhaimalManagerId(carModelId uuid.UUID) (CarManagement CarManagement, err error)
 
 	InsertCarManagement(p CarManagement) (err error)
 	UpdateCarManagementByCompanyId(companyId uuid.UUID, p CarManagement, tx *gorm.DB) (err error)
@@ -77,6 +79,34 @@ func (o *CarManagementOrm) GetAllCarManagementPaginated(c *gin.Context, CarManag
 func (o *CarManagementOrm) GetOneByID(id uuid.UUID) (CarManagement CarManagement, err error) {
 	result := o.db.Model(&CarManagement).
 		Where("id = ?", id).
+		Preload(clause.Associations).
+		First(&CarManagement)
+	return CarManagement, result.Error
+}
+
+func (o *CarManagementOrm) CheckKhaimalDriverAvailable(carModelId uuid.UUID) (CarManagement []*CarManagement, err error) {
+	result := o.db.Model(&CarManagement).
+		Where("car_model_id = ? AND status = ?", carModelId, "active").
+		Preload("Company", func(db *gorm.DB) *gorm.DB {
+			return db.Where("company_name = ?", "Khaimal Group").First(Company{})
+		}).
+		Preload("Driver", func(db *gorm.DB) *gorm.DB {
+			return db.Where("booking_status = ? AND status = ?", "ready", "active").First(Driver{})
+		}).
+		Preload(clause.Associations).
+		Find(&CarManagement)
+	return CarManagement, result.Error
+}
+
+func (o *CarManagementOrm) GetKhaimalManagerId(carModelId uuid.UUID) (CarManagement CarManagement, err error) {
+	result := o.db.Model(&CarManagement).
+		Where("car_model_id = ? AND status = ?", carModelId, "active").
+		Preload("Company", func(db *gorm.DB) *gorm.DB {
+			return db.Where("company_name = ?", "Khaimal Group").First(Company{})
+		}).
+		Preload("Driver", func(db *gorm.DB) *gorm.DB {
+			return db.Where("driver_type = ?", "internal-agent").First(Driver{})
+		}).
 		Preload(clause.Associations).
 		First(&CarManagement)
 	return CarManagement, result.Error
