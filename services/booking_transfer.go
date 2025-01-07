@@ -3,6 +3,7 @@ package services
 import (
 	"errors"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -51,20 +52,41 @@ func (module *module) InsertBookingTransfer(p *dto.InsertBookingTransfer) (err e
 	}
 
 	var carManagement master.CarManagement
-	var internalDriver []*master.CarManagement
-	internalDriver, _ = module.db.carManagementModel.CheckKhaimalDriverAvailable(p.CarModelID)
-
-	if len(internalDriver) <= 0 {
-		if carManagement, err = module.db.carManagementModel.GetOneByCarModelIDAndAvailable(p.CarModelID, driverBalanceDetail.Driver.ID, driverBalanceDetail.Driver.Company.ID); err != nil {
-			tx.Rollback()
-			return errors.New("drivers seems busy. please try again later")
+	if _, err = module.db.carManagementModel.CheckKhaimalDriverAvailable(p.CarModelID); err == nil {
+		if carManagement, err = module.db.carManagementModel.GetKhaimalManagerId(p.CarModelID); err == nil {
+			log.Println("THIS1")
+			// tx.Rollback()
+			// return errors.New("drivers seems busy. please try again later")
+		} else {
+			log.Println("THIS2")
+			if carManagement, err = module.db.carManagementModel.GetOneByCarModelIDAndAvailable(p.CarModelID, driverBalanceDetail.Driver.ID, driverBalanceDetail.Driver.Company.ID); err != nil {
+				log.Println("THIS22")
+				tx.Rollback()
+				return errors.New("drivers seems busy. please try again later")
+			}
 		}
 	} else {
-		if carManagement, err = module.db.carManagementModel.GetKhaimalManagerId(p.CarModelID); err != nil {
+		log.Println("THIS3")
+		if carManagement, err = module.db.carManagementModel.GetOneByCarModelIDAndAvailable(p.CarModelID, driverBalanceDetail.Driver.ID, driverBalanceDetail.Driver.Company.ID); err != nil {
+			log.Println("THIS33")
 			tx.Rollback()
 			return errors.New("drivers seems busy. please try again later")
 		}
 	}
+
+	// if len(internalDriver) <= 0 {
+	// 	log.Println("THIS RUN 1ST")
+	// 	if carManagement, err = module.db.carManagementModel.GetOneByCarModelIDAndAvailable(p.CarModelID, driverBalanceDetail.Driver.ID, driverBalanceDetail.Driver.Company.ID); err != nil {
+	// 		tx.Rollback()
+	// 		return errors.New("drivers seems busy. please try again later")
+	// 	}
+	// } else {
+	// 	log.Println("THIS RUN 2ND")
+	// 	if carManagement, err = module.db.carManagementModel.GetKhaimalManagerId(p.CarModelID); err != nil {
+	// 		tx.Rollback()
+	// 		return errors.New("drivers seems busy. please try again later")
+	// 	}
+	// }
 
 	now := time.Now()
 	currentYear, currentMonth, _ := now.Date()
