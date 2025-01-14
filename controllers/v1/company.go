@@ -179,7 +179,7 @@ func POSTRegisteNewrDriverPartner(c *gin.Context) {
 
 	if err := services.Handler.CheckExistingUser("", struct{ *masterModels.Credentials }{&masterModels.Credentials{
 		Email: p.Email,
-	}}); err != nil {
+	}}); err == nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-existing-email", err, ""))
 		return
 	}
