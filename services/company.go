@@ -3,6 +3,7 @@ package services
 import (
 	"errors"
 	"fmt"
+	"log"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -516,6 +517,8 @@ func (module *module) RegisterNewDriverInternalAgent(driverId uuid.UUID, credent
 		return errors.New("server error. please try again later")
 	}
 
+	log.Printf("manager id >> %v", driverId)
+
 	var driverManager masterModels.Driver
 	if txError := tx.Model(&driverManager).
 		Where("credentials_id = ?", driverId).
@@ -568,7 +571,7 @@ func (module *module) RegisterNewDriverInternalAgent(driverId uuid.UUID, credent
 	if txError := tx.Model(&carManagement).
 		Where("driver_id = ?", driverManager.ID).
 		Preload(clause.Associations).
-		First(&carManagement); txError.Error != nil {
+		Find(&carManagement); txError.Error != nil {
 		tx.Rollback()
 		return errors.New("failed to register new driver. try again")
 	}
