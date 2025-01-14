@@ -3,6 +3,7 @@ package services
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 	database "github.com/kalleriakronos24/khaimal-group/db"
@@ -91,10 +92,28 @@ func (module *module) AcceptBookingTransfer(id uuid.UUID) (err error) {
 		return errors.New("failed to deduct driver balance")
 	}
 
-	DriverTransactionHistory := models.DriverTransactionHistory{
-		Remark:   "order deduction",
-		Status:   "deduction",
+	now := time.Now()
+	currentYear, currentMonth, _ := now.Date()
+	month := int(currentMonth)
+	randomUid, _ := utils.GenerateNumber(10)
+
+	// config.AppConfig.APPUrl
+	DriverTopup := models.DriverTopup{
+		Uid:      fmt.Sprintf("DRV/DT/%v%v/%v", utils.IntegerToRoman(currentYear), utils.IntegerToRoman(month), randomUid),
+		Amount:   -float64(bookingTransferAssigned.BookingTransfer.Price) * 0.14,
 		DriverID: bookingTransferAssigned.DriverID,
+	}
+
+	if DriverTopupErr := tx.Create(&DriverTopup); DriverTopupErr.Error != nil {
+		tx.Rollback()
+		return errors.New("failed to upload balance topup")
+	}
+
+	DriverTransactionHistory := models.DriverTransactionHistory{
+		Remark:        "order deduction",
+		Status:        "deduction",
+		DriverID:      bookingTransferAssigned.DriverID,
+		DriverTopupID: DriverTopup.ID,
 	}
 
 	if DriverTransactionHistoryErr := tx.Create(&DriverTransactionHistory); DriverTransactionHistoryErr.Error != nil {
