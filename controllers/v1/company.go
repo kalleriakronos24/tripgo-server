@@ -8,6 +8,7 @@ import (
 	"github.com/kalleriakronos24/khaimal-group/constants"
 	"github.com/kalleriakronos24/khaimal-group/dto"
 	"github.com/kalleriakronos24/khaimal-group/models/master"
+	masterModels "github.com/kalleriakronos24/khaimal-group/models/master"
 	"github.com/kalleriakronos24/khaimal-group/services"
 	"github.com/kalleriakronos24/khaimal-group/utils"
 )
@@ -141,4 +142,52 @@ func GETAllDriversByCompanyId(c *gin.Context) {
 	} else {
 		c.JSON(http.StatusOK, dto.Response{Data: &drivers, Message: "success"})
 	}
+}
+
+// AuthSignup godoc
+// @Summary      A Driver Registration through company manager
+// @Description  A Driver Registration through company manager
+// @Tags         Company
+// @Accept       json
+// @Produce      json
+// @Success      200 {object}	dto.Response
+// @Failure      400 {object}	dto.Response
+// @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
+// @Param 	 	 data body dto.DriverSignup true "driver registration"
+// @Router       /company/driver/new [post]
+func POSTRegisteNewrDriverPartner(c *gin.Context) {
+	var err error
+
+	p := &dto.DriverSignup{}
+
+	userLoggedInId := c.GetString("user_id")
+	userId, err := uuid.Parse(userLoggedInId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("uuid-error", err, ""))
+		return
+	}
+
+	if err = c.ShouldBindJSON(&p); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
+		return
+	}
+
+	if err := utils.ValidateHTTPPayload(p); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
+		return
+	}
+
+	if err := services.Handler.CheckExistingUser("", struct{ *masterModels.Credentials }{&masterModels.Credentials{
+		Email: p.Email,
+	}}); err == nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-existing-email", err, ""))
+		return
+	}
+
+	if err = services.Handler.RegisterNewDriverInternalAgent(userId, p); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("insert-failed", err, "driver"))
+		return
+	}
+
+	c.JSON(http.StatusCreated, dto.Response{Message: "success"})
 }

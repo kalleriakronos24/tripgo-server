@@ -26,6 +26,7 @@ type HandlerFunc interface {
 	InsertCompany(c *gin.Context, p *dto.InsertCompany, pAgent *dto.DriverSignUpValidator, pDrivers []*dto.DriverSignUpValidator, pTransports []*dto.InsertCarManagement) (err error)
 	ApproveCompany(companyId uuid.UUID) (err error)
 	RetrieveAllAvailableDrivers(companyId uuid.UUID) (m []*masterModels.Driver, err error)
+	RegisterNewDriverInternalAgent(driverId uuid.UUID, credentials *dto.DriverSignup) (err error)
 	// Credentials
 	RetrieveEntityCredentialsByUserID(userId uuid.UUID) (m masterModels.Credentials, err error)
 	// Booking Transfer

@@ -1078,6 +1078,38 @@ paths:
       summary: Method to get all drivers by company id
       tags:
       - Company
+  /company/driver/new:
+    post:
+      consumes:
+      - application/json
+      description: A Driver Registration through company manager
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: driver registration
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.DriverSignup'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: A Driver Registration through company manager
+      tags:
+      - Company
   /driver-balance/get:
     get:
       consumes:

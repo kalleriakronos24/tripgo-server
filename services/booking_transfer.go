@@ -55,8 +55,6 @@ func (module *module) InsertBookingTransfer(p *dto.InsertBookingTransfer) (err e
 	if _, err = module.db.carManagementModel.CheckKhaimalDriverAvailable(p.CarModelID); err == nil {
 		if carManagement, err = module.db.carManagementModel.GetKhaimalManagerId(p.CarModelID); err == nil {
 			log.Println("THIS1")
-			// tx.Rollback()
-			// return errors.New("drivers seems busy. please try again later")
 		} else {
 			log.Println("THIS2")
 			if carManagement, err = module.db.carManagementModel.GetOneByCarModelIDAndAvailable(p.CarModelID, driverBalanceDetail.Driver.ID, driverBalanceDetail.Driver.Company.ID); err != nil {

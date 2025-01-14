@@ -65,6 +65,7 @@ func InitializeRouter() (router *gin.Engine) {
 			company.POST("/create", v1.POSTCreateCompany)
 			company.GET("/create/approval/:id", v1.POSTApproveCompanyRegistration)
 			company.GET("/driver/all/:id", v1.GETAllDriversByCompanyId)
+			company.POST("/driver/new", v1.POSTRegisteNewrDriverPartner)
 		}
 
 		authInternal := v1route.Group("/auth/i")
