@@ -103,7 +103,7 @@ func (o *DriverOrm) GetAllAvailable(id uuid.UUID) (Driver []*Driver, err error) 
 }
 
 func (o *DriverOrm) GetAllAvailableDriversByCompanyId(companyId uuid.UUID) (m []*Driver, err error) {
-	result := o.db.Model(&m).Where("company_id = ?", companyId).Find(&m)
+	result := o.db.Model(&m).Where("company_id = ? AND status = ?", companyId, "active").Find(&m)
 	return m, result.Error
 }
 
