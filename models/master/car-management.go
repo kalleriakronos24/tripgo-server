@@ -93,6 +93,7 @@ func (o *CarManagementOrm) CheckKhaimalDriverAvailable(carModelId uuid.UUID) (Ca
 			return db.Preload("Credentials")
 		}).
 		Preload("Company").
+		Preload("CarModel").
 		// Preload("Company", func(db *gorm.DB) *gorm.DB {
 		// 	return db.Where("company_name = ?", "Khaimal Group").First(Company{})
 		// }).
@@ -112,6 +113,7 @@ func (o *CarManagementOrm) GetKhaimalManagerId(carModelId uuid.UUID) (CarManagem
 			return db.Preload("Credentials")
 		}).
 		Preload("Company").
+		Preload("CarModel").
 		First(&CarManagement)
 	return CarManagement, result.Error
 }
