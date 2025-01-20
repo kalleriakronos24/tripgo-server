@@ -78,6 +78,8 @@ definitions:
         type: string
       price:
         type: number
+      refferalCode:
+        type: string
       toLatCoordinate:
         type: number
       toLngCoordinate:
@@ -715,6 +717,25 @@ paths:
           schema:
             $ref: '#/definitions/dto.Response'
       summary: Method to cancel booking transfer by customer
+      tags:
+      - Booking - Transfer
+  /booking/transfer/khaimal:
+    get:
+      consumes:
+      - application/json
+      description: A GET Request to fetch a all records booking transfers
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Method to get all received khaimal booking transfers
       tags:
       - Booking - Transfer
   /booking/transfer/rating:

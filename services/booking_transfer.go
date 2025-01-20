@@ -28,6 +28,13 @@ func (module *module) RetrieveBookingTransferByUserID(userId uuid.UUID) (m model
 	return
 }
 
+func (module *module) RetrieveAllKhaimalBookingTransfer() (m []*models.BookingTransfer, err error) {
+	if m, err = module.db.bookingTransfer.GetAllKhaimalBookingOrders(); err != nil {
+		return m, errors.New("failed to get booking transfers")
+	}
+	return
+}
+
 func (module *module) RetrieveAllBookingTransferByCustomer(id uuid.UUID) (m []*models.BookingTransfer, err error) {
 	if m, err = module.db.bookingTransfer.GetAllByCustomerID(id); err != nil {
 		return m, errors.New("failed to get booking transfers")
@@ -56,35 +63,17 @@ func (module *module) InsertBookingTransfer(p *dto.InsertBookingTransfer) (err e
 		if carManagement, err = module.db.carManagementModel.GetKhaimalManagerId(p.CarModelID); err == nil {
 			log.Println("THIS1")
 		} else {
-			log.Println("THIS2")
 			if carManagement, err = module.db.carManagementModel.GetOneByCarModelIDAndAvailable(p.CarModelID, driverBalanceDetail.Driver.ID, driverBalanceDetail.Driver.Company.ID); err != nil {
-				log.Println("THIS22")
 				tx.Rollback()
 				return errors.New("drivers seems busy. please try again later")
 			}
 		}
 	} else {
-		log.Println("THIS3")
 		if carManagement, err = module.db.carManagementModel.GetOneByCarModelIDAndAvailable(p.CarModelID, driverBalanceDetail.Driver.ID, driverBalanceDetail.Driver.Company.ID); err != nil {
-			log.Println("THIS33")
 			tx.Rollback()
 			return errors.New("drivers seems busy. please try again later")
 		}
 	}
-
-	// if len(internalDriver) <= 0 {
-	// 	log.Println("THIS RUN 1ST")
-	// 	if carManagement, err = module.db.carManagementModel.GetOneByCarModelIDAndAvailable(p.CarModelID, driverBalanceDetail.Driver.ID, driverBalanceDetail.Driver.Company.ID); err != nil {
-	// 		tx.Rollback()
-	// 		return errors.New("drivers seems busy. please try again later")
-	// 	}
-	// } else {
-	// 	log.Println("THIS RUN 2ND")
-	// 	if carManagement, err = module.db.carManagementModel.GetKhaimalManagerId(p.CarModelID); err != nil {
-	// 		tx.Rollback()
-	// 		return errors.New("drivers seems busy. please try again later")
-	// 	}
-	// }
 
 	now := time.Now()
 	currentYear, currentMonth, _ := now.Date()
@@ -110,6 +99,7 @@ func (module *module) InsertBookingTransfer(p *dto.InsertBookingTransfer) (err e
 		AddPickupPoint:    p.AddPickupPoint,
 		AddDropPoint:      p.AddDropoffPoint,
 		GrandTotal:        p.GrandTotal,
+		RefferalCode:      p.RefferalCode,
 		Uid:               fmt.Sprintf("TRF/%v%v/%v", utils.IntegerToRoman(currentYear), utils.IntegerToRoman(month), randomUid),
 	}, tx); err != nil {
 		tx.Rollback()

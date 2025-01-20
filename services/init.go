@@ -30,6 +30,7 @@ type HandlerFunc interface {
 	// Credentials
 	RetrieveEntityCredentialsByUserID(userId uuid.UUID) (m masterModels.Credentials, err error)
 	// Booking Transfer
+	RetrieveAllKhaimalBookingTransfer() (m []*models.BookingTransfer, err error)
 	InsertBookingTransfer(p *dto.InsertBookingTransfer) (err error)
 	UpdateBookingTransfer(id uuid.UUID, p *dto.UpdateBookingTransfer) (err error)
 	RetrieveAllBookingTransferByCustomer(id uuid.UUID) (m []*models.BookingTransfer, err error)

@@ -812,6 +812,35 @@ const docTemplate = `{
                 }
             }
         },
+        "/booking/transfer/khaimal": {
+            "get": {
+                "description": "A GET Request to fetch a all records booking transfers",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking - Transfer"
+                ],
+                "summary": "Method to get all received khaimal booking transfers",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/booking/transfer/rating": {
             "post": {
                 "description": "A POST Request to give a driver's car a rating based on completed booking",
@@ -1845,6 +1874,9 @@ const docTemplate = `{
                 },
                 "price": {
                     "type": "number"
+                },
+                "refferalCode": {
+                    "type": "string"
                 },
                 "toLatCoordinate": {
                     "type": "number"

@@ -61,6 +61,7 @@ func POSTBookingTransfer(c *gin.Context) {
 		AddDropoffPoint:   pValidator.AddDropoffPoint,
 		CustomerID:        cred.CredentialCustomer.ID,
 		TotalDistance:     pValidator.TotalDistance,
+		RefferalCode:      pValidator.RefferalCode,
 	}
 
 	if err = services.Handler.InsertBookingTransfer(p); err != nil {
@@ -99,6 +100,24 @@ func GETAllBookingTransferByCustomer(c *gin.Context) {
 	}
 
 	if bookingTransfer, err := services.Handler.RetrieveAllBookingTransferByCustomer(cred.ID); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "booking transfer"))
+		return
+	} else {
+		c.JSON(http.StatusOK, dto.Response{Data: &bookingTransfer, Message: "success"})
+	}
+}
+
+// AuthLogin godoc
+// @Summary      Method to get all received khaimal booking transfers
+// @Description  A GET Request to fetch a all records booking transfers
+// @Tags         Booking - Transfer
+// @Accept       json
+// @Produce      json
+// @Success      200 {object}	dto.Response
+// @Failure      400 {object}	dto.Response
+// @Router       /booking/transfer/khaimal [get]
+func GETAllKhaimalBookingTransfer(c *gin.Context) {
+	if bookingTransfer, err := services.Handler.RetrieveAllKhaimalBookingTransfer(); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "booking transfer"))
 		return
 	} else {

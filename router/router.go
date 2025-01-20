@@ -110,6 +110,7 @@ func InitializeRouter() (router *gin.Engine) {
 
 		bookingTransfer := v1route.Group("/booking/transfer")
 		{
+			bookingTransfer.GET("/khaimal", v1.GETAllKhaimalBookingTransfer)
 			bookingTransfer.GET("/all", utils.AuthOnly, v1.GETAllBookingTransferByCustomer)
 			bookingTransfer.POST("/cancel/:id", utils.AuthOnly, v1.POSTCancelBookingTransferByCustomer)
 			bookingTransfer.POST("", utils.AuthOnly, v1.POSTBookingTransfer)

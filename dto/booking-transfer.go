@@ -24,6 +24,7 @@ type InsertBookingTransfer struct {
 	GrandTotal        float32   `json:"grandTotal,omitempty"`
 	AddPickupPoint    int       `json:"addPickupPoint,omitempty"`
 	AddDropoffPoint   int       `json:"addDropoffPoint,omitempty"`
+	RefferalCode      string    `json:"refferalCode,omitempty"`
 }
 
 type UpdateBookingTransfer struct {
@@ -44,4 +45,5 @@ type UpdateBookingTransfer struct {
 	GrandTotal        float32   `json:"grandTotal,omitempty"`
 	AddPickupPoint    int       `json:"addPickupPoint,omitempty"`
 	AddDropoffPoint   int       `json:"addDropoffPoint,omitempty"`
+	RefferalCode      string    `json:"refferalCode,omitempty"`
 }

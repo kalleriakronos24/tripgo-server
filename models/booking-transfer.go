@@ -35,6 +35,7 @@ type BookingTransfer struct {
 	Distance          float32   `json:"distance,omitempty" gorm:"default:0"`
 	Status            string    `json:"status,omitempty" gorm:"not null;default:waiting for driver accept"`
 	Uid               string    `json:"uid,omitempty" gorm:"default:NULL"`
+	RefferalCode      string    `json:"refferalCode,omitempty" gorm:"default:NULL"`
 
 	CustomerID uuid.UUID `json:"customerId,omitempty" gorm:"type:uuid;not null"`
 	CarModelID uuid.UUID `json:"carModelId,omitempty" gorm:"type:uuid;not null"`
@@ -54,6 +55,7 @@ type BookingTransferModelAction interface {
 	GetAllByCustomerID(id uuid.UUID) (BookingTransfer []*BookingTransfer, err error)
 	GetCountByCustomerID(id uuid.UUID) (ctx int64, err error)
 	GetCountActiveByCustomerID(id uuid.UUID) (ctx int64, err error)
+	GetAllKhaimalBookingOrders() (BookingTransfer []*BookingTransfer, err error)
 
 	InsertBookingTransfer(p BookingTransfer, tx *gorm.DB) (bookingTransfer BookingTransfer, err error)
 	UpdateBookingTransfer(id uuid.UUID, p BookingTransfer, tx *gorm.DB) (err error)
@@ -69,6 +71,24 @@ func (o *BookingTransferOrm) GetOneByID(id uuid.UUID) (BookingTransfer BookingTr
 		Where("id = ?", id).
 		Preload(clause.Associations).
 		First(&BookingTransfer)
+	return BookingTransfer, result.Error
+}
+
+func (o *BookingTransferOrm) GetAllKhaimalBookingOrders() (BookingTransfer []*BookingTransfer, err error) {
+	result := o.db.Model(&BookingTransfer).
+		Preload("CarModel").
+		Preload("Customer").
+		Preload("BookingTransferAssigned", func(db *gorm.DB) *gorm.DB {
+			return db.Preload("Driver", func(dbxx *gorm.DB) *gorm.DB {
+				return dbxx.Preload("Company")
+			}).Preload("BookingTransferRating").Preload("CarManagement", func(dbx *gorm.DB) *gorm.DB {
+				return dbx.Preload("Company", func(dby *gorm.DB) *gorm.DB {
+					return dby.Where("company_name", "Khaimal Group")
+				})
+			})
+		}).
+		Order("created_at DESC").
+		Find(&BookingTransfer)
 	return BookingTransfer, result.Error
 }
 
