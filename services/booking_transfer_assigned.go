@@ -68,6 +68,11 @@ func (module *module) AcceptBookingTransfer(id uuid.UUID) (err error) {
 		return errors.New(err.Error())
 	}
 
+	var companyManager master.Driver
+	if companyManager, err = module.db.driverModel.GetOneMainAgentByCompanyId(bookingTransferAssigned.Driver.CompanyID); err != nil {
+		return errors.New(err.Error())
+	}
+
 	if err := module.db.bookingTransferAssigned.UpdateBookingTransferAssigned(id, models.BookingTransferAssigned{
 		IsAccepted:  utils.NewTrue(),
 		IsCancelled: utils.NewFalse(),
@@ -81,11 +86,11 @@ func (module *module) AcceptBookingTransfer(id uuid.UUID) (err error) {
 
 	// once accepted the order immediately deduct the driver balance
 	var balanceDriver models.BalanceDriver
-	if balanceDriver, err = module.db.balanceDriver.GetOneByID(bookingTransferAssigned.DriverID); err != nil {
+	if balanceDriver, err = module.db.balanceDriver.GetOneByID(companyManager.ID); err != nil {
 		return errors.New(err.Error())
 	}
 
-	if BalanceDriverErr := tx.Model(&models.BalanceDriver{}).Where("driver_id", bookingTransferAssigned.DriverID).Updates(&models.BalanceDriver{
+	if BalanceDriverErr := tx.Model(&models.BalanceDriver{}).Where("driver_id", companyManager.ID).Updates(&models.BalanceDriver{
 		Amount: balanceDriver.Amount - float64(bookingTransferAssigned.BookingTransfer.Price)*0.14,
 	}); BalanceDriverErr.Error != nil {
 		tx.Rollback()
@@ -101,7 +106,7 @@ func (module *module) AcceptBookingTransfer(id uuid.UUID) (err error) {
 	DriverTopup := models.DriverTopup{
 		Uid:      fmt.Sprintf("DRV/DT/%v%v/%v", utils.IntegerToRoman(currentYear), utils.IntegerToRoman(month), randomUid),
 		Amount:   -float64(bookingTransferAssigned.BookingTransfer.Price) * 0.14,
-		DriverID: bookingTransferAssigned.DriverID,
+		DriverID: companyManager.ID,
 	}
 
 	if DriverTopupErr := tx.Create(&DriverTopup); DriverTopupErr.Error != nil {
@@ -112,7 +117,7 @@ func (module *module) AcceptBookingTransfer(id uuid.UUID) (err error) {
 	DriverTransactionHistory := models.DriverTransactionHistory{
 		Remark:        "order deduction",
 		Status:        "deduction",
-		DriverID:      bookingTransferAssigned.DriverID,
+		DriverID:      companyManager.ID,
 		DriverTopupID: DriverTopup.ID,
 	}
 
@@ -143,48 +148,48 @@ func (module *module) CancelBookingTransfer(id uuid.UUID) (err error) {
 		return errors.New(err.Error())
 	}
 
-	if bookingTransferAssigned.IsAccepted == utils.NewTrue() {
-		var balanceDriver models.BalanceDriver
-		if balanceDriver, err = module.db.balanceDriver.GetOneByID(bookingTransferAssigned.DriverID); err != nil {
-			return errors.New(err.Error())
-		}
+	// if bookingTransferAssigned.IsAccepted == utils.NewTrue() {
+	// 	var balanceDriver models.BalanceDriver
+	// 	if balanceDriver, err = module.db.balanceDriver.GetOneByID(bookingTransferAssigned.DriverID); err != nil {
+	// 		return errors.New(err.Error())
+	// 	}
 
-		if BalanceDriverErr := tx.Model(&models.BalanceDriver{}).Where("driver_id", bookingTransferAssigned.DriverID).Updates(&models.BalanceDriver{
-			Amount: balanceDriver.Amount + float64(bookingTransferAssigned.BookingTransfer.Price)*0.14,
-		}); BalanceDriverErr.Error != nil {
-			tx.Rollback()
-			return errors.New("failed to refund driver balance")
-		}
+	// 	if BalanceDriverErr := tx.Model(&models.BalanceDriver{}).Where("driver_id", bookingTransferAssigned.DriverID).Updates(&models.BalanceDriver{
+	// 		Amount: balanceDriver.Amount + float64(bookingTransferAssigned.BookingTransfer.Price)*0.14,
+	// 	}); BalanceDriverErr.Error != nil {
+	// 		tx.Rollback()
+	// 		return errors.New("failed to refund driver balance")
+	// 	}
 
-		now := time.Now()
-		currentYear, currentMonth, _ := now.Date()
-		month := int(currentMonth)
-		randomUid, _ := utils.GenerateNumber(10)
+	// 	now := time.Now()
+	// 	currentYear, currentMonth, _ := now.Date()
+	// 	month := int(currentMonth)
+	// 	randomUid, _ := utils.GenerateNumber(10)
 
-		// config.AppConfig.APPUrl
-		DriverTopup := models.DriverTopup{
-			Uid:      fmt.Sprintf("DRV/RF/%v%v/%v", utils.IntegerToRoman(currentYear), utils.IntegerToRoman(month), randomUid),
-			Amount:   float64(bookingTransferAssigned.BookingTransfer.Price) * 0.14,
-			DriverID: bookingTransferAssigned.DriverID,
-		}
+	// 	// config.AppConfig.APPUrl
+	// 	DriverTopup := models.DriverTopup{
+	// 		Uid:      fmt.Sprintf("DRV/RF/%v%v/%v", utils.IntegerToRoman(currentYear), utils.IntegerToRoman(month), randomUid),
+	// 		Amount:   float64(bookingTransferAssigned.BookingTransfer.Price) * 0.14,
+	// 		DriverID: bookingTransferAssigned.DriverID,
+	// 	}
 
-		if DriverTopupErr := tx.Create(&DriverTopup); DriverTopupErr.Error != nil {
-			tx.Rollback()
-			return errors.New("failed to refund driver balance")
-		}
+	// 	if DriverTopupErr := tx.Create(&DriverTopup); DriverTopupErr.Error != nil {
+	// 		tx.Rollback()
+	// 		return errors.New("failed to refund driver balance")
+	// 	}
 
-		DriverTransactionHistory := models.DriverTransactionHistory{
-			Remark:        "cancel / refund",
-			Status:        "refund",
-			DriverID:      bookingTransferAssigned.DriverID,
-			DriverTopupID: DriverTopup.ID,
-		}
+	// 	DriverTransactionHistory := models.DriverTransactionHistory{
+	// 		Remark:        "cancel / refund",
+	// 		Status:        "refund",
+	// 		DriverID:      bookingTransferAssigned.DriverID,
+	// 		DriverTopupID: DriverTopup.ID,
+	// 	}
 
-		if DriverTransactionHistoryErr := tx.Create(&DriverTransactionHistory); DriverTransactionHistoryErr.Error != nil {
-			tx.Rollback()
-			return errors.New("failed to refund driver balance")
-		}
-	}
+	// 	if DriverTransactionHistoryErr := tx.Create(&DriverTransactionHistory); DriverTransactionHistoryErr.Error != nil {
+	// 		tx.Rollback()
+	// 		return errors.New("failed to refund driver balance")
+	// 	}
+	// }
 
 	if err := module.db.bookingTransfer.UpdateBookingTransfer(bookingTransferAssigned.BookingTransferID, models.BookingTransfer{
 		Status: "driver cancelled due some reasons",

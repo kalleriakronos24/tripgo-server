@@ -191,12 +191,18 @@ func (module *module) CustomerCancelBooking(id uuid.UUID) (err error) {
 	}
 
 	if bookingTransferAssigned.IsAccepted == utils.NewTrue() {
-		var balanceDriver models.BalanceDriver
-		if balanceDriver, err = module.db.balanceDriver.GetOneByID(bookingTransferAssigned.DriverID); err != nil {
+
+		var companyManager master.Driver
+		if companyManager, err = module.db.driverModel.GetOneMainAgentByCompanyId(bookingTransferAssigned.Driver.CompanyID); err != nil {
 			return errors.New(err.Error())
 		}
 
-		if BalanceDriverErr := tx.Model(&models.BalanceDriver{}).Where("driver_id", bookingTransferAssigned.DriverID).Updates(&models.BalanceDriver{
+		var balanceDriver models.BalanceDriver
+		if balanceDriver, err = module.db.balanceDriver.GetOneByID(companyManager.ID); err != nil {
+			return errors.New(err.Error())
+		}
+
+		if BalanceDriverErr := tx.Model(&models.BalanceDriver{}).Where("driver_id", companyManager.ID).Updates(&models.BalanceDriver{
 			Amount: balanceDriver.Amount + float64(bookingTransferAssigned.BookingTransfer.Price)*0.14,
 		}); BalanceDriverErr.Error != nil {
 			tx.Rollback()
@@ -212,7 +218,7 @@ func (module *module) CustomerCancelBooking(id uuid.UUID) (err error) {
 		DriverTopup := models.DriverTopup{
 			Uid:      fmt.Sprintf("DRV/RF/%v%v/%v", utils.IntegerToRoman(currentYear), utils.IntegerToRoman(month), randomUid),
 			Amount:   float64(bookingTransferAssigned.BookingTransfer.Price) * 0.14,
-			DriverID: bookingTransferAssigned.DriverID,
+			DriverID: companyManager.ID,
 		}
 
 		if DriverTopupErr := tx.Create(&DriverTopup); DriverTopupErr.Error != nil {
@@ -223,7 +229,7 @@ func (module *module) CustomerCancelBooking(id uuid.UUID) (err error) {
 		DriverTransactionHistory := models.DriverTransactionHistory{
 			Remark:        "cancel / refund",
 			Status:        "refund",
-			DriverID:      bookingTransferAssigned.DriverID,
+			DriverID:      companyManager.ID,
 			DriverTopupID: DriverTopup.ID,
 		}
 
