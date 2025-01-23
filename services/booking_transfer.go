@@ -203,7 +203,7 @@ func (module *module) CustomerCancelBooking(id uuid.UUID) (err error) {
 		}
 
 		if BalanceDriverErr := tx.Model(&models.BalanceDriver{}).Where("driver_id", companyManager.ID).Updates(&models.BalanceDriver{
-			Amount: balanceDriver.Amount + float64(bookingTransferAssigned.BookingTransfer.Price)*0.14,
+			Amount: utils.ToFixed((balanceDriver.Amount + (float64(bookingTransferAssigned.BookingTransfer.Price) * 0.14)), 1),
 		}); BalanceDriverErr.Error != nil {
 			tx.Rollback()
 			return errors.New("failed to refund driver balance")
@@ -217,7 +217,7 @@ func (module *module) CustomerCancelBooking(id uuid.UUID) (err error) {
 		// config.AppConfig.APPUrl
 		DriverTopup := models.DriverTopup{
 			Uid:      fmt.Sprintf("DRV/RF/%v%v/%v", utils.IntegerToRoman(currentYear), utils.IntegerToRoman(month), randomUid),
-			Amount:   float64(bookingTransferAssigned.BookingTransfer.Price) * 0.14,
+			Amount:   utils.ToFixed((float64(bookingTransferAssigned.BookingTransfer.Price) * 0.14), 1),
 			DriverID: companyManager.ID,
 		}
 

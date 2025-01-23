@@ -16,10 +16,11 @@ type CustomerOrm struct {
 }
 
 type Customer struct {
-	ID     uuid.UUID `gorm:"index:id,unique;type:uuid;default:gen_random_uuid();" json:"id"`
-	Name   string    `json:"name" gorm:"not null" binding:"required"`
-	Phone  string    `json:"phone,omitempty" gorm:"default:NULL"`
-	Status string    `json:"status,omitempty" binding:"required" gorm:"not null;default:active;"`
+	ID           uuid.UUID `gorm:"index:id,unique;type:uuid;default:gen_random_uuid();" json:"id"`
+	Name         string    `json:"name" gorm:"not null" binding:"required"`
+	Phone        string    `json:"phone,omitempty" gorm:"default:NULL"`
+	Status       string    `json:"status,omitempty" binding:"required" gorm:"not null;default:active;"`
+	RefferalCode string    `json:"refferalCode,omitempty" gorm:"default:NULL"`
 
 	CredentialsID uuid.UUID    `json:"credentialsId" gorm:"type:uuid;not null"`
 	CreatedBy     uuid.UUID    `json:"createdBy,omitempty" gorm:"type:uuid;default:NULL"`

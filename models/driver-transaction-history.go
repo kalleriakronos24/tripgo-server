@@ -53,6 +53,7 @@ func (o *DriverTransactionHistoryOrm) GetAllHistoryByDriverID(id uuid.UUID) (Dri
 		Where("driver_id = ?", id).
 		Preload("Driver").
 		Preload("DriverTopup").
+		Order("created_at DESC").
 		Find(&DriverTransactionHistory)
 	return DriverTransactionHistory, result.Error
 }

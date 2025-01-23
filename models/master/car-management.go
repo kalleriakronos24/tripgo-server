@@ -94,12 +94,6 @@ func (o *CarManagementOrm) CheckKhaimalDriverAvailable(carModelId uuid.UUID) (Ca
 		}).
 		Preload("Company").
 		Preload("CarModel").
-		// Preload("Company", func(db *gorm.DB) *gorm.DB {
-		// 	return db.Where("company_name = ?", "Khaimal Group").First(Company{})
-		// }).
-		// Preload("Driver", func(db *gorm.DB) *gorm.DB {
-		// 	return db.Where("booking_status = ? AND status = ?", "ready", "active").First(Driver{})
-		// }).
 		First(&CarManagement)
 	return CarManagement, result.Error
 }
@@ -121,7 +115,11 @@ func (o *CarManagementOrm) GetKhaimalManagerId(carModelId uuid.UUID) (CarManagem
 func (o *CarManagementOrm) GetAllAvailableCarManagementByCompanyIdAndDriverId(companyId uuid.UUID, driverId uuid.UUID) (CarManagement []*CarManagement, err error) {
 	result := o.db.Model(&CarManagement).
 		Where("driver_id = ? AND company_id = ?", driverId, companyId).
-		Preload(clause.Associations).
+		Preload("Driver").
+		Preload("CarModel", func(db *gorm.DB) *gorm.DB {
+			return db.Order("order_num DESC")
+		}).
+		Preload("Company").
 		Find(&CarManagement)
 	return CarManagement, result.Error
 }
