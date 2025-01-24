@@ -27,6 +27,7 @@ type HandlerFunc interface {
 	ApproveCompany(companyId uuid.UUID) (err error)
 	RetrieveAllAvailableDrivers(companyId uuid.UUID) (m []*masterModels.Driver, err error)
 	RegisterNewDriverInternalAgent(driverId uuid.UUID, credentials *dto.DriverSignup) (err error)
+	RetrieveAllRegisteredCustomerPaginated(c *gin.Context) (pagination *database.Pagination, err error)
 	// Credentials
 	RetrieveEntityCredentialsByUserID(userId uuid.UUID) (m masterModels.Credentials, err error)
 	// Booking Transfer

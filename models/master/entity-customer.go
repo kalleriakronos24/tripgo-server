@@ -33,7 +33,7 @@ type Customer struct {
 type CustomerModelAction interface {
 	GetOneByID(id uuid.UUID) (m Customer, err error)
 	GetOneByCustomerName(Customername string) (m Customer, err error)
-	GetAllCustomerPaginated(c *gin.Context, CustomerId uuid.UUID) (*database.Pagination, error)
+	GetAllCustomerPaginated(c *gin.Context) (*database.Pagination, error)
 	InsertCustomer(p Customer, tx *gorm.DB) (err error)
 	DeleteCustomer(id uuid.UUID, tx *gorm.DB) (err error)
 }
@@ -42,12 +42,12 @@ func NewCustomerAction(db *gorm.DB) CustomerModelAction {
 	return &CustomerOrm{db}
 }
 
-func (o *CustomerOrm) GetAllCustomerPaginated(c *gin.Context, CustomerId uuid.UUID) (*database.Pagination, error) {
+func (o *CustomerOrm) GetAllCustomerPaginated(c *gin.Context) (*database.Pagination, error) {
 	var mArr []*Customer
 	var pagination database.Pagination
 	o.db.
-		Scopes(database.Paginator(c, &mArr, []string{"CreatedBy", "UpdatedBy", "Company"}, &pagination)).
-		Where("created_by", CustomerId).
+		Scopes(database.Paginator(c, &mArr, []string{"Credentials"}, &pagination)).
+		Order("created_at DESC").
 		Find(&mArr)
 	pagination.Data = &mArr
 	return &pagination, nil

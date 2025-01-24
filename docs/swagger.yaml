@@ -21,6 +21,8 @@ definitions:
         type: string
       phone:
         type: string
+      refferalCode:
+        type: string
     required:
     - email
     - name
@@ -1072,6 +1074,32 @@ paths:
           schema:
             $ref: '#/definitions/dto.Response'
       summary: Method to Approve company registration
+      tags:
+      - Company
+  /company/customer/all:
+    get:
+      consumes:
+      - application/json
+      description: A GET Request to fetch a all records customer registered
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Method to get all customer registered
       tags:
       - Company
   /company/driver/all/{id}:

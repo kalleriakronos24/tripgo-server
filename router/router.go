@@ -65,6 +65,7 @@ func InitializeRouter() (router *gin.Engine) {
 			company.POST("/create", v1.POSTCreateCompany)
 			company.GET("/create/approval/:id", v1.POSTApproveCompanyRegistration)
 			company.GET("/driver/all/:id", v1.GETAllDriversByCompanyId)
+			company.GET("/customer/all", v1.GETAllCustomerRegistered)
 			company.POST("/driver/new", v1.POSTRegisteNewrDriverPartner)
 		}
 

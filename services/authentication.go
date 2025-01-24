@@ -105,6 +105,7 @@ func (module *module) RegisterCustomer(credentials *dto.CustomerSignup) (err err
 		Name:          credentials.Name,
 		Phone:         credentials.Phone,
 		CredentialsID: cred.ID,
+		RefferalCode:  credentials.RefferalCode,
 	}, tx); err != nil {
 		tx.Rollback()
 		return errors.New("failed to register. try again")

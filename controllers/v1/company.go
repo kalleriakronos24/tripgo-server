@@ -99,6 +99,26 @@ func POSTApproveCompanyRegistration(c *gin.Context) {
 }
 
 // AuthLogin godoc
+// @Summary      Method to get all customer registered
+// @Description  A GET Request to fetch a all records customer registered
+// @Tags         Company
+// @Accept       json
+// @Produce      json
+// @Success      200 {object}	dto.Response
+// @Failure      400 {object}	dto.Response
+// @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
+// @Router       /company/customer/all [get]
+func GETAllCustomerRegistered(c *gin.Context) {
+
+	if customers, err := services.Handler.RetrieveAllRegisteredCustomerPaginated(c); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "registered customer"))
+		return
+	} else {
+		c.JSON(http.StatusOK, dto.Response{Data: &customers, Message: "success"})
+	}
+}
+
+// AuthLogin godoc
 // @Summary      Method to get all drivers by company id
 // @Description  A GET Request to fetch a all records
 // @Tags         Company

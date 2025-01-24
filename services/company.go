@@ -437,6 +437,13 @@ func (module *module) RetrieveCompanyByUserID(userId uuid.UUID) (m masterModels.
 	return
 }
 
+func (module *module) RetrieveAllRegisteredCustomerPaginated(c *gin.Context) (pagination *database.Pagination, err error) {
+	if pagination, err = module.db.userCustomerModel.GetAllCustomerPaginated(c); err != nil {
+		return pagination, fmt.Errorf("%s", err.Error())
+	}
+	return
+}
+
 func (module *module) ApproveCompany(companyId uuid.UUID) (err error) {
 	tx := database.GetDatabaseConnection().Begin()
 
