@@ -25,7 +25,7 @@ type CarManagement struct {
 	VEPPhoto          string    `json:"vepPhoto,omitempty" gorm:"default:NULL"`
 	CarManagementType string    `json:"carType,omitempty" gorm:"default:external"`
 	FileName          string    `json:"fileName,omitempty" gorm:"default:NULL"`
-	Status            string    `json:"status,omitempty" binding:"required" gorm:"not null;default:active;"`
+	Status            string    `json:"status,omitempty" binding:"required" gorm:"not null;default:active;"` // active | inactive | on-ride
 
 	CarModelID uuid.UUID `json:"carModelId" gorm:"type:uuid;not null"`
 	DriverID   uuid.UUID `json:"driverId" gorm:"type:uuid;not null"`
@@ -56,6 +56,7 @@ type CarManagementModelAction interface {
 
 	InsertCarManagement(p CarManagement) (err error)
 	UpdateCarManagementByCompanyId(companyId uuid.UUID, p CarManagement, tx *gorm.DB) (err error)
+	UpdateCarManagementByCompanyIdAndPlateNumber(companyId uuid.UUID, plateNumber string, p CarManagement, tx *gorm.DB) (err error)
 	UpdateCarManagementToInactive(id uuid.UUID, tx *gorm.DB) (err error)
 	RemoveCarManagementFromCompany(id uuid.UUID, tx *gorm.DB) (err error)
 	DeleteCarManagement(id uuid.UUID, tx *gorm.DB) (err error)
@@ -176,6 +177,11 @@ func (o *CarManagementOrm) GetOneByCarManagementName(name string) (m CarManageme
 
 func (o *CarManagementOrm) UpdateCarManagementByCompanyId(companyId uuid.UUID, p CarManagement, tx *gorm.DB) (err error) {
 	result := tx.Model(&CarManagement{}).Where("company_id", companyId).Updates(&p)
+	return result.Error
+}
+
+func (o *CarManagementOrm) UpdateCarManagementByCompanyIdAndPlateNumber(companyId uuid.UUID, plateNumber string, p CarManagement, tx *gorm.DB) (err error) {
+	result := tx.Model(&CarManagement{}).Where("company_id = ? AND plate_number = ?", companyId).Updates(&p)
 	return result.Error
 }
 

@@ -250,6 +250,20 @@ func (module *module) OngoingBookingTransfer(id uuid.UUID) (err error) {
 		return errors.New("failed to set ongoing booking")
 	}
 
+	// update all car management on a company that has this plate number name
+	if err := module.db.carManagementModel.UpdateCarManagementByCompanyIdAndPlateNumber(bookingTransferAssigned.Driver.CompanyID, bookingTransferAssigned.CarManagement.PlateNumber, master.CarManagement{
+		Status: "On Ride",
+	}, tx); err != nil {
+		tx.Rollback()
+		return errors.New("failed to set ongoing booking")
+	}
+
+	// update the driver also to have status busy
+	if err := module.db.driverModel.UpdateDriverToBusy(bookingTransferAssigned.Driver.ID, tx); err != nil {
+		tx.Rollback()
+		return errors.New("failed to set ongoing booking")
+	}
+
 	if err = mail.SendMailV3(&mail.TSendMail{
 		From:    "WadahGo <notification@wadahgo.com>",
 		MailTo:  bookingTransferAssigned.BookingTransfer.Customer.Credentials.Email,
@@ -287,6 +301,20 @@ func (module *module) CompleteBookingTransfer(id uuid.UUID) (err error) {
 		IsCompleted: utils.NewTrue(),
 		IsPickedUp:  utils.NewFalse(),
 	}, tx); err != nil {
+		tx.Rollback()
+		return errors.New("failed to set complete booking")
+	}
+
+	// update all car management on a company that has this plate number name
+	if err := module.db.carManagementModel.UpdateCarManagementByCompanyIdAndPlateNumber(bookingTransferAssigned.Driver.CompanyID, bookingTransferAssigned.CarManagement.PlateNumber, master.CarManagement{
+		Status: "active",
+	}, tx); err != nil {
+		tx.Rollback()
+		return errors.New("failed to set complete booking")
+	}
+
+	// update the driver also to have status ready
+	if err := module.db.driverModel.UpdateDriverToReady(bookingTransferAssigned.Driver.ID, tx); err != nil {
 		tx.Rollback()
 		return errors.New("failed to set complete booking")
 	}

@@ -274,3 +274,11 @@ func (module *module) CustomerCancelBooking(id uuid.UUID) (err error) {
 	tx.Commit()
 	return
 }
+
+func (module *module) GetOutdatedActiveBookingAndSetCancelled() (err error) {
+	tx := database.GetDatabaseConnection().Begin()
+
+	// update driver status to busy and put the car busy also, and waiting to approval by the driver
+	tx.Commit()
+	return
+}

@@ -51,6 +51,7 @@ type DriverModelAction interface {
 	UpdateDriverToInactive(id uuid.UUID, tx *gorm.DB) (err error)
 	UpdateDriverByCompanyId(companyId uuid.UUID, p Driver, tx *gorm.DB) (err error)
 	UpdateDriverToBusy(id uuid.UUID, tx *gorm.DB) (err error)
+	UpdateDriverToReady(id uuid.UUID, tx *gorm.DB) (err error)
 	RemoveDriverFromCompany(id uuid.UUID, tx *gorm.DB) (err error)
 	DeleteDriver(id uuid.UUID, tx *gorm.DB) (err error)
 }
@@ -133,6 +134,11 @@ func (o *DriverOrm) UpdateDriverByCompanyId(companyId uuid.UUID, p Driver, tx *g
 
 func (o *DriverOrm) UpdateDriverToBusy(id uuid.UUID, tx *gorm.DB) (err error) {
 	result := tx.Model(&Driver{}).Where("id = ?", id).Update("booking_status", "busy")
+	return result.Error
+}
+
+func (o *DriverOrm) UpdateDriverToReady(id uuid.UUID, tx *gorm.DB) (err error) {
+	result := tx.Model(&Driver{}).Where("id = ?", id).Update("booking_status", "ready")
 	return result.Error
 }
 
