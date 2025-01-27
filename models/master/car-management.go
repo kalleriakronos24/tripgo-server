@@ -181,7 +181,7 @@ func (o *CarManagementOrm) UpdateCarManagementByCompanyId(companyId uuid.UUID, p
 }
 
 func (o *CarManagementOrm) UpdateCarManagementByCompanyIdAndPlateNumber(companyId uuid.UUID, plateNumber string, p CarManagement, tx *gorm.DB) (err error) {
-	result := tx.Model(&CarManagement{}).Where("company_id = ? AND plate_number = ?", companyId).Updates(&p)
+	result := tx.Model(&CarManagement{}).Where("company_id = ? AND plate_number = ?", companyId, plateNumber).Updates(&p)
 	return result.Error
 }
 
