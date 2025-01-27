@@ -110,7 +110,7 @@ func (o *DriverOrm) GetAllAvailableDriversByCompanyId(companyId uuid.UUID) (m []
 }
 
 func (o *DriverOrm) GetAllAvailableCompanyManagerByCompanyId() (m []*Driver, err error) {
-	result := o.db.Model(&m).Where("status = ? AND driver_type = ?", "active", "internal-agent").Find(&m)
+	result := o.db.Model(&m).Where("status = ? AND driver_type = ?", "active", "internal-agent").Preload(clause.Associations)..Find(&m)
 	return m, result.Error
 }
 

@@ -255,7 +255,7 @@ func (module *module) CancelBookingTransfer(id uuid.UUID) (err error) {
 
 		formattedNotificationMessage := fmt.Sprintf("Booking Transfer Request <br/> %v <br/> %v Person Pax x %v Luggagge <br/> Pickup Date %v <br/> Notes: %v <br/> Price: %v", carManagement.Name, carManagement.CarModel.PersonCount, carManagement.CarModel.LuggageCount, utils.ConvertEnToIDDateTime(bookingTransferAssigned.BookingTransfer.PickUpDate), bookingTransferAssigned.BookingTransfer.PassengerNotes, bookingTransferAssigned.BookingTransfer.GrandTotal)
 		// send notification to the selected driver
-		if err = onesignal.PushNotificationSingleExternalId(carManagement.Driver.Credentials.Email, formattedNotificationMessage); err != nil {
+		if err = onesignal.PushNotificationSingleExternalId(pickOnePartnerRandom.Credentials.Email, formattedNotificationMessage); err != nil {
 			return errors.New("server-error. please try again later")
 		}
 
@@ -274,7 +274,7 @@ func (module *module) CancelBookingTransfer(id uuid.UUID) (err error) {
 		// send backup email to the driver
 		if err = mail.SendMailV3(&mail.TSendMail{
 			From:    "WadahGo <notification@wadahgo.com>",
-			MailTo:  carManagement.Driver.Credentials.Email,
+			MailTo:  pickOnePartnerRandom.Credentials.Email,
 			Subject: "Booking Transfer Received",
 			Body: fmt.Sprintf(`<html><body>
 		<p>%v</p>
