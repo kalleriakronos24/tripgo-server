@@ -46,6 +46,7 @@ type DriverModelAction interface {
 	GetAllDriverPaginated(c *gin.Context, DriverId uuid.UUID) (*database.Pagination, error)
 	InsertDriver(p Driver, tx *gorm.DB) (err error)
 	GetAllAvailableDriversByCompanyId(companyId uuid.UUID) (m []*Driver, err error)
+	GetAllAvailableCompanyManagerByCompanyId() (m []*Driver, err error)
 	GetOneByDriverID(id uuid.UUID) (Driver Driver, err error)
 
 	UpdateDriverToInactive(id uuid.UUID, tx *gorm.DB) (err error)
@@ -105,6 +106,11 @@ func (o *DriverOrm) GetAllAvailable(id uuid.UUID) (Driver []*Driver, err error) 
 
 func (o *DriverOrm) GetAllAvailableDriversByCompanyId(companyId uuid.UUID) (m []*Driver, err error) {
 	result := o.db.Model(&m).Where("company_id = ? AND status = ?", companyId, "active").Find(&m)
+	return m, result.Error
+}
+
+func (o *DriverOrm) GetAllAvailableCompanyManagerByCompanyId() (m []*Driver, err error) {
+	result := o.db.Model(&m).Where("status = ? AND driver_type = ?", "active", "internal-agent").Find(&m)
 	return m, result.Error
 }
 

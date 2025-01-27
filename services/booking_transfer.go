@@ -74,7 +74,6 @@ func (module *module) InsertBookingTransfer(p *dto.InsertBookingTransfer) (err e
 			tx.Rollback()
 			return errors.New("drivers seems busy. please try again later")
 		}
-
 		var driverBalanceDetail *models.BalanceDriver
 		if driverBalanceDetail, err = module.db.balanceDriver.GetOneDetailByID(driverBalance.ID); err != nil {
 			tx.Rollback()
