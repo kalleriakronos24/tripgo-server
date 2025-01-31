@@ -31,6 +31,14 @@ func (module *module) AuthenticateUser(credentials dto.CredentialSignInDto) (tok
 	return generateToken(user)
 }
 
+func (module *module) AuthenticateUserV2(credentials dto.CredentialSignInDto) (token string, err error) {
+	var user masterModels.Credentials
+	if user, err = module.db.credentialModel.GetOneByEmail(credentials.Email); err != nil {
+		return "", errors.New("email or password is incorrect")
+	}
+	return generateToken(user)
+}
+
 func (module *module) UpdateDeviceToken(token string, credentialId uuid.UUID) (err error) {
 	if token != "" {
 		if err = module.db.credentialModel.UpdateDeviceToken(credentialId, masterModels.Credentials{

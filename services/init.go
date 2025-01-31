@@ -16,6 +16,7 @@ var Handler HandlerFunc
 type HandlerFunc interface {
 	// AUTH
 	AuthenticateUser(p dto.CredentialSignInDto) (token string, err error)
+	AuthenticateUserV2(credentials dto.CredentialSignInDto) (token string, err error)
 	CheckExistingUser(id string, param CheckExistingUserStruct) (err error)
 	RetrieveAllUserPaginated(c *gin.Context, id uuid.UUID) (pagination *database.Pagination, err error)
 	RetrieveUser(id uuid.UUID) (m masterModels.User, err error)

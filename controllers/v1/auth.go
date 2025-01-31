@@ -537,18 +537,17 @@ func GETGoogleLogin(ctx *gin.Context) {
 		// return
 	}
 
-	// var pLoginObject = dto.CredentialSignInDto{
-	// 	Email:    p.Email,
-	// 	Password: p.Password,
-	// 	Type:     "google",
-	// }
+	var pLoginObject = dto.CredentialSignInDto{
+		Email: p.Email,
+		Type:  "google",
+	}
 
-	// var token string
-	// if token, err = services.Handler.AuthenticateUser(pLoginObject); err != nil {
-	// 	ctx.Redirect(http.StatusTemporaryRedirect, fmt.Sprintf("%v?error-code=2", pathUrl))
-	// 	// ctx.JSON(http.StatusNotFound, constants.GetErrorResponse("logical", err, "Incorrect email or password. Please try again"))
-	// 	return
-	// }
+	var token string
+	if token, err = services.Handler.AuthenticateUserV2(pLoginObject); err != nil {
+		ctx.Redirect(http.StatusTemporaryRedirect, fmt.Sprintf("%v?error-code=2", pathUrl))
+		// ctx.JSON(http.StatusNotFound, constants.GetErrorResponse("logical", err, "Incorrect email or password. Please try again"))
+		return
+	}
 
 	// var customer master.Credentials
 	// if customer, err = services.Handler.RetrieveEntityCredentialsByEmail(p.Email); err != nil {
@@ -560,7 +559,7 @@ func GETGoogleLogin(ctx *gin.Context) {
 		Token string `json:"token,omitempty"`
 		// Phone    string `json:"phone,omitempty"`
 	}{
-		Token: tokenRes.Id_token,
+		Token: token,
 		// Phone:    customer.CredentialCustomer.Phone,
 	}
 
