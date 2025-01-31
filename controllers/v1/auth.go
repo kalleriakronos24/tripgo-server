@@ -560,7 +560,7 @@ func GETGoogleLogin(ctx *gin.Context) {
 		Token string `json:"token,omitempty"`
 		// Phone    string `json:"phone,omitempty"`
 	}{
-		Token: tokenRes.Access_token,
+		Token: tokenRes.Id_token,
 		// Phone:    customer.CredentialCustomer.Phone,
 	}
 
