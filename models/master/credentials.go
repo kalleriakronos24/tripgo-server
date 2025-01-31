@@ -16,6 +16,7 @@ type Credentials struct {
 	Email       string    `gorm:"email:id,unique" json:"email,omitempty" binding:"required"`
 	Password    string    `json:"password,omitempty" binding:"required" gorm:"not null"`
 	DeviceToken string    `json:"deviceToken,omitempty" binding:"required" gorm:"default:NULL;"`
+	Type        string    `json:"type,omitempty" binding:"required" gorm:"default:email;"`
 
 	CreatedBy uuid.UUID `json:"createdBy,omitempty" gorm:"type:uuid;default:NULL"`
 	UpdatedBy uuid.UUID `json:"updatedBy,omitempty" gorm:"type:uuid;default:NULL"`
@@ -49,7 +50,7 @@ func (o *CredentialsOrm) GetOneByID(id uuid.UUID) (Credentials Credentials, err 
 }
 
 func (o *CredentialsOrm) GetOneByEmail(email string) (m Credentials, err error) {
-	result := o.db.Model(&m).Where("email = ?", email).First(&m)
+	result := o.db.Model(&m).Where("email = ?", email).Preload(clause.Associations).First(&m)
 	return m, result.Error
 }
 

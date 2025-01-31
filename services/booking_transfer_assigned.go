@@ -150,10 +150,6 @@ func (module *module) CancelBookingTransfer(id uuid.UUID) (err error) {
 		return errors.New(err.Error())
 	}
 
-	// if driver cancel
-
-	// reasons[rand.Intn(len(reasons))]
-
 	var companyManager master.Driver
 	if companyManager, err = module.db.driverModel.GetOneMainAgentByCompanyId(bookingTransferAssigned.Driver.CompanyID); err != nil {
 		return errors.New(err.Error())

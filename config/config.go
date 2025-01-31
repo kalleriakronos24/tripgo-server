@@ -39,6 +39,12 @@ type Config struct {
 
 	OneSignalAppID      string
 	OneSignalRestApiKey string
+
+	GOOGLE_OAUTH_CLIENT_ID     string
+	GOOGLE_OAUTH_CLIENT_SECRET string
+	GOOGLE_OAUTH_REDIRECT_URL  string
+
+	CURRENT_DOMAIN string
 }
 
 var AppConfig Config
@@ -83,6 +89,12 @@ func InitializeAppConfig() Config {
 
 	AppConfig.OneSignalAppID = viper.GetString("ONESIGNAL_APP_ID")
 	AppConfig.OneSignalRestApiKey = viper.GetString("ONESIGNAL_REST_API_KEY")
+
+	AppConfig.GOOGLE_OAUTH_CLIENT_ID = viper.GetString("GOOGLE_OAUTH_CLIENT_ID")
+	AppConfig.GOOGLE_OAUTH_CLIENT_SECRET = viper.GetString("GOOGLE_OAUTH_CLIENT_SECRET")
+	AppConfig.GOOGLE_OAUTH_REDIRECT_URL = viper.GetString("GOOGLE_OAUTH_REDIRECT_URL")
+
+	AppConfig.CURRENT_DOMAIN = viper.GetString("CURRENT_DOMAIN")
 
 	log.Printf("[INIT] configuration loaded")
 	return AppConfig

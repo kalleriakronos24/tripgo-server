@@ -1,9 +1,12 @@
 package v1
 
 import (
+	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/kalleriakronos24/khaimal-group/config"
 	"github.com/kalleriakronos24/khaimal-group/constants"
 	middleware "github.com/kalleriakronos24/khaimal-group/controllers/middlewares"
@@ -74,6 +77,78 @@ func POSTLogin(c *gin.Context) {
 	// c.SetCookie("token", token, int(time.Now().Add(time.Hour*24).Unix()), "", clientSideUrl, true, false)
 
 	c.JSON(http.StatusCreated, dto.Response{Message: "success", Data: responseData})
+}
+
+// AuthLogin godoc
+// @Summary      Customer Sign-In
+// @Description  A Customer authentication sign-in method
+// @Tags         Authentication - Customer
+// @Accept       json
+// @Produce      json
+// @Success      200 {object}	dto.Response
+// @Failure      400 {object}	dto.Response
+// @Param 		 data body dto.UserLogin true "customer login"
+// @Router       /auth/c/customer [get]
+func GETCustomerByID(c *gin.Context) {
+	var err error
+	userLoggedInId := c.GetString("user_id")
+	userId, _ := uuid.Parse(userLoggedInId)
+
+	log.Printf("ID >> %v", userId)
+	var customer masterModels.Customer
+
+	if customer, err = services.Handler.RetrieveEntityCustomerByUserID(userId); err != nil {
+		c.JSON(http.StatusNotFound, constants.GetErrorResponse("data-not-found", err, "Passenger data not found."))
+		return
+	}
+
+	responseData := struct {
+		Name  string `json:"name,omitempty"`
+		Phone string `json:"phone,omitempty"`
+	}{
+		Name:  customer.Name,
+		Phone: customer.Phone,
+	}
+	c.JSON(http.StatusCreated, dto.Response{Message: "success", Data: responseData})
+}
+
+// AuthLogin godoc
+// @Summary      Customer Sign-In
+// @Description  A Customer authentication sign-in method
+// @Tags         Authentication - Customer
+// @Accept       json
+// @Produce      json
+// @Success      200 {object}	dto.Response
+// @Failure      400 {object}	dto.Response
+// @Param 		 data body dto.UserLogin true "customer login"
+// @Router       /auth/c/customer [put]
+func UPDCustomerByID(c *gin.Context) {
+	var err error
+	userLoggedInId := c.GetString("user_id")
+	userId, _ := uuid.Parse(userLoggedInId)
+
+	var p dto.UpdateCustomer
+	if err = c.ShouldBindJSON(&p); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
+		return
+	}
+
+	if err := utils.ValidateHTTPPayload(p); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("payload-error", err, ""))
+		return
+	}
+
+	if _, err := services.Handler.RetrieveEntityCustomerByUserID(userId); err != nil {
+		c.JSON(http.StatusNotFound, constants.GetErrorResponse("data-not-found", err, "Passenger data not found."))
+		return
+	}
+
+	if err = services.Handler.UpdateCustomerByCredID(c, &p, userId); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("insert-failed", err, "user"))
+		return
+	}
+
+	c.JSON(http.StatusCreated, dto.Response{Message: "success"})
 }
 
 // AuthLogin godoc
@@ -282,6 +357,7 @@ func POSTRegisterCustomer(c *gin.Context) {
 	var pLoginObject = dto.CredentialSignInDto{
 		Email:    p.Email,
 		Password: p.Password,
+		Type:     "email",
 	}
 
 	var token string
@@ -403,4 +479,96 @@ func POSTResetPassword(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, dto.Response{Message: "success", Data: nil})
+}
+
+// AuthLogin godoc
+// @Summary      Customer Google Sign-In
+// @Description  A Customer authentication google sign-in method
+// @Tags         Authentication - Customer
+// @Accept       json
+// @Produce      json
+// @Success      200 {object}	dto.Response
+// @Failure      400 {object}	dto.Response
+// @Param 		 data body dto.UserLogin true "customer google login"
+// @Router       /auth/c/google-signin [post]
+func GETGoogleLogin(ctx *gin.Context) {
+	var err error
+	var pathUrl string = "/"
+	if ctx.Query("state") != "" {
+		pathUrl = ctx.Query("state")
+	}
+
+	code := ctx.Query("code")
+
+	if code == "" {
+		ctx.Redirect(http.StatusTemporaryRedirect, fmt.Sprintf("%v?error-code=3", pathUrl))
+		// ctx.JSON(http.StatusUnauthorized, gin.H{"status": "fail", "message": "Authorization code not provided!"})
+		return
+	}
+
+	// Use the code to get the id and access tokens
+	tokenRes, err := utils.GetGoogleOauthToken(code)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadGateway, gin.H{"status": "fail", "message": err.Error()})
+	}
+
+	user, err := utils.GetGoogleUser(tokenRes.Access_token, tokenRes.Id_token)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadGateway, gin.H{"status": "fail", "message": err.Error()})
+	}
+
+	p := &dto.CustomerSignup{
+		Email: user.Email,
+		Name:  user.Name,
+		Type:  "google",
+	}
+
+	if err := services.Handler.CheckExistingUser("", struct{ *masterModels.Credentials }{&masterModels.Credentials{
+		Email: p.Email,
+	}}); err != nil {
+		if err = services.Handler.RegisterCustomer(p); err != nil {
+			// ctx.JSON(http.StatusBadRequest, constants.GetErrorResponse("insert-failed", err, "user"))
+			// return
+		}
+		// ctx.Redirect(http.StatusTemporaryRedirect, fmt.Sprintf("%v?error-code=1", pathUrl))
+		// ctx.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-existing-email", err, ""))
+		// return
+	}
+
+	var pLoginObject = dto.CredentialSignInDto{
+		Email:    p.Email,
+		Password: p.Password,
+		Type:     "google",
+	}
+
+	var token string
+	if token, err = services.Handler.AuthenticateUser(pLoginObject); err != nil {
+		ctx.Redirect(http.StatusTemporaryRedirect, fmt.Sprintf("%v?error-code=2", pathUrl))
+		// ctx.JSON(http.StatusNotFound, constants.GetErrorResponse("logical", err, "Incorrect email or password. Please try again"))
+		return
+	}
+
+	// var customer master.Credentials
+	// if customer, err = services.Handler.RetrieveEntityCredentialsByEmail(p.Email); err != nil {
+	// 	// c.JSON(http.StatusNotFound, constants.GetErrorResponse("data-not-found", err, "Driver data not found."))
+	// 	// return
+	// }
+
+	responseData := struct {
+		Token    string `json:"token,omitempty"`
+		FullName string `json:"fullName,omitempty"`
+		// Phone    string `json:"phone,omitempty"`
+	}{
+		Token:    token,
+		FullName: p.Name,
+		// Phone:    customer.CredentialCustomer.Phone,
+	}
+
+	// ctx.JSON(http.StatusCreated, dto.Response{Message: "success", Data: responseData})
+	ctx.SetCookie("token", responseData.Token, 48*60*60, "/", config.AppConfig.CURRENT_DOMAIN, false, false)
+	// ctx.SetCookie("phone", responseData.phone, 48*60*60, "/", "localhost", false, false)
+	// ctx.SetCookie("passengerName", utils.RemoveAllSymbolsWithSpaces(responseData.FullName), 48*60*60, "/", config.AppConfig.CURRENT_DOMAIN, false, false)
+	ctx.Redirect(http.StatusTemporaryRedirect, fmt.Sprintf("%v?success-code=1", pathUrl))
 }

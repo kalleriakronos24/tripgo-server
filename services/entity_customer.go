@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	database "github.com/kalleriakronos24/khaimal-group/db"
+	"github.com/kalleriakronos24/khaimal-group/dto"
 	"github.com/kalleriakronos24/khaimal-group/models/master"
 )
 
@@ -21,6 +22,23 @@ func (module *module) RetrieveEntityCustomerByUserID(userId uuid.UUID) (m master
 }
 
 func (module *module) RetrieveAllEntityCustomer(id uuid.UUID) (m []master.Customer, err error) {
+	return
+}
+
+func (module *module) UpdateCustomerByCredID(c *gin.Context, p *dto.UpdateCustomer, id uuid.UUID) (err error) {
+	tx := database.GetDatabaseConnection().Begin()
+
+	Customer := master.Customer{
+		Name:         p.Name,
+		RefferalCode: p.RefferalCode,
+		Phone:        p.Phone,
+	}
+
+	if CustomerErr := tx.Model(&master.Customer{}).Where("credentials_id = ?", id).Updates(&Customer); CustomerErr.Error != nil {
+		tx.Rollback()
+		return errors.New("failed to update information")
+	}
+	tx.Commit()
 	return
 }
 

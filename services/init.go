@@ -30,6 +30,7 @@ type HandlerFunc interface {
 	RetrieveAllRegisteredCustomerPaginated(c *gin.Context) (pagination *database.Pagination, err error)
 	// Credentials
 	RetrieveEntityCredentialsByUserID(userId uuid.UUID) (m masterModels.Credentials, err error)
+	RetrieveEntityCredentialsByEmail(email string) (m master.Credentials, err error)
 	// Booking Transfer
 	RetrieveAllKhaimalBookingTransfer() (m []*models.BookingTransfer, err error)
 	InsertBookingTransfer(p *dto.InsertBookingTransfer) (err error)
@@ -59,6 +60,7 @@ type HandlerFunc interface {
 	SetCarManagementActive(c *gin.Context, id uuid.UUID) (err error)
 	RetrieveAllAvailable(userId uuid.UUID) (m []masterModels.CarManagement, err error)
 	// AUTH - CUSTOMER
+	UpdateCustomerByCredID(c *gin.Context, p *dto.UpdateCustomer, id uuid.UUID) (err error)
 	RegisterCustomer(credentials *dto.CustomerSignup) (err error)
 	RetrieveEntityCustomerByUserID(userId uuid.UUID) (m masterModels.Customer, err error)
 	// AUTH - INTERNAL

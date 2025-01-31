@@ -96,6 +96,7 @@ func (module *module) RegisterCustomer(credentials *dto.CustomerSignup) (err err
 	if cred, err = module.db.credentialModel.InsertCredentials(masterModels.Credentials{
 		Email:    credentials.Email,
 		Password: string(hashedPassword),
+		Type:     credentials.Type,
 	}, tx); err != nil {
 		tx.Rollback()
 		return errors.New("failed to register. try again")

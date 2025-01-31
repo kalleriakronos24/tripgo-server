@@ -79,6 +79,9 @@ func InitializeRouter() (router *gin.Engine) {
 		{
 			authCustomer.POST("/signup", v1.POSTRegisterCustomer)
 			authCustomer.POST("/signin", v1.POSTLogin)
+			authCustomer.GET("/google-signin", v1.GETGoogleLogin)
+			authCustomer.GET("/customer", utils.AuthOnly, v1.GETCustomerByID)
+			authCustomer.PUT("/customer", utils.AuthOnly, v1.UPDCustomerByID)
 		}
 
 		authDriver := v1route.Group("/auth/d")

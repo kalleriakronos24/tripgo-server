@@ -129,9 +129,9 @@ func (module *module) InsertBookingTransfer(p *dto.InsertBookingTransfer) (err e
 
 	formattedNotificationMessage := fmt.Sprintf("Booking Transfer Request <br/> %v <br/> %v Person Pax x %v Luggagge <br/> Pickup Date %v <br/> Notes: %v <br/> Price: %v", carManagement.Name, carManagement.CarModel.PersonCount, carManagement.CarModel.LuggageCount, utils.ConvertEnToIDDateTime(bookingTransfer.PickUpDate), bookingTransfer.PassengerNotes, bookingTransfer.GrandTotal)
 	// send notification to the selected driver
-	if err = onesignal.PushNotificationSingleExternalId(carManagement.Driver.Credentials.Email, formattedNotificationMessage); err != nil {
-		return errors.New("server-error. please try again later")
-	}
+	// if err = onesignal.PushNotificationSingleExternalId(carManagement.Driver.Credentials.Email, formattedNotificationMessage); err != nil {
+	// 	return errors.New("server-error. please try again later")
+	// }
 
 	// send backup email to the driver
 	if err = mail.SendMailV3(&mail.TSendMail{
