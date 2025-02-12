@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -122,6 +123,22 @@ func (module *module) InsertBookingTransfer(p *dto.InsertBookingTransfer) (err e
 		RefferalCode:      p.RefferalCode,
 		PaymentOption:     p.PaymentOption,
 		Uid:               fmt.Sprintf("TRF/%v%v/%v", utils.IntegerToRoman(currentYear), utils.IntegerToRoman(month), randomUid),
+	}, tx); err != nil {
+		tx.Rollback()
+		return errors.New(err.Error())
+	}
+
+	if err = module.db.paymentModel.InsertPayment(models.Payment{
+		Amount:            float64(p.GrandTotal),
+		Status:            "pending",
+		PI:                p.PI,
+		PaymentMethod:     strings.ToUpper(p.PaymentOption),
+		BookingTransferID: bookingTransfer.ID,
+		CustomerID:        p.CustomerID,
+		DriverID:          carManagement.DriverID,
+		Currency:          "MYR",
+		CardLastNumber:    "XXXX",
+		ReceiptURL:        "#",
 	}, tx); err != nil {
 		tx.Rollback()
 		return errors.New(err.Error())

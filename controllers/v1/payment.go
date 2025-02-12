@@ -5,7 +5,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -86,7 +85,6 @@ func POSTCreatePaymentIntent(c *gin.Context) {
 	}
 
 	pi, err := paymentintent.New(params)
-	log.Printf("INTENT ID >>> %v", pi.ID)
 	if err != nil {
 		// Try to safely cast a generic error to a stripe.Error so that we can get at
 		// some additional Stripe-specific information about what went wrong.
@@ -100,7 +98,7 @@ func POSTCreatePaymentIntent(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, dto.Response{Data: pi.ClientSecret, Message: "success"})
+	c.JSON(http.StatusOK, dto.Response{Data: pi.ClientSecret, Message: pi.ID})
 }
 
 // AuthLogin godoc
@@ -164,18 +162,18 @@ func POSTListenStripeWebhook(c *gin.Context) {
 			log.Println("Failed to get Customer")
 		}
 
-		var cred master.Credentials
-		if cred, err = services.Handler.RetrieveEntityCredentialsByEmail(customerResult.Email); err != nil {
-			c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "customer"))
-			return
-		}
+		// var cred master.Credentials
+		// if cred, err = services.Handler.RetrieveEntityCredentialsByEmail(customerResult.Email); err != nil {
+		// 	c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "customer"))
+		// 	return
+		// }
 
-		// get last booking transfer id
-		var bookingTransfer models.BookingTransfer
-		if bookingTransfer, err = services.Handler.RetrieveLastOrderByCustomerID(cred.CredentialCustomer.ID); err != nil {
-			c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "booking transfer"))
-			return
-		}
+		// // get last booking transfer id
+		// var bookingTransfer models.BookingTransfer
+		// if bookingTransfer, err = services.Handler.RetrieveLastOrderByCustomerID(cred.CredentialCustomer.ID); err != nil {
+		// 	c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "booking transfer"))
+		// 	return
+		// }
 
 		paymentMethodParams := &stripe.CustomerRetrievePaymentMethodParams{
 			Customer: &customerResult.ID,
@@ -192,28 +190,41 @@ func POSTListenStripeWebhook(c *gin.Context) {
 			MailTo:  customerResult.Email,
 			Subject: "Payment Success",
 			Body: fmt.Sprintf(`<html><body>
-			<p>Dear Customer, below is a receipt from Stripe that because you have successfully made a payment through WadahGo \n\n <a href="%v">View Receipt</a></p>
+			<p>Dear Customer, below is a receipt from Stripe that because you have successfully made a payment through WadahGo <br/><br/> <a href="%v">View Receipt</a></p>
 			</body></html>`, event.GetObjectValue("receipt_url")),
 		}); err != nil {
 			return
 		}
 
-		parsedAmountPayment, _ := strconv.ParseFloat(event.GetObjectValue("amount"), 64)
-		if err := services.Handler.InsertPayment(&models.Payment{
-			Amount:            parsedAmountPayment / 100,
-			Status:            event.GetObjectValue("status"),
-			PI:                event.GetObjectValue("payment_intent"),
-			PaymentMethod:     paymentMethodUsed.Card.DisplayBrand,
-			BookingTransferID: bookingTransfer.ID,
-			CustomerID:        bookingTransfer.CustomerID,
-			DriverID:          bookingTransfer.BookingTransferAssigned.DriverID,
-			CardLastNumber:    paymentMethodUsed.Card.Last4,
-			Currency:          event.GetObjectValue("currency"),
-			ReceiptURL:        event.GetObjectValue("receipt_url"),
-		}); err != nil {
-			c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "payment"))
+		tx := database.GetDatabaseConnection().Begin()
+		if PaymentErr := tx.Model(&models.Payment{}).Where("pi = ?", event.GetObjectValue("payment_intent")).Updates(&models.Payment{
+			ReceiptURL:     event.GetObjectValue("receipt_url"),
+			CardLastNumber: paymentMethodUsed.Card.Last4,
+			Status:         event.GetObjectValue("status"),
+			PaymentMethod:  paymentMethodUsed.Card.DisplayBrand,
+			Currency:       event.GetObjectValue("currency"),
+		}); PaymentErr.Error != nil {
+			tx.Rollback()
 			return
 		}
+		tx.Commit()
+
+		// parsedAmountPayment, _ := strconv.ParseFloat(event.GetObjectValue("amount"), 64)
+		// if err := services.Handler.InsertPayment(&models.Payment{
+		// 	Amount:            parsedAmountPayment / 100,
+		// 	Status:            event.GetObjectValue("status"),
+		// 	PI:                event.GetObjectValue("payment_intent"),
+		// 	PaymentMethod:     paymentMethodUsed.Card.DisplayBrand,
+		// 	BookingTransferID: bookingTransfer.ID,
+		// 	CustomerID:        bookingTransfer.CustomerID,
+		// 	DriverID:          bookingTransfer.BookingTransferAssigned.DriverID,
+		// 	CardLastNumber:    paymentMethodUsed.Card.Last4,
+		// 	Currency:          event.GetObjectValue("currency"),
+		// 	ReceiptURL:        event.GetObjectValue("receipt_url"),
+		// }); err != nil {
+		// 	c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "payment"))
+		// 	return
+		// }
 		// insert the payment table
 		// sent the receipt payment email to the customer
 		log.Println("charge.updated")
@@ -246,7 +257,7 @@ func POSTListenStripeWebhook(c *gin.Context) {
 			MailTo:  customerResult.Email,
 			Subject: "You've cancelled the order",
 			Body: fmt.Sprintf(`<html><body>
-			<p>Dear Customer, because you've cancelled below is your Refund receipt from Stripe \n\n <a href="%v">View Receipt</a></p>
+			<p>Dear Customer, because you've cancelled below is your Refund receipt from Stripe <br/><br/> <a href="%v">View Receipt</a></p>
 			</body></html>`, event.GetObjectValue("receipt_url")),
 		}); err != nil {
 			return

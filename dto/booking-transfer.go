@@ -26,6 +26,7 @@ type InsertBookingTransfer struct {
 	AddDropoffPoint   int       `json:"addDropoffPoint,omitempty"`
 	RefferalCode      string    `json:"refferalCode,omitempty"`
 	PaymentOption     string    `json:"paymentOption,omitempty"`
+	PI                string    `json:"pi,omitempty"`
 }
 
 type UpdateBookingTransfer struct {
@@ -48,4 +49,5 @@ type UpdateBookingTransfer struct {
 	AddDropoffPoint   int       `json:"addDropoffPoint,omitempty"`
 	RefferalCode      string    `json:"refferalCode,omitempty"`
 	PaymentOption     string    `json:"paymentOption,omitempty"`
+	PI                string    `json:"pi,omitempty"`
 }
