@@ -48,6 +48,7 @@ require (
 	github.com/googleapis/gax-go/v2 v2.8.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/mailru/easyjson v0.7.6 // indirect
+	github.com/stripe/stripe-go/v81 v81.3.1 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	golang.org/x/oauth2 v0.7.0 // indirect
 	golang.org/x/sync v0.10.0 // indirect
@@ -111,6 +112,7 @@ require (
 	github.com/pelletier/go-toml/v2 v2.2.1 // indirect
 	github.com/spf13/viper v1.16.0
 	github.com/steinfletcher/apitest v1.5.15
+	github.com/stripe/stripe-go v70.15.0+incompatible
 	github.com/swaggo/gin-swagger v1.6.0
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.12 // indirect

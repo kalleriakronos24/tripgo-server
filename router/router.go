@@ -69,6 +69,12 @@ func InitializeRouter() (router *gin.Engine) {
 			company.POST("/driver/new", v1.POSTRegisteNewrDriverPartner)
 		}
 
+		payment := v1route.Group("/payment")
+		{
+			payment.POST("/create/intent", utils.AuthOnly, v1.POSTCreatePaymentIntent)
+			payment.POST("/webhook", v1.POSTListenStripeWebhook)
+		}
+
 		authInternal := v1route.Group("/auth/i")
 		{
 			authInternal.POST("/signin", v1.POSTLoginInternal)

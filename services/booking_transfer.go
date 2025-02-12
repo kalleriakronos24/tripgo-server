@@ -8,6 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/kalleriakronos24/khaimal-group/config"
 	database "github.com/kalleriakronos24/khaimal-group/db"
 	"github.com/kalleriakronos24/khaimal-group/dto"
 	"github.com/kalleriakronos24/khaimal-group/models"
@@ -15,10 +16,19 @@ import (
 	"github.com/kalleriakronos24/khaimal-group/onesignal"
 	"github.com/kalleriakronos24/khaimal-group/pkg/mail-service"
 	"github.com/kalleriakronos24/khaimal-group/utils"
+	"github.com/stripe/stripe-go/v81"
+	"github.com/stripe/stripe-go/v81/refund"
 )
 
 type CheckExistingBookingTransferStruct struct {
 	*models.BookingTransfer
+}
+
+func (module *module) RetrieveLastOrderByCustomerID(userId uuid.UUID) (m models.BookingTransfer, err error) {
+	if m, err = module.db.bookingTransfer.GetLastOrderByCustomerId(userId); err != nil {
+		return m, errors.New("failed to get booking transfers")
+	}
+	return
 }
 
 func (module *module) RetrieveBookingTransferByUserID(userId uuid.UUID) (m models.BookingTransfer, err error) {
@@ -110,6 +120,7 @@ func (module *module) InsertBookingTransfer(p *dto.InsertBookingTransfer) (err e
 		AddDropPoint:      p.AddDropoffPoint,
 		GrandTotal:        p.GrandTotal,
 		RefferalCode:      p.RefferalCode,
+		PaymentOption:     p.PaymentOption,
 		Uid:               fmt.Sprintf("TRF/%v%v/%v", utils.IntegerToRoman(currentYear), utils.IntegerToRoman(month), randomUid),
 	}, tx); err != nil {
 		tx.Rollback()
@@ -270,6 +281,31 @@ func (module *module) CustomerCancelBooking(id uuid.UUID) (err error) {
 	// send notification to the selected driver
 	onesignal.PushNotificationSingleExternalId(bookingTransferAssigned.CarManagement.Driver.Credentials.Email, formattedNotificationMessage)
 
+	// update the payment to refund
+	stripe.Key = config.AppConfig.STRIPE_SECRET_KEY
+
+	var paymentQuery models.Payment
+	if paymentQuery, err = module.db.paymentModel.GetOneLastCreatedByCustomerID(bookingTransferAssigned.BookingTransfer.CustomerID); err != nil {
+		return errors.New(err.Error())
+	}
+
+	log.Printf("LAST PAYMENT >>> %v", paymentQuery.PI)
+
+	// create the refund request
+	params := &stripe.RefundParams{PaymentIntent: stripe.String(paymentQuery.PI), Reason: stripe.String("requested_by_customer")}
+	_, err = refund.New(params)
+
+	if err != nil {
+		if stripeErr, ok := err.(*stripe.Error); ok {
+			log.Printf("Refund Stripe Error: %v\n", stripeErr.Error())
+			tx.Rollback()
+			return errors.New("failed to refund by stripe. please try again")
+		} else {
+			log.Printf("Refund Error: %v\n", err.Error())
+			tx.Rollback()
+			return errors.New("issue when trying to refund customer payment. please try again")
+		}
+	}
 	tx.Commit()
 	return
 }

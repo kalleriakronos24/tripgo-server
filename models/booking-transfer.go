@@ -36,6 +36,7 @@ type BookingTransfer struct {
 	Status            string    `json:"status,omitempty" gorm:"not null;default:waiting for driver accept"`
 	Uid               string    `json:"uid,omitempty" gorm:"default:NULL"`
 	RefferalCode      string    `json:"refferalCode,omitempty" gorm:"default:NULL"`
+	PaymentOption     string    `json:"paymentOption,omitempty" gorm:"default:NULL"`
 
 	CustomerID uuid.UUID `json:"customerId,omitempty" gorm:"type:uuid;not null"`
 	CarModelID uuid.UUID `json:"carModelId,omitempty" gorm:"type:uuid;not null"`
@@ -46,11 +47,13 @@ type BookingTransfer struct {
 	Customer *master.Customer `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;foreignKey:CustomerID;references:ID" json:"customer,omitempty"`
 
 	BookingTransferAssigned *BookingTransferAssigned `json:"driverAssigned,omitempty"`
+	Payment                 *Payment                 `json:"payment,omitempty"`
 	types.DefaultModelProperty
 }
 
 type BookingTransferModelAction interface {
 	GetOneByID(id uuid.UUID) (m BookingTransfer, err error)
+	GetLastOrderByCustomerId(id uuid.UUID) (BookingTransfer BookingTransfer, err error)
 	GetOneByEmail(email string) (m BookingTransfer, err error)
 	GetAllByCustomerID(id uuid.UUID) (BookingTransfer []*BookingTransfer, err error)
 	GetCountByCustomerID(id uuid.UUID) (ctx int64, err error)
@@ -64,6 +67,21 @@ type BookingTransferModelAction interface {
 
 func NewBookingTransferAction(db *gorm.DB) BookingTransferModelAction {
 	return &BookingTransferOrm{db}
+}
+
+func (o *BookingTransferOrm) GetLastOrderByCustomerId(id uuid.UUID) (BookingTransfer BookingTransfer, err error) {
+	result := o.db.Model(&BookingTransfer).
+		Where("customer_id = ?", id).
+		Preload("BookingTransferAssigned", func(db *gorm.DB) *gorm.DB {
+			return db.Preload("Driver", func(dbxx *gorm.DB) *gorm.DB {
+				return dbxx.Preload("Company")
+			})
+		}).
+		Preload(clause.Associations).
+		Order("created_at DESC").
+		Limit(1).
+		First(&BookingTransfer)
+	return BookingTransfer, result.Error
 }
 
 func (o *BookingTransferOrm) GetOneByID(id uuid.UUID) (BookingTransfer BookingTransfer, err error) {
@@ -97,6 +115,7 @@ func (o *BookingTransferOrm) GetAllByCustomerID(id uuid.UUID) (BookingTransfer [
 		Where("customer_id = ?", id).
 		Preload("CarModel").
 		Preload("Customer").
+		Preload("Payment").
 		Preload("BookingTransferAssigned", func(db *gorm.DB) *gorm.DB {
 			return db.Preload("BookingTransferRating").Preload("CarManagement", func(dbx *gorm.DB) *gorm.DB {
 				return dbx.Preload("Driver")

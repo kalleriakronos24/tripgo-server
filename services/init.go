@@ -33,6 +33,7 @@ type HandlerFunc interface {
 	RetrieveEntityCredentialsByUserID(userId uuid.UUID) (m masterModels.Credentials, err error)
 	RetrieveEntityCredentialsByEmail(email string) (m master.Credentials, err error)
 	// Booking Transfer
+	RetrieveLastOrderByCustomerID(userId uuid.UUID) (m models.BookingTransfer, err error)
 	RetrieveAllKhaimalBookingTransfer() (m []*models.BookingTransfer, err error)
 	InsertBookingTransfer(p *dto.InsertBookingTransfer) (err error)
 	UpdateBookingTransfer(id uuid.UUID, p *dto.UpdateBookingTransfer) (err error)
@@ -83,6 +84,8 @@ type HandlerFunc interface {
 	RejectDriverTopup(c *gin.Context, p *dto.UpdateDriverTopupHistory) (err error)
 	// DRIVER BALANCE
 	RetrieveDriverBalanceDetailByDriver(id uuid.UUID) (m models.BalanceDriver, err error)
+	// PAYMENT
+	InsertPayment(p *models.Payment) (err error)
 }
 
 type module struct {
@@ -92,6 +95,7 @@ type module struct {
 type dbEntity struct {
 	conn                          *gorm.DB
 	userModel                     masterModels.UserModelAction
+	paymentModel                  models.PaymentModelAction
 	credentialModel               masterModels.CredentialsModelAction
 	driverModel                   masterModels.DriverModelAction
 	balanceDriver                 models.BalanceDriverModelAction
@@ -120,6 +124,7 @@ func InitializeServices() (err error) {
 	Handler = &module{
 		db: &dbEntity{
 			conn:                          db,
+			paymentModel:                  models.NewPaymentAction(db),
 			userModel:                     masterModels.NewUserAction(db),
 			credentialModel:               masterModels.NewCredentialsAction(db),
 			driverModel:                   masterModels.NewDriverAction(db),

@@ -25,6 +25,8 @@ type Company struct {
 	CompanyCountry     string    `json:"companyCountry,omitempty" gorm:"default:NULL"`
 	CompanyCertificate string    `json:"companyCertificate,omitempty" gorm:"default:NULL"`
 	CompanyNumber      string    `json:"companyNumber,omitempty" gorm:"default:NULL"`
+	Lat                float32   `json:"lat,omitempty" gorm:"default:NULL"`
+	Lng                float32   `json:"lng,omitempty" gorm:"default:NULL"`
 	Status             string    `json:"status,omitempty" gorm:"default:pending-approval"` // pending-approval | active | inactive | suspended
 
 	CompanyCreatedBy uuid.UUID `json:"createdBy" gorm:"type:uuid;default:NULL;"`

@@ -45,6 +45,11 @@ type Config struct {
 	GOOGLE_OAUTH_REDIRECT_URL  string
 
 	CURRENT_DOMAIN string
+
+	STRIPE_PUBLISHABLE_KEY string
+	STRIPE_SECRET_KEY      string
+
+	STRIPE_WEBHOOK_SECRET string
 }
 
 var AppConfig Config
@@ -95,6 +100,10 @@ func InitializeAppConfig() Config {
 	AppConfig.GOOGLE_OAUTH_REDIRECT_URL = viper.GetString("GOOGLE_OAUTH_REDIRECT_URL")
 
 	AppConfig.CURRENT_DOMAIN = viper.GetString("CURRENT_DOMAIN")
+
+	AppConfig.STRIPE_PUBLISHABLE_KEY = viper.GetString("STRIPE_PUBLISHABLE_KEY")
+	AppConfig.STRIPE_SECRET_KEY = viper.GetString("STRIPE_SECRET_KEY")
+	AppConfig.STRIPE_WEBHOOK_SECRET = viper.GetString("STRIPE_WEBHOOK_SECRET")
 
 	log.Printf("[INIT] configuration loaded")
 	return AppConfig

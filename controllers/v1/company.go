@@ -52,6 +52,8 @@ func POSTCreateCompany(c *gin.Context) {
 		CompanyCountry:     pValidator.CompanyCountry,
 		CompanyNumber:      pValidator.CompanyNumber,
 		CompanyCertificate: fCompanyCertificate,
+		Lat:                pValidator.Lat,
+		Lng:                pValidator.Lng,
 	}
 
 	pAgentPIC := &dto.DriverSignUpValidator{

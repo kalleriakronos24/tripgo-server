@@ -3,15 +3,19 @@ package services
 import (
 	"errors"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/kalleriakronos24/khaimal-group/config"
 	database "github.com/kalleriakronos24/khaimal-group/db"
 	"github.com/kalleriakronos24/khaimal-group/models"
 	"github.com/kalleriakronos24/khaimal-group/models/master"
 	"github.com/kalleriakronos24/khaimal-group/onesignal"
 	"github.com/kalleriakronos24/khaimal-group/pkg/mail-service"
 	"github.com/kalleriakronos24/khaimal-group/utils"
+	"github.com/stripe/stripe-go/v81"
+	"github.com/stripe/stripe-go/v81/refund"
 	"golang.org/x/exp/rand"
 )
 
@@ -227,7 +231,30 @@ func (module *module) CancelBookingTransfer(id uuid.UUID) (err error) {
 		}); err != nil {
 			return errors.New("server error. please try again later")
 		}
-		// logic to send email to customer
+
+		// update the payment to refund
+		stripe.Key = config.AppConfig.STRIPE_SECRET_KEY
+
+		var paymentQuery models.Payment
+		if paymentQuery, err = module.db.paymentModel.GetOneLastCreatedByCustomerID(bookingTransferAssigned.BookingTransfer.CustomerID); err != nil {
+			return errors.New(err.Error())
+		}
+
+		// create the refund request
+		params := &stripe.RefundParams{PaymentIntent: stripe.String(paymentQuery.PI), Reason: stripe.String("requested_by_customer")}
+		_, err = refund.New(params)
+
+		if err != nil {
+			if stripeErr, ok := err.(*stripe.Error); ok {
+				log.Printf("Refund Stripe Error: %v\n", stripeErr.Error())
+				tx.Rollback()
+				return errors.New("failed to refund by stripe. please try again")
+			} else {
+				log.Printf("Refund Error: %v\n", err.Error())
+				tx.Rollback()
+				return errors.New("issue when trying to refund customer payment. please try again")
+			}
+		}
 		tx.Commit()
 	} else {
 		pickOnePartnerRandom := availablePartners[rand.Intn(len(availablePartners))]
@@ -266,7 +293,6 @@ func (module *module) CancelBookingTransfer(id uuid.UUID) (err error) {
 			tx.Rollback()
 			return errors.New("failed to cancel booking")
 		}
-
 		// send backup email to the driver
 		if err = mail.SendMailV3(&mail.TSendMail{
 			From:    "WadahGo <notification@wadahgo.com>",
@@ -278,10 +304,8 @@ func (module *module) CancelBookingTransfer(id uuid.UUID) (err error) {
 		}); err != nil {
 			return errors.New(err.Error())
 		}
-
 		tx.Commit()
 	}
-
 	return
 }
 
@@ -346,6 +370,51 @@ func (module *module) CompleteBookingTransfer(id uuid.UUID) (err error) {
 	var bookingTransferAssigned models.BookingTransferAssigned
 	if bookingTransferAssigned, err = module.db.bookingTransferAssigned.GetOneByID(id); err != nil {
 		return errors.New(err.Error())
+	}
+
+	var companyManager master.Driver
+	if companyManager, err = module.db.driverModel.GetOneMainAgentByCompanyId(bookingTransferAssigned.Driver.CompanyID); err != nil {
+		return errors.New(err.Error())
+	}
+
+	var balanceDriver models.BalanceDriver
+	if balanceDriver, err = module.db.balanceDriver.GetOneByID(companyManager.ID); err != nil {
+		return errors.New(err.Error())
+	}
+
+	if BalanceDriverErr := tx.Model(&models.BalanceDriver{}).Where("driver_id", companyManager.ID).Updates(&models.BalanceDriver{
+		Amount: utils.ToFixed(balanceDriver.Amount+(float64(bookingTransferAssigned.BookingTransfer.Price)), 1),
+	}); BalanceDriverErr.Error != nil {
+		tx.Rollback()
+		return errors.New("failed to add partner balance")
+	}
+
+	now := time.Now()
+	currentYear, currentMonth, _ := now.Date()
+	month := int(currentMonth)
+	randomUid, _ := utils.GenerateNumber(10)
+
+	DriverTopup := models.DriverTopup{
+		Uid:      fmt.Sprintf("PARTNER/INC/%v%v/%v", utils.IntegerToRoman(currentYear), utils.IntegerToRoman(month), randomUid),
+		Amount:   utils.ToFixed((float64(bookingTransferAssigned.BookingTransfer.Price)), 1),
+		DriverID: companyManager.ID,
+	}
+
+	if DriverTopupErr := tx.Create(&DriverTopup); DriverTopupErr.Error != nil {
+		tx.Rollback()
+		return errors.New("failed to add partner balance")
+	}
+
+	DriverTransactionHistory := models.DriverTransactionHistory{
+		Remark:        "income",
+		Status:        "income",
+		DriverID:      companyManager.ID,
+		DriverTopupID: DriverTopup.ID,
+	}
+
+	if DriverTransactionHistoryErr := tx.Create(&DriverTransactionHistory); DriverTransactionHistoryErr.Error != nil {
+		tx.Rollback()
+		return errors.New("failed to add partner balance")
 	}
 
 	if err := module.db.bookingTransfer.UpdateBookingTransfer(bookingTransferAssigned.BookingTransferID, models.BookingTransfer{

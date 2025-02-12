@@ -62,6 +62,7 @@ func POSTBookingTransfer(c *gin.Context) {
 		CustomerID:        cred.CredentialCustomer.ID,
 		TotalDistance:     pValidator.TotalDistance,
 		RefferalCode:      pValidator.RefferalCode,
+		PaymentOption:     pValidator.PaymentOption,
 	}
 
 	if err = services.Handler.InsertBookingTransfer(p); err != nil {

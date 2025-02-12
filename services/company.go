@@ -35,6 +35,8 @@ func (module *module) InsertCompany(c *gin.Context, p *dto.InsertCompany, pAgent
 		CompanyAddress: p.CompanyAddress,
 		CompanyCountry: p.CompanyCountry,
 		CompanyNumber:  p.CompanyNumber,
+		Lat:            p.Lat,
+		Lng:            p.Lng,
 		Status:         "pending-approval",
 	}, tx); err != nil {
 		tx.Rollback()
@@ -48,7 +50,7 @@ func (module *module) InsertCompany(c *gin.Context, p *dto.InsertCompany, pAgent
 		Email:    pAgent.Email,
 		Phone:    pAgent.Phone,
 		Password: "12345678",
-	}
+	} 
 
 	var hashedPasswordAgent []byte
 	if hashedPasswordAgent, err = bcrypt.GenerateFromPassword([]byte(pAgentDto.Password), bcrypt.DefaultCost); err != nil {

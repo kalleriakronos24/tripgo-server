@@ -15,6 +15,124 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/auth/c/customer": {
+            "get": {
+                "description": "A Customer authentication sign-in method",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authentication - Customer"
+                ],
+                "summary": "Customer Sign-In",
+                "parameters": [
+                    {
+                        "description": "customer login",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UserLogin"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "A Customer authentication sign-in method",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authentication - Customer"
+                ],
+                "summary": "Customer Sign-In",
+                "parameters": [
+                    {
+                        "description": "customer login",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UserLogin"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/c/google-signin": {
+            "post": {
+                "description": "A Customer authentication google sign-in method",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authentication - Customer"
+                ],
+                "summary": "Customer Google Sign-In",
+                "parameters": [
+                    {
+                        "description": "customer google login",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UserLogin"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/auth/c/signin": {
             "post": {
                 "description": "A Customer authentication sign-in method",
@@ -1259,6 +1377,16 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "type": "number",
+                        "name": "lat",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "number",
+                        "name": "lng",
+                        "in": "formData"
+                    },
+                    {
                         "type": "string",
                         "name": "name",
                         "in": "formData",
@@ -1718,6 +1846,46 @@ const docTemplate = `{
                 }
             }
         },
+        "/payment/create/intent": {
+            "post": {
+                "description": "A POST Request to create a payment intent by Stripe",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Payment"
+                ],
+                "summary": "Method to create payment intent by Stripe",
+                "parameters": [
+                    {
+                        "description": "insert payment payload",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreatePaymentIntentValidator"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/web/statistic/customer/booking-count": {
             "get": {
                 "description": "A GET Request to fetch count how many bookings are made by customer either transfer, tour or delivery",
@@ -1798,6 +1966,21 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "dto.CreatePaymentIntentValidator": {
+            "type": "object",
+            "required": [
+                "amount",
+                "currency"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "integer"
+                },
+                "currency": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.CredentialSignInDto": {
             "type": "object",
             "required": [
@@ -1812,6 +1995,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "password": {
+                    "type": "string"
+                },
+                "type": {
                     "type": "string"
                 }
             }
@@ -1837,6 +2023,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "refferalCode": {
+                    "type": "string"
+                },
+                "type": {
                     "type": "string"
                 }
             }

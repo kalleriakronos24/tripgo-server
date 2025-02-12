@@ -1,4 +1,14 @@
 definitions:
+  dto.CreatePaymentIntentValidator:
+    properties:
+      amount:
+        type: integer
+      currency:
+        type: string
+    required:
+    - amount
+    - currency
+    type: object
   dto.CredentialSignInDto:
     properties:
       deviceToken:
@@ -6,6 +16,8 @@ definitions:
       email:
         type: string
       password:
+        type: string
+      type:
         type: string
     required:
     - email
@@ -22,6 +34,8 @@ definitions:
       phone:
         type: string
       refferalCode:
+        type: string
+      type:
         type: string
     required:
     - email
@@ -180,6 +194,83 @@ definitions:
 info:
   contact: {}
 paths:
+  /auth/c/customer:
+    get:
+      consumes:
+      - application/json
+      description: A Customer authentication sign-in method
+      parameters:
+      - description: customer login
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Customer Sign-In
+      tags:
+      - Authentication - Customer
+    put:
+      consumes:
+      - application/json
+      description: A Customer authentication sign-in method
+      parameters:
+      - description: customer login
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Customer Sign-In
+      tags:
+      - Authentication - Customer
+  /auth/c/google-signin:
+    post:
+      consumes:
+      - application/json
+      description: A Customer authentication google sign-in method
+      parameters:
+      - description: customer google login
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Customer Google Sign-In
+      tags:
+      - Authentication - Customer
   /auth/c/signin:
     post:
       consumes:
@@ -1025,6 +1116,12 @@ paths:
         required: true
         type: string
       - in: formData
+        name: lat
+        type: number
+      - in: formData
+        name: lng
+        type: number
+      - in: formData
         name: name
         required: true
         type: string
@@ -1334,6 +1431,32 @@ paths:
       summary: Method to get all driver topup by drivers
       tags:
       - Driver Topup
+  /payment/create/intent:
+    post:
+      consumes:
+      - application/json
+      description: A POST Request to create a payment intent by Stripe
+      parameters:
+      - description: insert payment payload
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreatePaymentIntentValidator'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Method to create payment intent by Stripe
+      tags:
+      - Payment
   /web/statistic/customer/booking-count:
     get:
       consumes:
