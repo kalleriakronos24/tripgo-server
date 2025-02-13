@@ -32,6 +32,7 @@ type CredentialsModelAction interface {
 	GetOneByEmail(email string) (m Credentials, err error)
 	UpdateDeviceToken(id uuid.UUID, p Credentials) (err error)
 	UpdateCredentials(p Credentials, tx *gorm.DB) (cred *Credentials, err error)
+	GetOneByEmailV2(email string) (m *Credentials, err error)
 
 	InsertCredentials(p Credentials, tx *gorm.DB) (cred *Credentials, perr error)
 	DeleteCredentials(id uuid.UUID, tx *gorm.DB) (err error)
@@ -47,6 +48,11 @@ func (o *CredentialsOrm) GetOneByID(id uuid.UUID) (Credentials Credentials, err 
 		Preload(clause.Associations).
 		First(&Credentials)
 	return Credentials, result.Error
+}
+
+func (o *CredentialsOrm) GetOneByEmailV2(email string) (m *Credentials, err error) {
+	result := o.db.Model(&m).Where("email = ?", email).Preload(clause.Associations).First(&m)
+	return m, result.Error
 }
 
 func (o *CredentialsOrm) GetOneByEmail(email string) (m Credentials, err error) {

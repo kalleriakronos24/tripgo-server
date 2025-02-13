@@ -525,7 +525,8 @@ func GETGoogleLogin(ctx *gin.Context) {
 		Type:  "google",
 	}
 
-	if err := services.Handler.CheckExistingUser("", struct{ *masterModels.Credentials }{&masterModels.Credentials{
+	var customer *masterModels.Credentials
+	if customer, err = services.Handler.CheckExistingUserV2("", struct{ *masterModels.Credentials }{&masterModels.Credentials{
 		Email: p.Email,
 	}}); err != nil {
 		if err = services.Handler.RegisterCustomer(p); err != nil {
@@ -535,6 +536,10 @@ func GETGoogleLogin(ctx *gin.Context) {
 		// ctx.Redirect(http.StatusTemporaryRedirect, fmt.Sprintf("%v?error-code=1", pathUrl))
 		// ctx.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-existing-email", err, ""))
 		// return
+	}
+
+	if customer.CredentialCustomer == nil {
+		ctx.Redirect(http.StatusTemporaryRedirect, fmt.Sprintf("%v?error-code=4", pathUrl))
 	}
 
 	var pLoginObject = dto.CredentialSignInDto{
