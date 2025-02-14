@@ -293,6 +293,14 @@ func (module *module) CancelBookingTransfer(id uuid.UUID) (err error) {
 			tx.Rollback()
 			return errors.New("failed to cancel booking")
 		}
+
+		if err := module.db.bookingTransfer.UpdateBookingTransfer(id, models.BookingTransfer{
+			IsCompleted: utils.NewTrue(),
+		}, tx); err != nil {
+			tx.Rollback()
+			return errors.New("failed to set complete booking")
+		}
+
 		// send backup email to the driver
 		if err = mail.SendMailV3(&mail.TSendMail{
 			From:    "WadahGo <notification@wadahgo.com>",
@@ -430,6 +438,13 @@ func (module *module) CompleteBookingTransfer(id uuid.UUID) (err error) {
 		IsOnGoing:   utils.NewFalse(),
 		IsCompleted: utils.NewTrue(),
 		IsPickedUp:  utils.NewFalse(),
+	}, tx); err != nil {
+		tx.Rollback()
+		return errors.New("failed to set complete booking")
+	}
+
+	if err := module.db.bookingTransfer.UpdateBookingTransfer(id, models.BookingTransfer{
+		IsCompleted: utils.NewTrue(),
 	}, tx); err != nil {
 		tx.Rollback()
 		return errors.New("failed to set complete booking")

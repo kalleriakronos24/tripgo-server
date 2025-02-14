@@ -283,6 +283,12 @@ func (module *module) CustomerCancelBooking(id uuid.UUID) (err error) {
 		tx.Rollback()
 		return errors.New(err.Error())
 	}
+	if err := module.db.bookingTransfer.UpdateBookingTransfer(id, models.BookingTransfer{
+		IsCompleted: utils.NewTrue(),
+	}, tx); err != nil {
+		tx.Rollback()
+		return errors.New("failed to set complete booking")
+	}
 
 	if err = mail.SendMailV3(&mail.TSendMail{
 		From:    "WadahGo <notification@wadahgo.com>",

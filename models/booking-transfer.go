@@ -37,6 +37,7 @@ type BookingTransfer struct {
 	Uid               string    `json:"uid,omitempty" gorm:"default:NULL"`
 	RefferalCode      string    `json:"refferalCode,omitempty" gorm:"default:NULL"`
 	PaymentOption     string    `json:"paymentOption,omitempty" gorm:"default:NULL"`
+	IsCompleted       *bool     `json:"isCompleted" gorm:"type:boolean;default:false"`
 
 	CustomerID uuid.UUID `json:"customerId,omitempty" gorm:"type:uuid;not null"`
 	CarModelID uuid.UUID `json:"carModelId,omitempty" gorm:"type:uuid;not null"`

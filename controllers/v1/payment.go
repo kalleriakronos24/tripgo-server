@@ -181,7 +181,6 @@ func POSTListenStripeWebhook(c *gin.Context) {
 
 		var paymentMethodUsed *stripe.PaymentMethod
 		if paymentMethodUsed, err = customer.RetrievePaymentMethod(event.GetObjectValue("payment_method"), paymentMethodParams); err != nil {
-			log.Printf("PAYMENT METHOD ERROR >> %v", err)
 			return
 		}
 
@@ -236,9 +235,8 @@ func POSTListenStripeWebhook(c *gin.Context) {
 	if event.Type == "charge.refunded" {
 		customerParams := &stripe.CustomerParams{}
 		var customerResult *stripe.Customer
-		log.Printf("CUSTOMER ID >>> %v", event.GetObjectValue("customer"))
 		if customerResult, err = customer.Get(event.GetObjectValue("customer"), customerParams); err != nil {
-			log.Println("Failed to get Customer")
+			return
 		}
 		// var cred master.Credentials
 		// if cred, err = services.Handler.RetrieveEntityCredentialsByEmail(customerResult.Email); err != nil {

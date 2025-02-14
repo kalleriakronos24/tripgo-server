@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/kalleriakronos24/khaimal-group/constants"
 	"github.com/kalleriakronos24/khaimal-group/dto"
+	"github.com/kalleriakronos24/khaimal-group/models"
 	"github.com/kalleriakronos24/khaimal-group/models/master"
 	"github.com/kalleriakronos24/khaimal-group/services"
 	"github.com/kalleriakronos24/khaimal-group/utils"
@@ -64,6 +65,17 @@ func POSTBookingTransfer(c *gin.Context) {
 		RefferalCode:      pValidator.RefferalCode,
 		PaymentOption:     pValidator.PaymentOption,
 		PI:                pValidator.PI,
+	}
+
+	var bookingTransfer models.BookingTransfer
+	if bookingTransfer, err = services.Handler.RetrieveLastOrderByCustomerID(userId); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "customer"))
+		return
+	}
+
+	if bookingTransfer.IsCompleted != utils.NewTrue() {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, "You can only have one active booking."))
+		return
 	}
 
 	if err = services.Handler.InsertBookingTransfer(p); err != nil {
