@@ -232,27 +232,29 @@ func (module *module) CancelBookingTransfer(id uuid.UUID) (err error) {
 			return errors.New("server error. please try again later")
 		}
 
-		// update the payment to refund
-		stripe.Key = config.AppConfig.STRIPE_SECRET_KEY
+		if bookingTransferAssigned.BookingTransfer.PaymentOption != "cash" {
+			// update the payment to refund
+			stripe.Key = config.AppConfig.STRIPE_SECRET_KEY
 
-		var paymentQuery models.Payment
-		if paymentQuery, err = module.db.paymentModel.GetOneLastCreatedByCustomerID(bookingTransferAssigned.BookingTransfer.CustomerID); err != nil {
-			return errors.New(err.Error())
-		}
+			var paymentQuery models.Payment
+			if paymentQuery, err = module.db.paymentModel.GetOneLastCreatedByCustomerID(bookingTransferAssigned.BookingTransfer.CustomerID); err != nil {
+				return errors.New(err.Error())
+			}
 
-		// create the refund request
-		params := &stripe.RefundParams{PaymentIntent: stripe.String(paymentQuery.PI), Reason: stripe.String("requested_by_customer")}
-		_, err = refund.New(params)
+			// create the refund request
+			params := &stripe.RefundParams{PaymentIntent: stripe.String(paymentQuery.PI), Reason: stripe.String("requested_by_customer")}
+			_, err = refund.New(params)
 
-		if err != nil {
-			if stripeErr, ok := err.(*stripe.Error); ok {
-				log.Printf("Refund Stripe Error: %v\n", stripeErr.Error())
-				tx.Rollback()
-				return errors.New("failed to refund by stripe. please try again")
-			} else {
-				log.Printf("Refund Error: %v\n", err.Error())
-				tx.Rollback()
-				return errors.New("issue when trying to refund customer payment. please try again")
+			if err != nil {
+				if stripeErr, ok := err.(*stripe.Error); ok {
+					log.Printf("Refund Stripe Error: %v\n", stripeErr.Error())
+					tx.Rollback()
+					return errors.New("failed to refund by stripe. please try again")
+				} else {
+					log.Printf("Refund Error: %v\n", err.Error())
+					tx.Rollback()
+					return errors.New("issue when trying to refund customer payment. please try again")
+				}
 			}
 		}
 		tx.Commit()

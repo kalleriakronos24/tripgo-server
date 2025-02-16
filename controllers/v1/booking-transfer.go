@@ -69,7 +69,11 @@ func POSTBookingTransfer(c *gin.Context) {
 
 	var bookingTransfer models.BookingTransfer
 	if bookingTransfer, err = services.Handler.RetrieveLastOrderByCustomerID(cred.CredentialCustomer.ID); err != nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "customer"))
+		if err = services.Handler.InsertBookingTransfer(p); err != nil {
+			c.JSON(http.StatusBadRequest, constants.GetErrorResponse("insert-failed", err, "booking transfer"))
+			return
+		}
+		// c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "customer"))
 		return
 	}
 
