@@ -68,13 +68,13 @@ func POSTBookingTransfer(c *gin.Context) {
 	}
 
 	var bookingTransfer models.BookingTransfer
-	if bookingTransfer, err = services.Handler.RetrieveLastOrderByCustomerID(userId); err != nil {
+	if bookingTransfer, err = services.Handler.RetrieveLastOrderByCustomerID(cred.CredentialCustomer.ID); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "customer"))
 		return
 	}
 
-	if bookingTransfer.IsCompleted != utils.NewTrue() {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("logical", err, "You can only have one active booking."))
+	if bookingTransfer.IsCompleted == utils.NewFalse() {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("general", nil, "You can only have one active booking."))
 		return
 	}
 
