@@ -73,6 +73,7 @@ func POSTBookingTransfer(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, constants.GetErrorResponse("insert-failed", err, "booking transfer"))
 			return
 		}
+		c.JSON(http.StatusCreated, dto.Response{Message: "success"})
 		// c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "customer"))
 		return
 	}
