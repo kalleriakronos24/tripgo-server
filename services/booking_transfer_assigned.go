@@ -11,12 +11,10 @@ import (
 	database "github.com/kalleriakronos24/khaimal-group/db"
 	"github.com/kalleriakronos24/khaimal-group/models"
 	"github.com/kalleriakronos24/khaimal-group/models/master"
-	"github.com/kalleriakronos24/khaimal-group/onesignal"
 	"github.com/kalleriakronos24/khaimal-group/pkg/mail-service"
 	"github.com/kalleriakronos24/khaimal-group/utils"
 	"github.com/stripe/stripe-go/v81"
 	"github.com/stripe/stripe-go/v81/refund"
-	"golang.org/x/exp/rand"
 )
 
 type CheckExistingBookingTransferAssignedStruct struct {
@@ -202,120 +200,120 @@ func (module *module) CancelBookingTransfer(id uuid.UUID) (err error) {
 	}
 
 	// if khaimal cancelled the booking
-	if availablePartners, err := module.db.driverModel.GetAllAvailableCompanyManagerByCompanyId(); err != nil {
-		if err := module.db.bookingTransfer.UpdateBookingTransfer(bookingTransferAssigned.BookingTransferID, models.BookingTransfer{
-			Status: "driver cancelled due some reasons",
-		}, tx); err != nil {
-			tx.Rollback()
-			return errors.New("failed to cancel booking")
-		}
+	// if availablePartners, err := module.db.driverModel.GetAllAvailableCompanyManagerByCompanyId(); err != nil {
+	if err := module.db.bookingTransfer.UpdateBookingTransfer(bookingTransferAssigned.BookingTransferID, models.BookingTransfer{
+		Status: "driver cancelled due some reasons",
+	}, tx); err != nil {
+		tx.Rollback()
+		return errors.New("failed to cancel booking")
+	}
 
-		if err := module.db.bookingTransferAssigned.UpdateBookingTransferAssigned(id, models.BookingTransferAssigned{
-			IsAccepted:  utils.NewFalse(),
-			IsCancelled: utils.NewFalse(),
-			IsOnGoing:   utils.NewFalse(),
-			IsPickedUp:  utils.NewFalse(),
-			IsCompleted: utils.NewFalse(),
-		}, tx); err != nil {
-			tx.Rollback()
-			return errors.New("failed to cancel booking")
-		}
+	if err := module.db.bookingTransferAssigned.UpdateBookingTransferAssigned(id, models.BookingTransferAssigned{
+		IsAccepted:  utils.NewFalse(),
+		IsCancelled: utils.NewFalse(),
+		IsOnGoing:   utils.NewFalse(),
+		IsPickedUp:  utils.NewFalse(),
+		IsCompleted: utils.NewFalse(),
+	}, tx); err != nil {
+		tx.Rollback()
+		return errors.New("failed to cancel booking")
+	}
 
-		if err = mail.SendMailV3(&mail.TSendMail{
-			From:    "WadahGo <notification@wadahgo.com>",
-			MailTo:  bookingTransferAssigned.BookingTransfer.Customer.Credentials.Email,
-			Subject: "Booking Transfer Cancelled",
-			Body: `<html><body>
+	if err = mail.SendMailV3(&mail.TSendMail{
+		From:    "WadahGo <notification@wadahgo.com>",
+		MailTo:  bookingTransferAssigned.BookingTransfer.Customer.Credentials.Email,
+		Subject: "Booking Transfer Cancelled",
+		Body: `<html><body>
 		<p>Oops.. Driver canceled your booking due to some reason :( please create a new booking</p>
 		</body></html>`,
-		}); err != nil {
-			return errors.New("server error. please try again later")
-		}
+	}); err != nil {
+		return errors.New("server error. please try again later")
+	}
 
-		if bookingTransferAssigned.BookingTransfer.PaymentOption != "cash" {
-			// update the payment to refund
-			stripe.Key = config.AppConfig.STRIPE_SECRET_KEY
+	if bookingTransferAssigned.BookingTransfer.PaymentOption != "cash" {
+		// update the payment to refund
+		stripe.Key = config.AppConfig.STRIPE_SECRET_KEY
 
-			var paymentQuery models.Payment
-			if paymentQuery, err = module.db.paymentModel.GetOneLastCreatedByCustomerID(bookingTransferAssigned.BookingTransfer.CustomerID); err != nil {
-				return errors.New(err.Error())
-			}
-
-			// create the refund request
-			params := &stripe.RefundParams{PaymentIntent: stripe.String(paymentQuery.PI), Reason: stripe.String("requested_by_customer")}
-			_, err = refund.New(params)
-
-			if err != nil {
-				if stripeErr, ok := err.(*stripe.Error); ok {
-					log.Printf("Refund Stripe Error: %v\n", stripeErr.Error())
-					tx.Rollback()
-					return errors.New("failed to refund by stripe. please try again")
-				} else {
-					log.Printf("Refund Error: %v\n", err.Error())
-					tx.Rollback()
-					return errors.New("issue when trying to refund customer payment. please try again")
-				}
-			}
-		}
-		tx.Commit()
-	} else {
-		pickOnePartnerRandom := availablePartners[rand.Intn(len(availablePartners))]
-
-		var driverBalanceDetail *models.BalanceDriver
-		if driverBalanceDetail, err = module.db.balanceDriver.GetOneDetailByID(pickOnePartnerRandom.ID); err != nil {
-			tx.Rollback()
-			return errors.New("drivers seems busy. please try again later")
-		}
-
-		if driverBalanceDetail.Amount < float64(bookingTransferAssigned.BookingTransfer.Price)*0.14 {
-			tx.Rollback()
-			return errors.New("drivers seems busy. please try again later")
-		}
-
-		var carManagement master.CarManagement
-		if carManagement, err = module.db.carManagementModel.GetOneByCarModelIDAndAvailable(bookingTransferAssigned.BookingTransfer.CarModelID, driverBalanceDetail.Driver.ID, driverBalanceDetail.Driver.Company.ID); err != nil {
-			tx.Rollback()
-			return errors.New("drivers seems busy. please try again later")
-		}
-
-		formattedNotificationMessage := fmt.Sprintf("Booking Transfer Request <br/> %v <br/> %v Person Pax x %v Luggagge <br/> Pickup Date %v <br/> Notes: %v <br/> Price: %v", carManagement.Name, carManagement.CarModel.PersonCount, carManagement.CarModel.LuggageCount, utils.ConvertEnToIDDateTime(bookingTransferAssigned.BookingTransfer.PickUpDate), bookingTransferAssigned.BookingTransfer.PassengerNotes, bookingTransferAssigned.BookingTransfer.GrandTotal)
-		// send notification to the selected driver
-		if err = onesignal.PushNotificationSingleExternalId(pickOnePartnerRandom.Credentials.Email, formattedNotificationMessage); err != nil {
-			return errors.New("server-error. please try again later")
-		}
-
-		if err := module.db.bookingTransferAssigned.UpdateBookingTransferAssigned(id, models.BookingTransferAssigned{
-			IsAccepted:  utils.NewFalse(),
-			IsCancelled: utils.NewFalse(),
-			IsOnGoing:   utils.NewFalse(),
-			IsPickedUp:  utils.NewFalse(),
-			IsCompleted: utils.NewFalse(),
-			DriverID:    pickOnePartnerRandom.ID,
-		}, tx); err != nil {
-			tx.Rollback()
-			return errors.New("failed to cancel booking")
-		}
-
-		if err := module.db.bookingTransfer.UpdateBookingTransfer(id, models.BookingTransfer{
-			IsCompleted: utils.NewTrue(),
-		}, tx); err != nil {
-			tx.Rollback()
-			return errors.New("failed to set complete booking")
-		}
-
-		// send backup email to the driver
-		if err = mail.SendMailV3(&mail.TSendMail{
-			From:    "WadahGo <notification@wadahgo.com>",
-			MailTo:  pickOnePartnerRandom.Credentials.Email,
-			Subject: "Booking Transfer Received",
-			Body: fmt.Sprintf(`<html><body>
-		<p>%v</p>
-		</body></html>`, formattedNotificationMessage),
-		}); err != nil {
+		var paymentQuery models.Payment
+		if paymentQuery, err = module.db.paymentModel.GetOneLastCreatedByCustomerID(bookingTransferAssigned.BookingTransfer.CustomerID); err != nil {
 			return errors.New(err.Error())
 		}
-		tx.Commit()
+
+		// create the refund request
+		params := &stripe.RefundParams{PaymentIntent: stripe.String(paymentQuery.PI), Reason: stripe.String("requested_by_customer")}
+		_, err = refund.New(params)
+
+		if err != nil {
+			if stripeErr, ok := err.(*stripe.Error); ok {
+				log.Printf("Refund Stripe Error: %v\n", stripeErr.Error())
+				tx.Rollback()
+				return errors.New("failed to refund by stripe. please try again")
+			} else {
+				log.Printf("Refund Error: %v\n", err.Error())
+				tx.Rollback()
+				return errors.New("issue when trying to refund customer payment. please try again")
+			}
+		}
 	}
+	tx.Commit()
+	// } else {
+	// 	pickOnePartnerRandom := availablePartners[rand.Intn(len(availablePartners))]
+
+	// 	var driverBalanceDetail *models.BalanceDriver
+	// 	if driverBalanceDetail, err = module.db.balanceDriver.GetOneDetailByID(pickOnePartnerRandom.ID); err != nil {
+	// 		tx.Rollback()
+	// 		return errors.New("drivers seems busy. please try again later")
+	// 	}
+
+	// 	if driverBalanceDetail.Amount < float64(bookingTransferAssigned.BookingTransfer.Price)*0.14 {
+	// 		tx.Rollback()
+	// 		return errors.New("drivers seems busy. please try again later")
+	// 	}
+
+	// 	var carManagement master.CarManagement
+	// 	if carManagement, err = module.db.carManagementModel.GetOneByCarModelIDAndAvailable(bookingTransferAssigned.BookingTransfer.CarModelID, driverBalanceDetail.Driver.ID, driverBalanceDetail.Driver.Company.ID); err != nil {
+	// 		tx.Rollback()
+	// 		return errors.New("drivers seems busy. please try again later")
+	// 	}
+
+	// 	formattedNotificationMessage := fmt.Sprintf("Booking Transfer Request <br/> %v <br/> %v Person Pax x %v Luggagge <br/> Pickup Date %v <br/> Notes: %v <br/> Price: %v", carManagement.Name, carManagement.CarModel.PersonCount, carManagement.CarModel.LuggageCount, utils.ConvertEnToIDDateTime(bookingTransferAssigned.BookingTransfer.PickUpDate), bookingTransferAssigned.BookingTransfer.PassengerNotes, bookingTransferAssigned.BookingTransfer.GrandTotal)
+	// 	// send notification to the selected driver
+	// 	if err = onesignal.PushNotificationSingleExternalId(pickOnePartnerRandom.Credentials.Email, formattedNotificationMessage); err != nil {
+	// 		return errors.New("server-error. please try again later")
+	// 	}
+
+	// 	if err := module.db.bookingTransferAssigned.UpdateBookingTransferAssigned(id, models.BookingTransferAssigned{
+	// 		IsAccepted:  utils.NewFalse(),
+	// 		IsCancelled: utils.NewFalse(),
+	// 		IsOnGoing:   utils.NewFalse(),
+	// 		IsPickedUp:  utils.NewFalse(),
+	// 		IsCompleted: utils.NewFalse(),
+	// 		DriverID:    pickOnePartnerRandom.ID,
+	// 	}, tx); err != nil {
+	// 		tx.Rollback()
+	// 		return errors.New("failed to cancel booking")
+	// 	}
+
+	// 	if err := module.db.bookingTransfer.UpdateBookingTransfer(id, models.BookingTransfer{
+	// 		IsCompleted: utils.NewTrue(),
+	// 	}, tx); err != nil {
+	// 		tx.Rollback()
+	// 		return errors.New("failed to set complete booking")
+	// 	}
+
+	// 	// send backup email to the driver
+	// 	if err = mail.SendMailV3(&mail.TSendMail{
+	// 		From:    "WadahGo <notification@wadahgo.com>",
+	// 		MailTo:  pickOnePartnerRandom.Credentials.Email,
+	// 		Subject: "Booking Transfer Received",
+	// 		Body: fmt.Sprintf(`<html><body>
+	// 	<p>%v</p>
+	// 	</body></html>`, formattedNotificationMessage),
+	// 	}); err != nil {
+	// 		return errors.New(err.Error())
+	// 	}
+	// 	tx.Commit()
+	// }
 	return
 }
 
