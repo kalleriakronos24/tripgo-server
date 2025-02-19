@@ -210,7 +210,7 @@ func (module *module) CancelBookingTransfer(id uuid.UUID) (err error) {
 
 	if err := module.db.bookingTransferAssigned.UpdateBookingTransferAssigned(id, models.BookingTransferAssigned{
 		IsAccepted:  utils.NewFalse(),
-		IsCancelled: utils.NewFalse(),
+		IsCancelled: utils.NewTrue(),
 		IsOnGoing:   utils.NewFalse(),
 		IsPickedUp:  utils.NewFalse(),
 		IsCompleted: utils.NewFalse(),
