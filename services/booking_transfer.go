@@ -16,6 +16,7 @@ import (
 	"github.com/kalleriakronos24/khaimal-group/models/master"
 	"github.com/kalleriakronos24/khaimal-group/onesignal"
 	"github.com/kalleriakronos24/khaimal-group/pkg/mail-service"
+	"github.com/kalleriakronos24/khaimal-group/templates/email"
 	"github.com/kalleriakronos24/khaimal-group/utils"
 	"github.com/stripe/stripe-go/v81"
 	"github.com/stripe/stripe-go/v81/refund"
@@ -144,6 +145,12 @@ func (module *module) InsertBookingTransfer(p *dto.InsertBookingTransfer) (err e
 		return errors.New(err.Error())
 	}
 
+	var customer master.Customer
+	if customer, err = module.db.userCustomerModel.GetOneByCustomerID(p.CustomerID); err != nil {
+		tx.Rollback()
+		return errors.New(err.Error())
+	}
+
 	// immediately assign to the driver
 	if err = module.db.bookingTransferAssigned.InsertBookingTransferAssigned(models.BookingTransferAssigned{
 		CarManagementID:   carManagement.ID,
@@ -155,21 +162,76 @@ func (module *module) InsertBookingTransfer(p *dto.InsertBookingTransfer) (err e
 		return errors.New(err.Error())
 	}
 
-	formattedNotificationMessage := fmt.Sprintf("Booking Transfer Request <br/> %v <br/> %v Person Pax x %v Luggagge <br/> Pickup Date %v <br/> Notes: %v <br/> Price: %v", carManagement.Name, carManagement.CarModel.PersonCount, carManagement.CarModel.LuggageCount, utils.ConvertEnToIDDateTime(bookingTransfer.PickUpDate), bookingTransfer.PassengerNotes, bookingTransfer.GrandTotal)
+	// formattedNotificationMessage := fmt.Sprintf("Booking Transfer Request <br/> %v <br/> %v Person Pax x %v Luggagge <br/> Pickup Date %v <br/> Notes: %v <br/> Price: %v", carManagement.Name, carManagement.CarModel.PersonCount, carManagement.CarModel.LuggageCount, utils.ConvertEnToIDDateTime(bookingTransfer.PickUpDate), bookingTransfer.PassengerNotes, bookingTransfer.GrandTotal)
 	// send notification to the selected driver
 	// if err = onesignal.PushNotificationSingleExternalId(carManagement.Driver.Credentials.Email, formattedNotificationMessage); err != nil {
 	// 	return errors.New("server-error. please try again later")
 	// }
 
-	// send backup email to the driver
 	if err = mail.SendMailV3(&mail.TSendMail{
 		From:    "WadahGo <notification@wadahgo.com>",
 		MailTo:  carManagement.Driver.Credentials.Email,
-		Subject: "Booking Transfer Received",
-		Body: fmt.Sprintf(`<html><body>
-		<p>%v</p>
-		</body></html>`, formattedNotificationMessage),
+		Subject: fmt.Sprintf("Booking Received (%v)", bookingTransfer.Uid),
+		Body: email.ETOrderSuccess(
+			carManagement.Name,
+			"#",
+			carManagement.Driver.Name,
+			"#",
+			fmt.Sprintf("%v \n %v", customer.Name, customer.Phone),
+			carManagement.PlateNumber,
+			"#",
+			fmt.Sprintf("%v", carManagement.CarModel.PersonCount),
+			fmt.Sprintf("%v", carManagement.CarModel.LuggageCount),
+			p.PaymentOption,
+			fmt.Sprintf("RM %v", p.GrandTotal),
+			"#",
+			p.FromLocation,
+			p.ToLocation,
+			bookingTransfer.Uid,
+			utils.ConvertEnToIDDateTime(bookingTransfer.CreatedAt),
+			utils.ConvertEnToIDDateTime(p.PickUpDate),
+			fmt.Sprintf("You've Received order. Please check the booking information through WadahGo Driver App for booking statuses and details. Booking UID: %v", bookingTransfer.Uid),
+			"If issue happened do not hesitate to contact us and ask for help <br/> +60 13 686 8745",
+			"#",
+			"wadahgo-driver://",
+			"CUSTOMER NAME",
+		),
 	}); err != nil {
+		tx.Rollback()
+		return errors.New(err.Error())
+	}
+
+	// send backup email to the driver
+	if err = mail.SendMailV3(&mail.TSendMail{
+		From:    "WadahGo <notification@wadahgo.com>",
+		MailTo:  customer.Credentials.Email,
+		Subject: fmt.Sprintf("Booking Confirmation (%v)", bookingTransfer.Uid),
+		Body: email.ETOrderSuccess(
+			carManagement.Name,
+			"#",
+			customer.Name,
+			"#",
+			carManagement.Driver.Name,
+			carManagement.PlateNumber,
+			"#",
+			fmt.Sprintf("%v", carManagement.CarModel.PersonCount),
+			fmt.Sprintf("%v", carManagement.CarModel.LuggageCount),
+			p.PaymentOption,
+			fmt.Sprintf("RM %v", p.GrandTotal),
+			"#",
+			p.FromLocation,
+			p.ToLocation,
+			bookingTransfer.Uid,
+			utils.ConvertEnToIDDateTime(bookingTransfer.CreatedAt),
+			utils.ConvertEnToIDDateTime(p.PickUpDate),
+			fmt.Sprintf("Your was sent to %v and being processed to the next step. You will receive an update from us regarding the status of your Booking ID: %v", carManagement.Driver.Name, bookingTransfer.Uid),
+			"If there is no updates from the driver for quite long time, please cancel the order or contact us for assistance <br/> +60 13 686 8745",
+			"Track the Booking statuses under wadahgo.com > menu > bookings > booking detail",
+			"https://wadahgo.com",
+			"DRIVER NAME",
+		),
+	}); err != nil {
+		tx.Rollback()
 		return errors.New(err.Error())
 	}
 
@@ -218,7 +280,6 @@ func (module *module) CustomerCancelBooking(id uuid.UUID) (err error) {
 	}
 
 	if bookingTransferAssigned.IsAccepted == utils.NewTrue() {
-
 		var companyManager master.Driver
 		if companyManager, err = module.db.driverModel.GetOneMainAgentByCompanyId(bookingTransferAssigned.Driver.CompanyID); err != nil {
 			return errors.New(err.Error())
@@ -293,13 +354,46 @@ func (module *module) CustomerCancelBooking(id uuid.UUID) (err error) {
 	if err = mail.SendMailV3(&mail.TSendMail{
 		From:    "WadahGo <notification@wadahgo.com>",
 		MailTo:  bookingTransferAssigned.CarManagement.Driver.Credentials.Email,
-		Subject: "Booking Transfer Cancelled",
-		Body: `<html><body>
-		<p>Oops.. Customer cancelled your booking due to some reason :(, please keep an eye for another booking request</p>
-		</body></html>`,
+		Subject: fmt.Sprintf("Booking Cancelled (%v)", bookingTransferAssigned.BookingTransfer.Uid),
+		Body: email.ETOrderSuccess(
+			bookingTransferAssigned.CarManagement.Name,
+			"#",
+			bookingTransferAssigned.CarManagement.Driver.Name,
+			"#",
+			fmt.Sprintf("%v \n %v", bookingTransferAssigned.BookingTransfer.Customer.Name, bookingTransferAssigned.BookingTransfer.Customer.Phone),
+			bookingTransferAssigned.CarManagement.PlateNumber,
+			"#",
+			fmt.Sprintf("%v", bookingTransferAssigned.CarManagement.CarModel.PersonCount),
+			fmt.Sprintf("%v", bookingTransferAssigned.CarManagement.CarModel.LuggageCount),
+			bookingTransferAssigned.BookingTransfer.PaymentOption,
+			fmt.Sprintf("RM %v", bookingTransferAssigned.BookingTransfer.GrandTotal),
+			"#",
+			bookingTransferAssigned.BookingTransfer.FromLocation,
+			bookingTransferAssigned.BookingTransfer.ToLocation,
+			bookingTransferAssigned.BookingTransfer.Uid,
+			utils.ConvertEnToIDDateTime(bookingTransferAssigned.UpdatedAt),
+			utils.ConvertEnToIDDateTime(bookingTransferAssigned.BookingTransfer.PickUpDate),
+			fmt.Sprintf("Oops..., Unfortunately. Customer has Cancelled the Booking UID: %v", bookingTransferAssigned.BookingTransfer.Uid),
+			"If issue happened do not hesitate to contact us and ask for help <br/> +60 13 686 8745",
+			"#",
+			"wadahgo-driver://",
+			"CUSTOMER NAME",
+		),
 	}); err != nil {
+		tx.Rollback()
 		return errors.New(err.Error())
 	}
+
+	// if err = mail.SendMailV3(&mail.TSendMail{
+	// 	From:    "WadahGo <notification@wadahgo.com>",
+	// 	MailTo:  bookingTransferAssigned.CarManagement.Driver.Credentials.Email,
+	// 	Subject: "Booking Transfer Cancelled",
+	// 	Body: `<html><body>
+	// 	<p>Oops.. Customer cancelled your booking due to some reason :(, please keep an eye for another booking request</p>
+	// 	</body></html>`,
+	// }); err != nil {
+	// 	return errors.New(err.Error())
+	// }
 	formattedNotificationMessage := fmt.Sprintf("Booking Transfer Cancelled \n We are sorry that your Booking was cancelled by the Passenger %v", bookingTransferAssigned.BookingTransfer.Customer.Name)
 	// send notification to the selected driver
 	onesignal.PushNotificationSingleExternalId(bookingTransferAssigned.CarManagement.Driver.Credentials.Email, formattedNotificationMessage)

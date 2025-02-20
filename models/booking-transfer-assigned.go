@@ -59,7 +59,7 @@ func (o *BookingTransferAssignedOrm) GetOneByID(id uuid.UUID) (BookingTransferAs
 			})
 		}).
 		Preload("CarManagement", func(dbx *gorm.DB) *gorm.DB {
-			return dbx.Preload("Driver", func(dbxx *gorm.DB) *gorm.DB {
+			return dbx.Preload("CarModel").Preload("Driver", func(dbxx *gorm.DB) *gorm.DB {
 				return dbxx.Preload("Credentials")
 			})
 		}).

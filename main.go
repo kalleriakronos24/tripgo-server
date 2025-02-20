@@ -55,7 +55,7 @@ func runServer() {
 		Addr:           fmt.Sprintf(":%d", config.AppConfig.Port),
 		Handler:        router.InitializeRouter(),
 		ReadTimeout:    10 * time.Second,
-		WriteTimeout:   10 * time.Second,
+		WriteTimeout:   50 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
 	//log.Printf("address > %s", s)

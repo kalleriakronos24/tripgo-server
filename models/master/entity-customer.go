@@ -2,7 +2,6 @@ package master
 
 import (
 	"errors"
-	"log"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -36,6 +35,7 @@ type CustomerModelAction interface {
 	GetOneByCustomerName(Customername string) (m Customer, err error)
 	GetAllCustomerPaginated(c *gin.Context) (*database.Pagination, error)
 	InsertCustomer(p Customer, tx *gorm.DB) (err error)
+	GetOneByCustomerID(id uuid.UUID) (Customer Customer, err error)
 	UpdateCustomer(id uuid.UUID, p Customer, tx *gorm.DB) (err error)
 	DeleteCustomer(id uuid.UUID, tx *gorm.DB) (err error)
 }
@@ -60,7 +60,14 @@ func (o *CustomerOrm) GetOneByID(id uuid.UUID) (Customer Customer, err error) {
 		Where("credentials_id = ?", id).
 		Preload(clause.Associations).
 		First(&Customer)
-	log.Printf("CISTP<ER >>> %v", Customer)
+	return Customer, result.Error
+}
+
+func (o *CustomerOrm) GetOneByCustomerID(id uuid.UUID) (Customer Customer, err error) {
+	result := o.db.Model(&Customer).
+		Where("id = ?", id).
+		Preload(clause.Associations).
+		First(&Customer)
 	return Customer, result.Error
 }
 
