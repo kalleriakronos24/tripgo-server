@@ -163,13 +163,13 @@ func GETAllPartnerBookingTransfer(c *gin.Context) {
 		return
 	}
 
-	var cred master.Internal
-	if cred, err = services.Handler.RetrieveEntityInternalByUserID(userId); err != nil {
+	var cred master.Credentials
+	if cred, err = services.Handler.RetrieveEntityCredentialsByUserID(userId); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "internal"))
 		return
 	}
 
-	if bookingTransfer, err := services.Handler.RetrieveAllPartnerBookingTransfer(cred.RefferalCode); err != nil {
+	if bookingTransfer, err := services.Handler.RetrieveAllPartnerBookingTransfer(cred.CredentialInternal.RefferalCode); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "booking transfer"))
 		return
 	} else {
