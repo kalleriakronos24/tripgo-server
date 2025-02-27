@@ -40,7 +40,7 @@ func InitializeRouter() (router *gin.Engine) {
 	str := []string{"http://localhost:4321", "http://localhost:3000"}
 
 	if config.AppConfig.Environment == "PRODUCTION" {
-		str = []string{"https://wadahgo.com", "http://localhost:3000", "https://khaimal-group-dashboard.vercel.app", "http://206.189.35.127:3009"}
+		str = []string{"https://wadahgo.com", "http://localhost:3000", "https://khaimal-group-dashboard.vercel.app", "http://206.189.35.127:3009", "https://wadahgo-partner-dashboard.vercel.app/"}
 	}
 
 	configCors := cors.DefaultConfig()
@@ -121,6 +121,7 @@ func InitializeRouter() (router *gin.Engine) {
 		bookingTransfer := v1route.Group("/booking/transfer")
 		{
 			bookingTransfer.GET("/khaimal", v1.GETAllKhaimalBookingTransfer)
+			bookingTransfer.GET("/partner", utils.AuthOnly, v1.GETAllPartnerBookingTransfer)
 			bookingTransfer.GET("/all", utils.AuthOnly, v1.GETAllBookingTransferByCustomer)
 			bookingTransfer.POST("/cancel/:id", utils.AuthOnly, v1.POSTCancelBookingTransferByCustomer)
 			bookingTransfer.POST("", utils.AuthOnly, v1.POSTBookingTransfer)

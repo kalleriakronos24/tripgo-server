@@ -47,6 +47,13 @@ func (module *module) RetrieveAllKhaimalBookingTransfer() (m []*models.BookingTr
 	return
 }
 
+func (module *module) RetrieveAllPartnerBookingTransfer(refferalCode string) (m []*models.BookingTransfer, err error) {
+	if m, err = module.db.bookingTransfer.GetAllPartnerBookingOrders(refferalCode); err != nil {
+		return m, errors.New("failed to get booking transfers")
+	}
+	return
+}
+
 func (module *module) RetrieveAllBookingTransferByCustomer(id uuid.UUID) (m []*models.BookingTransfer, err error) {
 	if m, err = module.db.bookingTransfer.GetAllByCustomerID(id); err != nil {
 		return m, errors.New("failed to get booking transfers")

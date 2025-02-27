@@ -17,12 +17,13 @@ type InternalOrm struct {
 }
 
 type Internal struct {
-	ID       uuid.UUID `gorm:"index:id,unique;type:uuid;default:gen_random_uuid();" json:"id"`
-	Name     string    `json:"name" gorm:"not null" binding:"required"`
-	Email    string    `gorm:"email:id,unique" json:",omitempty" binding:"required"`
-	Password string    `json:"password,omitempty" binding:"required" gorm:"not null"`
-	Phone    string    `json:"phone,omitempty" gorm:"default:NULL"`
-	Status   string    `json:"status,omitempty" binding:"required" gorm:"not null;default:active;"`
+	ID           uuid.UUID `gorm:"index:id,unique;type:uuid;default:gen_random_uuid();" json:"id"`
+	Name         string    `json:"name" gorm:"not null" binding:"required"`
+	Email        string    `gorm:"email:id,unique" json:",omitempty" binding:"required"`
+	Password     string    `json:"password,omitempty" binding:"required" gorm:"not null"`
+	Phone        string    `json:"phone,omitempty" gorm:"default:NULL"`
+	Status       string    `json:"status,omitempty" binding:"required" gorm:"not null;default:active;"`
+	RefferalCode string    `json:"refferalCode,omitempty"  gorm:"default:NULL"`
 
 	CredentialsID uuid.UUID `json:"credentialsId" gorm:"type:uuid;not null"`
 	CompanyID     uuid.UUID `json:"companyId" gorm:"type:uuid;default:NULL"`

@@ -36,6 +36,7 @@ type HandlerFunc interface {
 	// Booking Transfer
 	RetrieveLastOrderByCustomerID(userId uuid.UUID) (m models.BookingTransfer, err error)
 	RetrieveAllKhaimalBookingTransfer() (m []*models.BookingTransfer, err error)
+	RetrieveAllPartnerBookingTransfer(refferalCode string) (m []*models.BookingTransfer, err error)
 	InsertBookingTransfer(p *dto.InsertBookingTransfer) (err error)
 	UpdateBookingTransfer(id uuid.UUID, p *dto.UpdateBookingTransfer) (err error)
 	RetrieveAllBookingTransferByCustomer(id uuid.UUID) (m []*models.BookingTransfer, err error)

@@ -145,6 +145,39 @@ func GETAllKhaimalBookingTransfer(c *gin.Context) {
 }
 
 // AuthLogin godoc
+// @Summary      Method to get all received partner booking transfers
+// @Description  A GET Request to fetch a all records booking transfers
+// @Tags         Booking - Transfer
+// @Accept       json
+// @Produce      json
+// @Success      200 {object}	dto.Response
+// @Failure      400 {object}	dto.Response
+// @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
+// @Router       /booking/transfer/partner [get]
+func GETAllPartnerBookingTransfer(c *gin.Context) {
+	userLoggedInId := c.GetString("user_id")
+	userId, err := uuid.Parse(userLoggedInId)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("uuid-error", err, ""))
+		return
+	}
+
+	var cred master.Internal
+	if cred, err = services.Handler.RetrieveEntityInternalByUserID(userId); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "internal"))
+		return
+	}
+
+	if bookingTransfer, err := services.Handler.RetrieveAllPartnerBookingTransfer(cred.RefferalCode); err != nil {
+		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "booking transfer"))
+		return
+	} else {
+		c.JSON(http.StatusOK, dto.Response{Data: &bookingTransfer, Message: "success"})
+	}
+}
+
+// AuthLogin godoc
 // @Summary      Method to count booking transfer by customer
 // @Description  A GET Request to fetch count how many bookings are made by customer either transfer, tour or delivery
 // @Tags         Booking - Transfer

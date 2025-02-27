@@ -60,6 +60,7 @@ type BookingTransferModelAction interface {
 	GetCountByCustomerID(id uuid.UUID) (ctx int64, err error)
 	GetCountActiveByCustomerID(id uuid.UUID) (ctx int64, err error)
 	GetAllKhaimalBookingOrders() (BookingTransfer []*BookingTransfer, err error)
+	GetAllPartnerBookingOrders(refferalCode string) (BookingTransfer []*BookingTransfer, err error)
 
 	InsertBookingTransfer(p BookingTransfer, tx *gorm.DB) (bookingTransfer BookingTransfer, err error)
 	UpdateBookingTransfer(id uuid.UUID, p BookingTransfer, tx *gorm.DB) (err error)
@@ -106,6 +107,23 @@ func (o *BookingTransferOrm) GetAllKhaimalBookingOrders() (BookingTransfer []*Bo
 				})
 			})
 		}).
+		Order("created_at DESC").
+		Find(&BookingTransfer)
+	return BookingTransfer, result.Error
+}
+
+func (o *BookingTransferOrm) GetAllPartnerBookingOrders(refferalCode string) (BookingTransfer []*BookingTransfer, err error) {
+	result := o.db.Model(&BookingTransfer).
+		Preload("CarModel").
+		Preload("Customer").
+		Preload("BookingTransferAssigned", func(db *gorm.DB) *gorm.DB {
+			return db.Preload("Driver", func(dbxx *gorm.DB) *gorm.DB {
+				return dbxx.Preload("Company")
+			}).Preload("BookingTransferRating").Preload("CarManagement", func(dbx *gorm.DB) *gorm.DB {
+				return dbx.Preload("Company")
+			})
+		}).
+		Where("refferal_code = ?", refferalCode).
 		Order("created_at DESC").
 		Find(&BookingTransfer)
 	return BookingTransfer, result.Error
