@@ -622,6 +622,52 @@ const docTemplate = `{
                 }
             }
         },
+        "/booking-assigned/transfer/complete/{id}": {
+            "post": {
+                "description": "A POST Request for Driver to set Complete specific booking transfer by it's ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking Assgined - Transfer"
+                ],
+                "summary": "Method to set status to complete and notify passenger",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer \u003cAdd access token here\u003e",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Booking Transfer Assigned ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/booking-assigned/transfer/completed": {
             "get": {
                 "description": "A GET Request to fetch a all records for driver to view booking transfer that assigned and whose are not accepted by the driver",
@@ -943,6 +989,45 @@ const docTemplate = `{
                     "Booking - Transfer"
                 ],
                 "summary": "Method to get all received khaimal booking transfers",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/booking/transfer/partner": {
+            "get": {
+                "description": "A GET Request to fetch a all records booking transfers",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking - Transfer"
+                ],
+                "summary": "Method to get all received partner booking transfers",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer \u003cAdd access token here\u003e",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -1886,6 +1971,46 @@ const docTemplate = `{
                 }
             }
         },
+        "/payment/get/webhook": {
+            "post": {
+                "description": "A POST Request to create a payment intent by Stripe",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Payment"
+                ],
+                "summary": "Method to create payment intent by Stripe",
+                "parameters": [
+                    {
+                        "description": "insert payment payload",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreatePaymentIntentValidator"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/web/statistic/customer/booking-count": {
             "get": {
                 "description": "A GET Request to fetch count how many bookings are made by customer either transfer, tour or delivery",
@@ -2098,6 +2223,12 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "passengerNotes": {
+                    "type": "string"
+                },
+                "paymentOption": {
+                    "type": "string"
+                },
+                "pi": {
                     "type": "string"
                 },
                 "pickUpDate": {

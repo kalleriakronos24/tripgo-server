@@ -90,6 +90,10 @@ definitions:
         type: string
       passengerNotes:
         type: string
+      paymentOption:
+        type: string
+      pi:
+        type: string
       pickUpDate:
         type: string
       price:
@@ -598,6 +602,38 @@ paths:
       summary: List Booking Transfer Assigned
       tags:
       - Booking Assgined - Transfer
+  /booking-assigned/transfer/complete/{id}:
+    post:
+      consumes:
+      - application/json
+      description: A POST Request for Driver to set Complete specific booking transfer
+        by it's ID
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Booking Transfer Assigned ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Method to set status to complete and notify passenger
+      tags:
+      - Booking Assgined - Transfer
   /booking-assigned/transfer/completed:
     get:
       consumes:
@@ -829,6 +865,32 @@ paths:
           schema:
             $ref: '#/definitions/dto.Response'
       summary: Method to get all received khaimal booking transfers
+      tags:
+      - Booking - Transfer
+  /booking/transfer/partner:
+    get:
+      consumes:
+      - application/json
+      description: A GET Request to fetch a all records booking transfers
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Method to get all received partner booking transfers
       tags:
       - Booking - Transfer
   /booking/transfer/rating:
@@ -1432,6 +1494,32 @@ paths:
       tags:
       - Driver Topup
   /payment/create/intent:
+    post:
+      consumes:
+      - application/json
+      description: A POST Request to create a payment intent by Stripe
+      parameters:
+      - description: insert payment payload
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreatePaymentIntentValidator'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Method to create payment intent by Stripe
+      tags:
+      - Payment
+  /payment/get/webhook:
     post:
       consumes:
       - application/json
