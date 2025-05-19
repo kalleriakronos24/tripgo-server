@@ -140,6 +140,24 @@ func (module *module) AcceptBookingTransfer(id uuid.UUID) (err error) {
 	carManagement := bookingTransferAssigned.CarManagement
 	bookingTransfer := bookingTransferAssigned.BookingTransfer
 
+	p := bookingTransfer
+
+	var currencyGrandTotal float32
+
+	currencyGrandTotal = p.GrandTotal
+
+	if p.Currency == "MYR" {
+		currencyGrandTotal = p.GrandTotal
+	}
+
+	if p.Currency == "SGD" {
+		currencyGrandTotal = float32(utils.ConvertMYRtoSGD(p.GrandTotal))
+	}
+
+	if p.Currency == "IDR" {
+		currencyGrandTotal = float32(utils.ConvertMYRtoIDR(p.GrandTotal))
+	}
+
 	// send backup email to the driver
 	if err = mail.SendMailV3(&mail.TSendMail{
 		From:    "WadahGo <notification@wadahgo.com>",
@@ -156,7 +174,7 @@ func (module *module) AcceptBookingTransfer(id uuid.UUID) (err error) {
 			fmt.Sprintf("%v", carManagement.CarModel.PersonCount),
 			fmt.Sprintf("%v", carManagement.CarModel.LuggageCount),
 			bookingTransfer.PaymentOption,
-			fmt.Sprintf("RM %v", bookingTransfer.GrandTotal),
+			fmt.Sprintf("%v %v", p.Currency, currencyGrandTotal),
 			"#",
 			bookingTransfer.FromLocation,
 			bookingTransfer.ToLocation,
@@ -273,6 +291,24 @@ func (module *module) CancelBookingTransfer(id uuid.UUID) (err error) {
 	carManagement := bookingTransferAssigned.CarManagement
 	bookingTransfer := bookingTransferAssigned.BookingTransfer
 
+	p := bookingTransfer
+
+	var currencyGrandTotal float32
+
+	currencyGrandTotal = p.GrandTotal
+
+	if p.Currency == "MYR" {
+		currencyGrandTotal = p.GrandTotal
+	}
+
+	if p.Currency == "SGD" {
+		currencyGrandTotal = float32(utils.ConvertMYRtoSGD(p.GrandTotal))
+	}
+
+	if p.Currency == "IDR" {
+		currencyGrandTotal = float32(utils.ConvertMYRtoIDR(p.GrandTotal))
+	}
+
 	// send backup email to the driver
 	if err = mail.SendMailV3(&mail.TSendMail{
 		From:    "WadahGo <notification@wadahgo.com>",
@@ -289,7 +325,7 @@ func (module *module) CancelBookingTransfer(id uuid.UUID) (err error) {
 			fmt.Sprintf("%v", carManagement.CarModel.PersonCount),
 			fmt.Sprintf("%v", carManagement.CarModel.LuggageCount),
 			bookingTransfer.PaymentOption,
-			fmt.Sprintf("RM %v", bookingTransfer.GrandTotal),
+			fmt.Sprintf("%v %v", p.Currency, currencyGrandTotal),
 			"#",
 			bookingTransfer.FromLocation,
 			bookingTransfer.ToLocation,
@@ -454,7 +490,24 @@ func (module *module) OngoingBookingTransfer(id uuid.UUID) (err error) {
 	carManagement := bookingTransferAssigned.CarManagement
 	bookingTransfer := bookingTransferAssigned.BookingTransfer
 
-	// send backup email to the driver
+	p := bookingTransfer
+
+	var currencyGrandTotal float32
+
+	currencyGrandTotal = p.GrandTotal
+
+	if p.Currency == "MYR" {
+		currencyGrandTotal = p.GrandTotal
+	}
+
+	if p.Currency == "SGD" {
+		currencyGrandTotal = float32(utils.ConvertMYRtoSGD(p.GrandTotal))
+	}
+
+	if p.Currency == "IDR" {
+		currencyGrandTotal = float32(utils.ConvertMYRtoIDR(p.GrandTotal))
+	}
+
 	if err = mail.SendMailV3(&mail.TSendMail{
 		From:    "WadahGo <notification@wadahgo.com>",
 		MailTo:  customer.Credentials.Email,
@@ -470,7 +523,7 @@ func (module *module) OngoingBookingTransfer(id uuid.UUID) (err error) {
 			fmt.Sprintf("%v", carManagement.CarModel.PersonCount),
 			fmt.Sprintf("%v", carManagement.CarModel.LuggageCount),
 			bookingTransfer.PaymentOption,
-			fmt.Sprintf("RM %v", bookingTransfer.GrandTotal),
+			fmt.Sprintf("%v %v", p.Currency, currencyGrandTotal),
 			"#",
 			bookingTransfer.FromLocation,
 			bookingTransfer.ToLocation,
@@ -603,6 +656,24 @@ func (module *module) CompleteBookingTransfer(id uuid.UUID) (err error) {
 	bookingTransfer := bookingTransferAssigned.BookingTransfer
 	carManagement := bookingTransferAssigned.CarManagement
 
+	p := bookingTransfer
+
+	var currencyGrandTotal float32
+
+	currencyGrandTotal = p.GrandTotal
+
+	if p.Currency == "MYR" {
+		currencyGrandTotal = p.GrandTotal
+	}
+
+	if p.Currency == "SGD" {
+		currencyGrandTotal = float32(utils.ConvertMYRtoSGD(p.GrandTotal))
+	}
+
+	if p.Currency == "IDR" {
+		currencyGrandTotal = float32(utils.ConvertMYRtoIDR(p.GrandTotal))
+	}
+
 	// send backup email to the driver
 	if err = mail.SendMailV3(&mail.TSendMail{
 		From:    "WadahGo <notification@wadahgo.com>",
@@ -619,7 +690,7 @@ func (module *module) CompleteBookingTransfer(id uuid.UUID) (err error) {
 			fmt.Sprintf("%v", carManagement.CarModel.PersonCount),
 			fmt.Sprintf("%v", carManagement.CarModel.LuggageCount),
 			bookingTransfer.PaymentOption,
-			fmt.Sprintf("RM %v", bookingTransfer.GrandTotal),
+			fmt.Sprintf("%v %v", p.Currency, currencyGrandTotal),
 			"#",
 			bookingTransfer.FromLocation,
 			bookingTransfer.ToLocation,
@@ -686,6 +757,24 @@ func (module *module) CompletePickupBooking(id uuid.UUID) (err error) {
 	carManagement := bookingTransferAssigned.CarManagement
 	bookingTransfer := bookingTransferAssigned.BookingTransfer
 
+	p := bookingTransfer
+
+	var currencyGrandTotal float32
+
+	currencyGrandTotal = p.GrandTotal
+
+	if p.Currency == "MYR" {
+		currencyGrandTotal = p.GrandTotal
+	}
+
+	if p.Currency == "SGD" {
+		currencyGrandTotal = float32(utils.ConvertMYRtoSGD(p.GrandTotal))
+	}
+
+	if p.Currency == "IDR" {
+		currencyGrandTotal = float32(utils.ConvertMYRtoIDR(p.GrandTotal))
+	}
+
 	// send backup email to the driver
 	if err = mail.SendMailV3(&mail.TSendMail{
 		From:    "WadahGo <notification@wadahgo.com>",
@@ -702,7 +791,7 @@ func (module *module) CompletePickupBooking(id uuid.UUID) (err error) {
 			fmt.Sprintf("%v", carManagement.CarModel.PersonCount),
 			fmt.Sprintf("%v", carManagement.CarModel.LuggageCount),
 			bookingTransfer.PaymentOption,
-			fmt.Sprintf("RM %v", bookingTransfer.GrandTotal),
+			fmt.Sprintf("%v %v", p.Currency, currencyGrandTotal),
 			"#",
 			bookingTransfer.FromLocation,
 			bookingTransfer.ToLocation,
@@ -762,6 +851,24 @@ func (module *module) SwitchDriver(id uuid.UUID, driverId uuid.UUID, plateNumber
 
 	bookingTransfer := bookingTransferAssigned.BookingTransfer
 
+	p := bookingTransfer
+
+	var currencyGrandTotal float32
+
+	currencyGrandTotal = p.GrandTotal
+
+	if p.Currency == "MYR" {
+		currencyGrandTotal = p.GrandTotal
+	}
+
+	if p.Currency == "SGD" {
+		currencyGrandTotal = float32(utils.ConvertMYRtoSGD(p.GrandTotal))
+	}
+
+	if p.Currency == "IDR" {
+		currencyGrandTotal = float32(utils.ConvertMYRtoIDR(p.GrandTotal))
+	}
+
 	// send backup email to the driver
 	if err = mail.SendMailV3(&mail.TSendMail{
 		From:    "WadahGo <notification@wadahgo.com>",
@@ -778,7 +885,7 @@ func (module *module) SwitchDriver(id uuid.UUID, driverId uuid.UUID, plateNumber
 			fmt.Sprintf("%v", carManagement.CarModel.PersonCount),
 			fmt.Sprintf("%v", carManagement.CarModel.LuggageCount),
 			bookingTransfer.PaymentOption,
-			fmt.Sprintf("RM %v", bookingTransfer.GrandTotal),
+			fmt.Sprintf("%v %v", p.Currency, currencyGrandTotal),
 			"#",
 			bookingTransfer.FromLocation,
 			bookingTransfer.ToLocation,

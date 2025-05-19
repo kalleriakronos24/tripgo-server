@@ -27,6 +27,7 @@ type InsertBookingTransfer struct {
 	RefferalCode      string    `json:"refferalCode,omitempty"`
 	PaymentOption     string    `json:"paymentOption,omitempty"`
 	PI                string    `json:"pi,omitempty"`
+	Currency          string    `json:"currency,omitempty"`
 }
 
 type UpdateBookingTransfer struct {

@@ -65,6 +65,7 @@ func POSTBookingTransfer(c *gin.Context) {
 		RefferalCode:      pValidator.RefferalCode,
 		PaymentOption:     pValidator.PaymentOption,
 		PI:                pValidator.PI,
+		Currency:          pValidator.Currency,
 	}
 
 	var bookingTransfer models.BookingTransfer
