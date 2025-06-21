@@ -21,6 +21,7 @@ import (
 // @Success      200 {object}	dto.Response
 // @Failure      400 {object}	dto.Response
 // @Param 		 data body dto.InsertBookingTransfer true "insert booking transfer"
+// @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
 // @Router       /booking/transfer [post]
 func POSTBookingTransfer(c *gin.Context) {
 	var err error
