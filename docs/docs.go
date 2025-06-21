@@ -873,6 +873,14 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.InsertBookingTransfer"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "default": "Bearer \u003cAdd access token here\u003e",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -2206,6 +2214,9 @@ const docTemplate = `{
                 },
                 "childSeater": {
                     "type": "integer"
+                },
+                "currency": {
+                    "type": "string"
                 },
                 "fromLatCoordinate": {
                     "type": "number"
