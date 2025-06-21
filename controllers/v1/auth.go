@@ -342,12 +342,12 @@ func POSTRegisterCustomer(c *gin.Context) {
 		return
 	}
 
-	if err := services.Handler.CheckExistingUser("", struct{ *masterModels.Credentials }{&masterModels.Credentials{
-		Email: p.Email,
-	}}); err == nil {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-existing-email", err, ""))
-		return
-	}
+	// if err := services.Handler.CheckExistingUser("", struct{ *masterModels.Credentials }{&masterModels.Credentials{
+	// 	Email: p.Email,
+	// }}); err == nil {
+	// 	c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-existing-email", err, ""))
+	// 	return
+	// }
 
 	if err = services.Handler.RegisterCustomer(p); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("insert-failed", err, "user"))
