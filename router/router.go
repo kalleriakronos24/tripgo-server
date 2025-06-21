@@ -40,7 +40,7 @@ func InitializeRouter() (router *gin.Engine) {
 	str := []string{"http://localhost:4321", "http://localhost:3000"}
 
 	if config.AppConfig.Environment == "PRODUCTION" {
-		str = []string{"https://wadahgo.com", "http://localhost:3000", "https://khaimal-group-dashboard.vercel.app", "http://206.189.35.127:3009"}
+		str = []string{"https://wadahgo.com", "http://localhost:3000", "https://khaimal-group-dashboard.vercel.app", "http://206.189.35.127:3009", "https://wadahgo-partner-dashboard.vercel.app"}
 	}
 
 	configCors := cors.DefaultConfig()
@@ -65,6 +65,14 @@ func InitializeRouter() (router *gin.Engine) {
 			company.POST("/create", v1.POSTCreateCompany)
 			company.GET("/create/approval/:id", v1.POSTApproveCompanyRegistration)
 			company.GET("/driver/all/:id", v1.GETAllDriversByCompanyId)
+			company.GET("/customer/all", v1.GETAllCustomerRegistered)
+			company.POST("/driver/new", v1.POSTRegisteNewrDriverPartner)
+		}
+
+		payment := v1route.Group("/payment")
+		{
+			payment.POST("/create/intent", utils.AuthOnly, v1.POSTCreatePaymentIntent)
+			payment.POST("/webhook", v1.POSTListenStripeWebhook)
 		}
 
 		authInternal := v1route.Group("/auth/i")
@@ -77,6 +85,9 @@ func InitializeRouter() (router *gin.Engine) {
 		{
 			authCustomer.POST("/signup", v1.POSTRegisterCustomer)
 			authCustomer.POST("/signin", v1.POSTLogin)
+			authCustomer.GET("/google-signin", v1.GETGoogleLogin)
+			authCustomer.GET("/customer", utils.AuthOnly, v1.GETCustomerByID)
+			authCustomer.PUT("/customer", utils.AuthOnly, v1.UPDCustomerByID)
 		}
 
 		authDriver := v1route.Group("/auth/d")
@@ -109,6 +120,8 @@ func InitializeRouter() (router *gin.Engine) {
 
 		bookingTransfer := v1route.Group("/booking/transfer")
 		{
+			bookingTransfer.GET("/khaimal", v1.GETAllKhaimalBookingTransfer)
+			bookingTransfer.GET("/partner", utils.AuthOnly, v1.GETAllPartnerBookingTransfer)
 			bookingTransfer.GET("/all", utils.AuthOnly, v1.GETAllBookingTransferByCustomer)
 			bookingTransfer.POST("/cancel/:id", utils.AuthOnly, v1.POSTCancelBookingTransferByCustomer)
 			bookingTransfer.POST("", utils.AuthOnly, v1.POSTBookingTransfer)

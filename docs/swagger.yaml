@@ -1,4 +1,14 @@
 definitions:
+  dto.CreatePaymentIntentValidator:
+    properties:
+      amount:
+        type: integer
+      currency:
+        type: string
+    required:
+    - amount
+    - currency
+    type: object
   dto.CredentialSignInDto:
     properties:
       deviceToken:
@@ -6,6 +16,8 @@ definitions:
       email:
         type: string
       password:
+        type: string
+      type:
         type: string
     required:
     - email
@@ -20,6 +32,10 @@ definitions:
       password:
         type: string
       phone:
+        type: string
+      refferalCode:
+        type: string
+      type:
         type: string
     required:
     - email
@@ -74,10 +90,16 @@ definitions:
         type: string
       passengerNotes:
         type: string
+      paymentOption:
+        type: string
+      pi:
+        type: string
       pickUpDate:
         type: string
       price:
         type: number
+      refferalCode:
+        type: string
       toLatCoordinate:
         type: number
       toLngCoordinate:
@@ -176,6 +198,83 @@ definitions:
 info:
   contact: {}
 paths:
+  /auth/c/customer:
+    get:
+      consumes:
+      - application/json
+      description: A Customer authentication sign-in method
+      parameters:
+      - description: customer login
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Customer Sign-In
+      tags:
+      - Authentication - Customer
+    put:
+      consumes:
+      - application/json
+      description: A Customer authentication sign-in method
+      parameters:
+      - description: customer login
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Customer Sign-In
+      tags:
+      - Authentication - Customer
+  /auth/c/google-signin:
+    post:
+      consumes:
+      - application/json
+      description: A Customer authentication google sign-in method
+      parameters:
+      - description: customer google login
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Customer Google Sign-In
+      tags:
+      - Authentication - Customer
   /auth/c/signin:
     post:
       consumes:
@@ -503,6 +602,38 @@ paths:
       summary: List Booking Transfer Assigned
       tags:
       - Booking Assgined - Transfer
+  /booking-assigned/transfer/complete/{id}:
+    post:
+      consumes:
+      - application/json
+      description: A POST Request for Driver to set Complete specific booking transfer
+        by it's ID
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Booking Transfer Assigned ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Method to set status to complete and notify passenger
+      tags:
+      - Booking Assgined - Transfer
   /booking-assigned/transfer/completed:
     get:
       consumes:
@@ -715,6 +846,51 @@ paths:
           schema:
             $ref: '#/definitions/dto.Response'
       summary: Method to cancel booking transfer by customer
+      tags:
+      - Booking - Transfer
+  /booking/transfer/khaimal:
+    get:
+      consumes:
+      - application/json
+      description: A GET Request to fetch a all records booking transfers
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Method to get all received khaimal booking transfers
+      tags:
+      - Booking - Transfer
+  /booking/transfer/partner:
+    get:
+      consumes:
+      - application/json
+      description: A GET Request to fetch a all records booking transfers
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Method to get all received partner booking transfers
       tags:
       - Booking - Transfer
   /booking/transfer/rating:
@@ -1002,6 +1178,12 @@ paths:
         required: true
         type: string
       - in: formData
+        name: lat
+        type: number
+      - in: formData
+        name: lng
+        type: number
+      - in: formData
         name: name
         required: true
         type: string
@@ -1053,6 +1235,32 @@ paths:
       summary: Method to Approve company registration
       tags:
       - Company
+  /company/customer/all:
+    get:
+      consumes:
+      - application/json
+      description: A GET Request to fetch a all records customer registered
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Method to get all customer registered
+      tags:
+      - Company
   /company/driver/all/{id}:
     get:
       consumes:
@@ -1076,6 +1284,38 @@ paths:
           schema:
             $ref: '#/definitions/dto.Response'
       summary: Method to get all drivers by company id
+      tags:
+      - Company
+  /company/driver/new:
+    post:
+      consumes:
+      - application/json
+      description: A Driver Registration through company manager
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: driver registration
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.DriverSignup'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: A Driver Registration through company manager
       tags:
       - Company
   /driver-balance/get:
@@ -1253,6 +1493,58 @@ paths:
       summary: Method to get all driver topup by drivers
       tags:
       - Driver Topup
+  /payment/create/intent:
+    post:
+      consumes:
+      - application/json
+      description: A POST Request to create a payment intent by Stripe
+      parameters:
+      - description: insert payment payload
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreatePaymentIntentValidator'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Method to create payment intent by Stripe
+      tags:
+      - Payment
+  /payment/get/webhook:
+    post:
+      consumes:
+      - application/json
+      description: A POST Request to create a payment intent by Stripe
+      parameters:
+      - description: insert payment payload
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreatePaymentIntentValidator'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Method to create payment intent by Stripe
+      tags:
+      - Payment
   /web/statistic/customer/booking-count:
     get:
       consumes:

@@ -306,7 +306,7 @@ func POSTOngoingBookingTransfer(c *gin.Context) {
 // @Failure      400 {object}	dto.Response
 // @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
 // @Param        id   path      string  true  "Booking Transfer Assigned ID"
-// @Router       /booking-assigned/transfer/ongoing [get]
+// @Router       /booking-assigned/transfer/complete/{id} [post]
 func POSTCompleteBookingTransfer(c *gin.Context) {
 	var err error
 

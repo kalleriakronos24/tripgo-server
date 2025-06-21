@@ -16,6 +16,7 @@ type Credentials struct {
 	Email       string    `gorm:"email:id,unique" json:"email,omitempty" binding:"required"`
 	Password    string    `json:"password,omitempty" binding:"required" gorm:"not null"`
 	DeviceToken string    `json:"deviceToken,omitempty" binding:"required" gorm:"default:NULL;"`
+	Type        string    `json:"type,omitempty" binding:"required" gorm:"default:email;"`
 
 	CreatedBy uuid.UUID `json:"createdBy,omitempty" gorm:"type:uuid;default:NULL"`
 	UpdatedBy uuid.UUID `json:"updatedBy,omitempty" gorm:"type:uuid;default:NULL"`
@@ -31,6 +32,7 @@ type CredentialsModelAction interface {
 	GetOneByEmail(email string) (m Credentials, err error)
 	UpdateDeviceToken(id uuid.UUID, p Credentials) (err error)
 	UpdateCredentials(p Credentials, tx *gorm.DB) (cred *Credentials, err error)
+	GetOneByEmailV2(email string) (m *Credentials, err error)
 
 	InsertCredentials(p Credentials, tx *gorm.DB) (cred *Credentials, perr error)
 	DeleteCredentials(id uuid.UUID, tx *gorm.DB) (err error)
@@ -48,8 +50,13 @@ func (o *CredentialsOrm) GetOneByID(id uuid.UUID) (Credentials Credentials, err 
 	return Credentials, result.Error
 }
 
+func (o *CredentialsOrm) GetOneByEmailV2(email string) (m *Credentials, err error) {
+	result := o.db.Model(&m).Where("email = ?", email).Preload(clause.Associations).First(&m)
+	return m, result.Error
+}
+
 func (o *CredentialsOrm) GetOneByEmail(email string) (m Credentials, err error) {
-	result := o.db.Model(&m).Where("email = ?", email).First(&m)
+	result := o.db.Model(&m).Where("email = ?", email).Preload(clause.Associations).First(&m)
 	return m, result.Error
 }
 

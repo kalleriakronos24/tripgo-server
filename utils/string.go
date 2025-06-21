@@ -2,6 +2,7 @@ package utils
 
 import (
 	"crypto/rand"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -21,6 +22,11 @@ func RandStringGenerator(n int) string {
 		b[i] = letterBytes[int(b[i])%ll]
 	}
 	return string(b)
+}
+
+func RemoveAllSymbolsWithSpaces(str string) string {
+	str = regexp.MustCompile(`[^a-zA-Z0-9 ]+`).ReplaceAllString(str, " ")
+	return str
 }
 
 func IntegerToRoman(number int) string {

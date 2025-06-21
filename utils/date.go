@@ -23,3 +23,7 @@ func ConvertEnToIDDateTime(date time.Time) string {
 	currentDate := date.Format("2 January 2006 09:00 AM")
 	return currentDate
 }
+
+func CurrentDateTime() string {
+	return time.Now().Format(time.RFC3339)
+}

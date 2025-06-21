@@ -25,7 +25,7 @@ type CarManagement struct {
 	VEPPhoto          string    `json:"vepPhoto,omitempty" gorm:"default:NULL"`
 	CarManagementType string    `json:"carType,omitempty" gorm:"default:external"`
 	FileName          string    `json:"fileName,omitempty" gorm:"default:NULL"`
-	Status            string    `json:"status,omitempty" binding:"required" gorm:"not null;default:active;"`
+	Status            string    `json:"status,omitempty" binding:"required" gorm:"not null;default:active;"` // active | inactive | on-ride
 
 	CarModelID uuid.UUID `json:"carModelId" gorm:"type:uuid;not null"`
 	DriverID   uuid.UUID `json:"driverId" gorm:"type:uuid;not null"`
@@ -56,6 +56,7 @@ type CarManagementModelAction interface {
 
 	InsertCarManagement(p CarManagement) (err error)
 	UpdateCarManagementByCompanyId(companyId uuid.UUID, p CarManagement, tx *gorm.DB) (err error)
+	UpdateCarManagementByCompanyIdAndPlateNumber(companyId uuid.UUID, plateNumber string, p CarManagement, tx *gorm.DB) (err error)
 	UpdateCarManagementToInactive(id uuid.UUID, tx *gorm.DB) (err error)
 	RemoveCarManagementFromCompany(id uuid.UUID, tx *gorm.DB) (err error)
 	DeleteCarManagement(id uuid.UUID, tx *gorm.DB) (err error)
@@ -86,22 +87,28 @@ func (o *CarManagementOrm) GetOneByID(id uuid.UUID) (CarManagement CarManagement
 
 func (o *CarManagementOrm) CheckKhaimalDriverAvailable(carModelId uuid.UUID) (CarManagement []*CarManagement, err error) {
 	result := o.db.Model(&CarManagement).
-		Where("car_model_id = ? AND status = ? AND company_id = ?", carModelId, "active", "45d64f59-bdc4-48cd-853b-33d88182e065").
-		Preload(clause.Associations).
-		// Preload("Company", func(db *gorm.DB) *gorm.DB {
-		// 	return db.Where("company_name = ?", "Khaimal Group").First(Company{})
-		// }).
-		// Preload("Driver", func(db *gorm.DB) *gorm.DB {
-		// 	return db.Where("booking_status = ? AND status = ?", "ready", "active").First(Driver{})
-		// }).
+		// Where("car_model_id = ? AND status = ? AND company_id = ?", carModelId, "active", "c2bfac84-cd6c-4b57-85a2-3d0730fa82da").
+		Where("car_model_id = ? AND status = ? AND company_id = ?", carModelId, "active", "1af117b6-dc78-4fb1-abab-2a9645651a88").
+		// Preload(clause.Associations).
+		Preload("Driver", func(db *gorm.DB) *gorm.DB {
+			return db.Preload("Credentials")
+		}).
+		Preload("Company").
+		Preload("CarModel").
 		First(&CarManagement)
 	return CarManagement, result.Error
 }
 
 func (o *CarManagementOrm) GetKhaimalManagerId(carModelId uuid.UUID) (CarManagement CarManagement, err error) {
 	result := o.db.Model(&CarManagement).
-		Where("car_model_id = ? AND status = ? AND driver_id = ?", carModelId, "active", "45d64f59-bdc4-48cd-853b-33d88182e065").
-		Preload(clause.Associations).
+		// Where("car_model_id = ? AND status = ? AND driver_id = ?", carModelId, "active", "45d64f59-bdc4-48cd-853b-33d88182e065").
+		Where("car_model_id = ? AND status = ? AND driver_id = ?", carModelId, "active", "de329135-f7de-483f-8dbf-2a125d323da3").
+		// Preload(clause.Associations).
+		Preload("Driver", func(db *gorm.DB) *gorm.DB {
+			return db.Preload("Credentials")
+		}).
+		Preload("Company").
+		Preload("CarModel").
 		First(&CarManagement)
 	return CarManagement, result.Error
 }
@@ -109,7 +116,11 @@ func (o *CarManagementOrm) GetKhaimalManagerId(carModelId uuid.UUID) (CarManagem
 func (o *CarManagementOrm) GetAllAvailableCarManagementByCompanyIdAndDriverId(companyId uuid.UUID, driverId uuid.UUID) (CarManagement []*CarManagement, err error) {
 	result := o.db.Model(&CarManagement).
 		Where("driver_id = ? AND company_id = ?", driverId, companyId).
-		Preload(clause.Associations).
+		Preload("Driver").
+		Preload("CarModel", func(db *gorm.DB) *gorm.DB {
+			return db.Order("order_num DESC")
+		}).
+		Preload("Company").
 		Find(&CarManagement)
 	return CarManagement, result.Error
 }
@@ -166,6 +177,11 @@ func (o *CarManagementOrm) GetOneByCarManagementName(name string) (m CarManageme
 
 func (o *CarManagementOrm) UpdateCarManagementByCompanyId(companyId uuid.UUID, p CarManagement, tx *gorm.DB) (err error) {
 	result := tx.Model(&CarManagement{}).Where("company_id", companyId).Updates(&p)
+	return result.Error
+}
+
+func (o *CarManagementOrm) UpdateCarManagementByCompanyIdAndPlateNumber(companyId uuid.UUID, plateNumber string, p CarManagement, tx *gorm.DB) (err error) {
+	result := tx.Model(&CarManagement{}).Where("company_id = ? AND plate_number = ?", companyId, plateNumber).Updates(&p)
 	return result.Error
 }
 

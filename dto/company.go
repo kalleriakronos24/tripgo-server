@@ -13,6 +13,8 @@ type InsertFormCompany struct {
 	CompanyCertificate *multipart.FileHeader    `form:"companyCertificate" swaggerignore:"true"`
 	Drivers            []*DriverSignUpValidator `json:"drivers,omitempty" binding:"required" validate:"required,dive,required"`
 	Transports         []*InsertCarManagement   `json:"transports,omitempty" binding:"required" validate:"required,dive,required"`
+	Lat                float32                  `json:"lat,omitempty"`
+	Lng                float32                  `json:"lng,omitempty"`
 }
 
 type InsertCompany struct {
@@ -23,5 +25,7 @@ type InsertCompany struct {
 	CompanyAddress     string
 	CompanyCountry     string
 	CompanyNumber      string
+	Lat                float32
+	Lng                float32
 	CompanyCertificate *multipart.FileHeader
 }

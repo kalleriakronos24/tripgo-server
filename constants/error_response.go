@@ -111,6 +111,13 @@ func GetErrorResponse(kind string, err error, message string) dto.Response {
 			Error:   err.Error(),
 		}
 		return response
+	case "general":
+		response = dto.Response{
+			Data:    false,
+			Kind:    "logical",
+			Message: message,
+		}
+		return response
 	default:
 		return response
 	}

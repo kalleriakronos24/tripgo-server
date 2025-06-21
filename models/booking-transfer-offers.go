@@ -28,6 +28,7 @@ type BookingTransferOffers struct {
 	PassengerNotes    string    `json:"passengerNotes,omitempty" gorm:"default:NULL"`
 	PickUpDate        time.Time `json:"pickUpDate,omitempty" gorm:"not null"`
 	Price             float32   `json:"price,omitempty" gorm:"not null"`
+	Currency          string    `json:"currency,omitempty" gorm:"default:NULL"`
 
 	CustomerID uuid.UUID `json:"customerId,omitempty" gorm:"type:uuid;default:NULL"`
 	CarModelID uuid.UUID `json:"carModelId,omitempty" gorm:"type:uuid;default:NULL"`

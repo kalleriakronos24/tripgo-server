@@ -16,10 +16,11 @@ type CustomerOrm struct {
 }
 
 type Customer struct {
-	ID     uuid.UUID `gorm:"index:id,unique;type:uuid;default:gen_random_uuid();" json:"id"`
-	Name   string    `json:"name" gorm:"not null" binding:"required"`
-	Phone  string    `json:"phone,omitempty" gorm:"default:NULL"`
-	Status string    `json:"status,omitempty" binding:"required" gorm:"not null;default:active;"`
+	ID           uuid.UUID `gorm:"index:id,unique;type:uuid;default:gen_random_uuid();" json:"id"`
+	Name         string    `json:"name" gorm:"not null" binding:"required"`
+	Phone        string    `json:"phone,omitempty" gorm:"default:NULL"`
+	Status       string    `json:"status,omitempty" binding:"required" gorm:"not null;default:active;"`
+	RefferalCode string    `json:"refferalCode,omitempty" gorm:"default:NULL"`
 
 	CredentialsID uuid.UUID    `json:"credentialsId" gorm:"type:uuid;not null"`
 	CreatedBy     uuid.UUID    `json:"createdBy,omitempty" gorm:"type:uuid;default:NULL"`
@@ -32,8 +33,10 @@ type Customer struct {
 type CustomerModelAction interface {
 	GetOneByID(id uuid.UUID) (m Customer, err error)
 	GetOneByCustomerName(Customername string) (m Customer, err error)
-	GetAllCustomerPaginated(c *gin.Context, CustomerId uuid.UUID) (*database.Pagination, error)
+	GetAllCustomerPaginated(c *gin.Context) (*database.Pagination, error)
 	InsertCustomer(p Customer, tx *gorm.DB) (err error)
+	GetOneByCustomerID(id uuid.UUID) (Customer Customer, err error)
+	UpdateCustomer(id uuid.UUID, p Customer, tx *gorm.DB) (err error)
 	DeleteCustomer(id uuid.UUID, tx *gorm.DB) (err error)
 }
 
@@ -41,12 +44,12 @@ func NewCustomerAction(db *gorm.DB) CustomerModelAction {
 	return &CustomerOrm{db}
 }
 
-func (o *CustomerOrm) GetAllCustomerPaginated(c *gin.Context, CustomerId uuid.UUID) (*database.Pagination, error) {
+func (o *CustomerOrm) GetAllCustomerPaginated(c *gin.Context) (*database.Pagination, error) {
 	var mArr []*Customer
 	var pagination database.Pagination
 	o.db.
-		Scopes(database.Paginator(c, &mArr, []string{"CreatedBy", "UpdatedBy", "Company"}, &pagination)).
-		Where("created_by", CustomerId).
+		Scopes(database.Paginator(c, &mArr, []string{"Credentials"}, &pagination)).
+		Order("created_at DESC").
 		Find(&mArr)
 	pagination.Data = &mArr
 	return &pagination, nil
@@ -55,6 +58,14 @@ func (o *CustomerOrm) GetAllCustomerPaginated(c *gin.Context, CustomerId uuid.UU
 func (o *CustomerOrm) GetOneByID(id uuid.UUID) (Customer Customer, err error) {
 	result := o.db.Model(&Customer).
 		Where("credentials_id = ?", id).
+		Preload(clause.Associations).
+		First(&Customer)
+	return Customer, result.Error
+}
+
+func (o *CustomerOrm) GetOneByCustomerID(id uuid.UUID) (Customer Customer, err error) {
+	result := o.db.Model(&Customer).
+		Where("id = ?", id).
 		Preload(clause.Associations).
 		First(&Customer)
 	return Customer, result.Error
@@ -72,6 +83,11 @@ func (o *CustomerOrm) GetOneByCustomerName(Customername string) (m Customer, err
 
 func (o *CustomerOrm) InsertCustomer(p Customer, tx *gorm.DB) (err error) {
 	result := tx.Model(&p).Create(&p)
+	return result.Error
+}
+
+func (o *CustomerOrm) UpdateCustomer(id uuid.UUID, p Customer, tx *gorm.DB) (err error) {
+	result := tx.Model(&p).Where("credential_id = ?", id).Updates(&p)
 	return result.Error
 }
 

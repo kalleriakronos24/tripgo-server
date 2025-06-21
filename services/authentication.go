@@ -31,6 +31,14 @@ func (module *module) AuthenticateUser(credentials dto.CredentialSignInDto) (tok
 	return generateToken(user)
 }
 
+func (module *module) AuthenticateUserV2(credentials dto.CredentialSignInDto) (token string, err error) {
+	var user masterModels.Credentials
+	if user, err = module.db.credentialModel.GetOneByEmail(credentials.Email); err != nil {
+		return "", errors.New("email or password is incorrect")
+	}
+	return generateToken(user)
+}
+
 func (module *module) UpdateDeviceToken(token string, credentialId uuid.UUID) (err error) {
 	if token != "" {
 		if err = module.db.credentialModel.UpdateDeviceToken(credentialId, masterModels.Credentials{
@@ -96,6 +104,7 @@ func (module *module) RegisterCustomer(credentials *dto.CustomerSignup) (err err
 	if cred, err = module.db.credentialModel.InsertCredentials(masterModels.Credentials{
 		Email:    credentials.Email,
 		Password: string(hashedPassword),
+		Type:     credentials.Type,
 	}, tx); err != nil {
 		tx.Rollback()
 		return errors.New("failed to register. try again")
@@ -105,6 +114,7 @@ func (module *module) RegisterCustomer(credentials *dto.CustomerSignup) (err err
 		Name:          credentials.Name,
 		Phone:         credentials.Phone,
 		CredentialsID: cred.ID,
+		RefferalCode:  credentials.RefferalCode,
 	}, tx); err != nil {
 		tx.Rollback()
 		return errors.New("failed to register. try again")

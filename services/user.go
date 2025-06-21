@@ -55,3 +55,13 @@ func (module *module) CheckExistingUser(id string, param CheckExistingUserStruct
 	}
 	return
 }
+
+func (module *module) CheckExistingUserV2(id string, param CheckExistingUserStruct) (m *masterModels.Credentials, err error) {
+	if param.Email != "" {
+		if m, err = module.db.credentialModel.GetOneByEmailV2(param.Email); err != nil {
+			return nil, errors.New(err.Error())
+		}
+		return m, nil
+	}
+	return
+}

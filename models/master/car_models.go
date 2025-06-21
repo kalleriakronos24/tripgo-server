@@ -22,6 +22,7 @@ type CarModel struct {
 	PersonCount   int              `json:"personCount,omitempty" gorm:"not null" binding:"required"`
 	ImagePath     string           `json:"imagePath,omitempty" gorm:"not null" binding:"required"`
 	Status        string           `json:"status,omitempty" binding:"required" gorm:"not null;default:active;"`
+	OrderNum      int              `json:"orderNum,omitempty" gorm:"default:NULL"`
 	CreatedBy     uuid.UUID        `json:"createdBy,omitempty" gorm:"type:uuid;default:NULL"`
 	UpdatedBy     uuid.UUID        `json:"updatedBy,omitempty" gorm:"type:uuid;default:NULL"`
 	CarManagement []*CarManagement `json:"carManagement,omitempty"`

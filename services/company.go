@@ -3,6 +3,7 @@ package services
 import (
 	"errors"
 	"fmt"
+	"log"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -12,6 +13,7 @@ import (
 	"github.com/kalleriakronos24/khaimal-group/models"
 	masterModels "github.com/kalleriakronos24/khaimal-group/models/master"
 	"github.com/kalleriakronos24/khaimal-group/pkg/mail-service"
+	"github.com/kalleriakronos24/khaimal-group/templates/email"
 	"github.com/kalleriakronos24/khaimal-group/utils"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm/clause"
@@ -33,6 +35,8 @@ func (module *module) InsertCompany(c *gin.Context, p *dto.InsertCompany, pAgent
 		CompanyAddress: p.CompanyAddress,
 		CompanyCountry: p.CompanyCountry,
 		CompanyNumber:  p.CompanyNumber,
+		Lat:            p.Lat,
+		Lng:            p.Lng,
 		Status:         "pending-approval",
 	}, tx); err != nil {
 		tx.Rollback()
@@ -46,7 +50,7 @@ func (module *module) InsertCompany(c *gin.Context, p *dto.InsertCompany, pAgent
 		Email:    pAgent.Email,
 		Phone:    pAgent.Phone,
 		Password: "12345678",
-	}
+	} 
 
 	var hashedPasswordAgent []byte
 	if hashedPasswordAgent, err = bcrypt.GenerateFromPassword([]byte(pAgentDto.Password), bcrypt.DefaultCost); err != nil {
@@ -435,6 +439,13 @@ func (module *module) RetrieveCompanyByUserID(userId uuid.UUID) (m masterModels.
 	return
 }
 
+func (module *module) RetrieveAllRegisteredCustomerPaginated(c *gin.Context) (pagination *database.Pagination, err error) {
+	if pagination, err = module.db.userCustomerModel.GetAllCustomerPaginated(c); err != nil {
+		return pagination, fmt.Errorf("%s", err.Error())
+	}
+	return
+}
+
 func (module *module) ApproveCompany(companyId uuid.UUID) (err error) {
 	tx := database.GetDatabaseConnection().Begin()
 
@@ -503,5 +514,110 @@ func (module *module) RetrieveCompany(id uuid.UUID) (m masterModels.Company, err
 	if m, err = module.db.companyModel.GetOneCompanyByID(id); err != nil {
 		return m, fmt.Errorf("%s", err.Error())
 	}
+	return
+}
+
+func (module *module) RegisterNewDriverInternalAgent(driverId uuid.UUID, credentials *dto.DriverSignup) (err error) {
+
+	tx := database.GetDatabaseConnection().Begin()
+
+	var hashedPassword []byte
+	if hashedPassword, err = bcrypt.GenerateFromPassword([]byte(credentials.Password), bcrypt.DefaultCost); err != nil {
+		return errors.New("server error. please try again later")
+	}
+
+	log.Printf("manager id >> %v", driverId)
+
+	var driverManager masterModels.Driver
+	if txError := tx.Model(&driverManager).
+		Where("credentials_id = ?", driverId).
+		Preload(clause.Associations).
+		First(&driverManager); txError.Error != nil {
+		tx.Rollback()
+		return errors.New("failed to register new driver. try again")
+	}
+
+	var cred *masterModels.Credentials
+
+	if cred, err = module.db.credentialModel.InsertCredentials(masterModels.Credentials{
+		Email:    credentials.Email,
+		Password: string(hashedPassword),
+	}, tx); err != nil {
+		tx.Rollback()
+		return errors.New("failed to register. try again")
+	}
+
+	if err = module.db.userDriverModel.InsertDriver(masterModels.Driver{
+		Name:          credentials.Name,
+		CredentialsID: cred.ID,
+		DriverType:    "internal",
+		Phone:         credentials.Phone,
+		Prob:          0,
+		CompanyID:     driverManager.CompanyID,
+	}, tx); err != nil {
+		tx.Rollback()
+		return errors.New("failed to register new driver. try again")
+	}
+
+	var driver masterModels.Credentials
+	if txError := tx.Model(&driver).
+		Where("id = ?", cred.ID).
+		Preload(clause.Associations).
+		First(&driver); txError.Error != nil {
+		tx.Rollback()
+		return errors.New("failed to register new driver. try again")
+	}
+
+	if err = module.db.balanceDriver.InsertBalanceDriver(models.BalanceDriver{
+		Amount:   0,
+		DriverID: driver.CredentialDriver.ID,
+	}, tx); err != nil {
+		tx.Rollback()
+		return errors.New("failed to register. try again")
+	}
+
+	var carManagement []masterModels.CarManagement
+	if txError := tx.Model(&carManagement).
+		Where("driver_id = ?", driverManager.ID).
+		Preload(clause.Associations).
+		Find(&carManagement); txError.Error != nil {
+		tx.Rollback()
+		return errors.New("failed to register new driver. try again")
+	}
+
+	randomFileName, _ := utils.GenerateNumber(30)
+	uniqueFileName := fmt.Sprintf("%v%v", randomFileName, ".jpg")
+
+	for i := range carManagement {
+		p := carManagement[i]
+		CarManagement := masterModels.CarManagement{
+			Name:              p.Name,
+			PlateNumber:       p.PlateNumber,
+			LicensePhoto:      fmt.Sprintf("%s/%s/car-management/front-car-photo/%s", config.AppConfig.APPUrl, config.AppConfig.AppUrlStaticFileMainRoute, uniqueFileName),
+			CarManagementType: p.CarManagementType,
+			DriverID:          driver.CredentialDriver.ID,
+			CarModelID:        p.CarModelID,
+			FileName:          uniqueFileName,
+			CompanyID:         p.CompanyID,
+			FrontCarPhoto:     fmt.Sprintf("%s/%s/car-management/front-car-photo/%s", config.AppConfig.APPUrl, config.AppConfig.AppUrlStaticFileMainRoute, uniqueFileName),
+			RoadTaxPhoto:      fmt.Sprintf("%s/%s/car-management/road-tax-photo/%s", config.AppConfig.APPUrl, config.AppConfig.AppUrlStaticFileMainRoute, uniqueFileName),
+			VEPPhoto:          fmt.Sprintf("%s/%s/car-management/vep-photo/%s", config.AppConfig.APPUrl, config.AppConfig.AppUrlStaticFileMainRoute, uniqueFileName),
+		}
+
+		if CarManagementErr := tx.Create(&CarManagement); CarManagementErr.Error != nil {
+			tx.Rollback()
+			return errors.New("failed to upload car management")
+		}
+	}
+
+	if err = mail.SendMailV3(&mail.TSendMail{
+		From:    "WadahGo <notification@wadahgo.com>",
+		MailTo:  cred.Email,
+		Subject: "Registration Success",
+		Body:    email.ETRegisterSuccess(credentials.Name),
+	}); err != nil {
+		return errors.New("server error. please try again later")
+	}
+	tx.Commit()
 	return
 }
