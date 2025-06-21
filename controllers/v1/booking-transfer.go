@@ -7,7 +7,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/kalleriakronos24/khaimal-group/constants"
 	"github.com/kalleriakronos24/khaimal-group/dto"
-	"github.com/kalleriakronos24/khaimal-group/models"
 	"github.com/kalleriakronos24/khaimal-group/models/master"
 	"github.com/kalleriakronos24/khaimal-group/services"
 	"github.com/kalleriakronos24/khaimal-group/utils"
@@ -69,21 +68,21 @@ func POSTBookingTransfer(c *gin.Context) {
 		Currency:          pValidator.Currency,
 	}
 
-	var bookingTransfer models.BookingTransfer
-	if bookingTransfer, err = services.Handler.RetrieveLastOrderByCustomerID(cred.CredentialCustomer.ID); err != nil {
-		if err = services.Handler.InsertBookingTransfer(p); err != nil {
-			c.JSON(http.StatusBadRequest, constants.GetErrorResponse("insert-failed", err, "booking transfer"))
-			return
-		}
-		c.JSON(http.StatusCreated, dto.Response{Message: "success"})
-		// c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "customer"))
-		return
-	}
+	// var bookingTransfer models.BookingTransfer
+	// if bookingTransfer, err = services.Handler.RetrieveLastOrderByCustomerID(cred.CredentialCustomer.ID); err != nil {
+	// 	if err = services.Handler.InsertBookingTransfer(p); err != nil {
+	// 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("insert-failed", err, "booking transfer"))
+	// 		return
+	// 	}
+	// 	c.JSON(http.StatusCreated, dto.Response{Message: "success"})
+	// 	// c.JSON(http.StatusBadRequest, constants.GetErrorResponse("data-not-found", err, "customer"))
+	// 	return
+	// }
 
-	if bookingTransfer.IsCompleted == utils.NewFalse() {
-		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("general", nil, "You can only have one active booking."))
-		return
-	}
+	// if bookingTransfer.IsCompleted == utils.NewFalse() {
+	// 	c.JSON(http.StatusBadRequest, constants.GetErrorResponse("general", nil, "You can only have one active booking."))
+	// 	return
+	// }
 
 	if err = services.Handler.InsertBookingTransfer(p); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("insert-failed", err, "booking transfer"))
