@@ -259,6 +259,7 @@ func (module *module) InsertBookingTransfer(p *dto.InsertBookingTransfer) (err e
 		return errors.New(err.Error())
 	}
 
+	log.Printf("is this work until here")
 	tx.Commit()
 	return err
 }

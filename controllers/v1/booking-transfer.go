@@ -87,9 +87,9 @@ func POSTBookingTransfer(c *gin.Context) {
 	if err = services.Handler.InsertBookingTransfer(p); err != nil {
 		c.JSON(http.StatusBadRequest, constants.GetErrorResponse("insert-failed", err, "booking transfer"))
 		return
+	} else {
+		c.JSON(http.StatusCreated, dto.Response{Message: "success"})
 	}
-
-	c.JSON(http.StatusCreated, dto.Response{Message: "success"})
 }
 
 // AuthLogin godoc
