@@ -95,7 +95,7 @@ func SendMailV3(p *TSendMail) (err error) {
 	message.Subject(p.Subject)
 	message.SetBodyString(mailer.TypeTextHTML, p.Body)
 
-	dialer, err := mailer.NewClient("live.smtp.mailtrap.io", mailer.WithSMTPAuth(mailer.SMTPAuthPlain), mailer.WithUsername("api"), mailer.WithPassword("eeb698e014595388ad1d80ed7e9ffb54"), mailer.WithTimeout(6000))
+	dialer, err := mailer.NewClient("live.smtp.mailtrap.io", mailer.WithTLSPortPolicy(587), mailer.WithSMTPAuth(mailer.SMTPAuthPlain), mailer.WithUsername("api"), mailer.WithPassword("eeb698e014595388ad1d80ed7e9ffb54"))
 
 	if err != nil {
 		log.Fatalf("failed to create mail client: %v", err)
