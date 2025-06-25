@@ -78,8 +78,8 @@ func SendMailV3(p *TSendMail) (err error) {
 	message.SetHeader("Subject", p.Subject)
 	message.AddAlternative("text/html", p.Body)
 
-	dialer := gomail.NewDialer("live.smtp.mailtrap.io", 587, "api", "eeb698e014595388ad1d80ed7e9ffb54")
-
+	dialer := gomail.NewDialer("live.smtp.mailtrap.io", 2525, "api", "eeb698e014595388ad1d80ed7e9ffb54")
+	// dialer.tls
 	log.Printf("is using SSL ? %v", dialer.SSL)
 	// log.Printf("TLS config ? %v", &dialer.TLSConfig.GetConfigForClient)
 	// Set a timeout for the dialer (e.g., 10 seconds)
