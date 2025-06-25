@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/spf13/viper"
-	mailer "github.com/wneessen/go-mail"
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/mail"
 	"gopkg.in/gomail.v2"
@@ -72,40 +71,41 @@ func SendMailV2(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Email sent successfully!"))
 }
 
-// func SendMailV3(p *TSendMail) (err error) {
-// 	message := gomail.NewMessage()
-// 	message.SetHeader("From", p.From)
-// 	message.SetHeader("To", p.MailTo)
-// 	message.SetHeader("Subject", p.Subject)
-// 	message.AddAlternative("text/html", p.Body)
-
-// 	dialer := gomail.NewDialer("live.smtp.mailtrap.io", 587, "api", "eeb698e014595388ad1d80ed7e9ffb54")
-// 	if err := dialer.DialAndSend(message); err != nil {
-// 		return err
-// 	} else {
-// 		fmt.Println("HTML Email sent successfully")
-// 		return nil
-// 	}
-// }
-
 func SendMailV3(p *TSendMail) (err error) {
-	message := mailer.NewMsg()
-	message.From(p.From)
-	message.To(p.MailTo)
-	message.Subject(p.Subject)
-	message.SetBodyString(mailer.TypeTextHTML, p.Body)
+	message := gomail.NewMessage()
+	message.SetHeader("From", p.From)
+	message.SetHeader("To", p.MailTo)
+	message.SetHeader("Subject", p.Subject)
+	message.AddAlternative("text/html", p.Body)
 
-	dialer, err := mailer.NewClient("live.smtp.mailtrap.io", mailer.WithTLSPortPolicy(587), mailer.WithSMTPAuth(mailer.SMTPAuthPlain), mailer.WithUsername("api"), mailer.WithPassword("eeb698e014595388ad1d80ed7e9ffb54"))
-
-	if err != nil {
-		log.Fatalf("failed to create mail client: %v", err)
-		return err
-	}
+	dialer := gomail.NewDialer("live.smtp.mailtrap.io", 587, "api", "eeb698e014595388ad1d80ed7e9ffb54")
 	if err := dialer.DialAndSend(message); err != nil {
-		log.Fatalf("failed to sent new email: %v", err)
+		log.Printf("failed send email >> %v", err)
 		return err
 	} else {
 		fmt.Println("HTML Email sent successfully")
 		return nil
 	}
 }
+
+// func SendMailV3(p *TSendMail) (err error) {
+// 	message := mailer.NewMsg()
+// 	message.From(p.From)
+// 	message.To(p.MailTo)
+// 	message.Subject(p.Subject)
+// 	message.SetBodyString(mailer.TypeTextHTML, p.Body)
+
+// 	dialer, err := mailer.NewClient("live.smtp.mailtrap.io", mailer.WithTLSPortPolicy(465), mailer.WithSMTPAuth(mailer.SMTPAuthPlain), mailer.WithUsername("api"), mailer.WithPassword("eeb698e014595388ad1d80ed7e9ffb54"))
+
+// 	if err != nil {
+// 		log.Fatalf("failed to create mail client: %v", err)
+// 		return err
+// 	}
+// 	if err := dialer.DialAndSend(message); err != nil {
+// 		log.Fatalf("failed to sent new email: %v", err)
+// 		return err
+// 	} else {
+// 		fmt.Println("HTML Email sent successfully")
+// 		return nil
+// 	}
+// }
