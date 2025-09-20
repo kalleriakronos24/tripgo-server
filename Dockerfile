@@ -9,8 +9,7 @@ FROM base AS init
 RUN apt-get update && apt-get install -y \
     git \
     curl \
-    docker.io \
-    wkhtmltopdf
+    docker.io
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 RUN go env -w GO111MODULE=auto
 

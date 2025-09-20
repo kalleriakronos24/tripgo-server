@@ -14,7 +14,7 @@ services:
       - database-backup:/opt/app/database-backup
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
-      - "3009:8080"
+      - "3010:8080"
     depends_on:
       - db
     links:
@@ -24,18 +24,18 @@ services:
 
   adminer:
     image: adminer:4.8.1-standalone
-    container_name: khaimal-adminer
+    container_name: tripgo-adminer
     restart: unless-stopped
     environment:
       ADMINER_DEFAULT_SERVER: db
     ports:
-      - "8001:8080"
+      - "8005:8080"
     networks:
       - internal
 
   db:
     image: postgres:16
-    container_name: khaimal-db
+    container_name: tripgo-db
     restart: on-failure
     environment:
       - POSTGRES_HOST=${DB_HOST}
@@ -48,7 +48,7 @@ services:
     expose:
       - 5432
     volumes:
-      - khaimal-db:/var/lib/postgresql/data"
+      - tripgo-db:/var/lib/postgresql/data"
     networks:
       - internal
 
@@ -56,7 +56,7 @@ networks:
   internal:
     driver: bridge
 volumes:
-  khaimal-db:
+  tripgo-db:
     driver: local
   files-uploaded:
     driver: local

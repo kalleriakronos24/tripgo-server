@@ -81,7 +81,7 @@ func WSTrackLocation(c *gin.Context) {
 func WSSendLocation(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Minute)
 	defer cancel()
-	conn, _, err := websocket.Dial(ctx, "ws://192.168.68.116:3009/api/v1/ws/loc/track/qweqwe123123213", nil)
+	conn, _, err := websocket.Dial(ctx, "ws://192.168.68.116:3010/api/v1/ws/loc/track/qweqwe123123213", nil)
 	if err != nil {
 		log.Printf("ERR DIAL WRITe >> %v", err)
 	}

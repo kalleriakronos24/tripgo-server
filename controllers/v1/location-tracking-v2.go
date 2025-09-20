@@ -188,7 +188,7 @@ func LocationTrackingV3(ctx *gin.Context) {
 	defer server.Close()
 }
 
-var addr = flag.String("addr", "192.168.176.61:3009", "http service address")
+var addr = flag.String("addr", "192.168.176.61:3010", "http service address")
 
 func ListenLocationTracking(gin *gin.Context) {
 	id, _ := gin.Params.Get("id")
