@@ -14,7 +14,7 @@ services:
       - database-backup:/opt/app/database-backup
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
-      - "3010:8080"
+      - "3010:8081"
     depends_on:
       - db
     links:
@@ -29,7 +29,7 @@ services:
     environment:
       ADMINER_DEFAULT_SERVER: db
     ports:
-      - "8005:8080"
+      - "8005:8081"
     networks:
       - internal
 
@@ -44,9 +44,9 @@ services:
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_DB=${DB_DATABASE}
     ports:
-      - "5432:5432"
+      - "5433:5433"
     expose:
-      - 5432
+      - 5433
     volumes:
       - tripgo-db:/var/lib/postgresql/data"
     networks:
