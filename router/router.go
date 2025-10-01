@@ -40,7 +40,7 @@ func InitializeRouter() (router *gin.Engine) {
 	str := []string{"http://localhost:4321", "http://localhost:3000"}
 
 	if config.AppConfig.Environment == "PRODUCTION" {
-		str = []string{"http://localhost:3000"}
+		str = []string{"https://tripgo.my", "https://tripgo-dashboard.vercel.app", "https://tripgo-dashboard.vercel.com"}
 	}
 
 	configCors := cors.DefaultConfig()
