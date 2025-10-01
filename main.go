@@ -35,10 +35,10 @@ func runServer() {
 	time.Local = loc
 	// swagger configs
 	docs.SwaggerInfo.Title = "Swagger Example API"
-	docs.SwaggerInfo.Description = "This is a sample server Khaimal Group server."
+	docs.SwaggerInfo.Description = "This is a sample server TripGo server."
 	docs.SwaggerInfo.Version = "1.0"
 	// docs.SwaggerInfo.Host = "localhost:3010"
-	docs.SwaggerInfo.Host = "srv.wadahgo.com"
+	docs.SwaggerInfo.Host = "srv.tripgo.my"
 	docs.SwaggerInfo.BasePath = "/api/v1"
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 	//automatic database backup
